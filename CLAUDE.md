@@ -1,0 +1,30 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+a11y-lint is a Ruby gem (v0.1.0) for accessibility linting. It uses the `A11y::Lint` module namespace. Requires Ruby >= 3.1.0.
+
+## Commands
+
+- **Install dependencies:** `bin/setup` or `bundle install`
+- **Run all checks (tests + linting):** `bundle exec rake`
+- **Run tests only:** `bundle exec rake test`
+- **Run a single test file:** `bundle exec ruby -Ilib:test test/a11y/test_lint.rb`
+- **Run a single test by name:** `bundle exec ruby -Ilib:test test/a11y/test_lint.rb -n test_name`
+- **Run linter:** `bundle exec rake rubocop`
+- **Interactive console with gem loaded:** `bin/console`
+
+## Architecture
+
+- **Entry point:** `lib/a11y/lint.rb` — defines the `A11y::Lint` module and `A11y::Lint::Error` exception
+- **Version:** `lib/a11y/lint/version.rb`
+- **Type signatures (RBS):** `sig/a11y/lint.rbs`
+- **Tests:** `test/` directory using Minitest; test helper at `test/test_helper.rb`
+
+## Code Style
+
+RuboCop is configured in `.rubocop.yml`:
+- Target Ruby version: 3.1
+- Enforces double quotes for strings
