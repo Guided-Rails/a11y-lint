@@ -83,6 +83,15 @@ module A11y
         assert_empty(offenses)
       end
 
+      def test_slim_output_nodes
+        offenses =
+          Runner
+          .new([Rules::ImageTagMissingAlt.new])
+          .run('= image_tag "photo.jpg"', filename: "test.slim")
+
+        assert_equal(1, offenses.length)
+      end
+
       private
 
       def multiline_source

@@ -5,6 +5,7 @@ require_relative "lint/version"
 require_relative "lint/offense"
 require_relative "lint/node"
 require_relative "lint/rule"
+require_relative "lint/rules/image_tag_missing_alt"
 require_relative "lint/rules/img_missing_alt"
 require_relative "lint/runner"
 

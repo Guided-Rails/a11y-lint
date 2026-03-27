@@ -15,6 +15,12 @@ module A11y
         @sexp[2]
       end
 
+      def ruby_code
+        return unless @sexp[0] == :slim && @sexp[1] == :output
+
+        @sexp[3]
+      end
+
       def attribute?(name)
         attributes.key?(name)
       end
