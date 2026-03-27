@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "a11y/lint"
+require "a11y/lint/cli"
+
+exit A11y::Lint::CLI.new(ARGV).run

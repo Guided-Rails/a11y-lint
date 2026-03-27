@@ -14,10 +14,12 @@ a11y-lint is a Ruby gem (v0.1.0) for accessibility linting. It uses the `A11y::L
 - **Run a single test file:** `bundle exec ruby -Ilib:test test/a11y/test_lint.rb`
 - **Run a single test by name:** `bundle exec ruby -Ilib:test test/a11y/test_lint.rb -n test_name`
 - **Run linter:** `bundle exec rake rubocop`
+- **Run a11y-lint on files:** `bundle exec a11y-lint [file_or_directory ...]`
 - **Interactive console with gem loaded:** `bin/console`
 
 ## Architecture
 
+- **CLI:** `lib/a11y/lint/cli.rb` — command-line interface; executable at `exe/a11y-lint`
 - **Entry point:** `lib/a11y/lint.rb` — defines the `A11y::Lint` module and `A11y::Lint::Error` exception
 - **Version:** `lib/a11y/lint/version.rb`
 - **Type signatures (RBS):** `sig/a11y/lint.rbs`
