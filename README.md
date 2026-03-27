@@ -24,8 +24,33 @@ gem install a11y-lint
 
 ## Usage
 
+### Command Line
+
+Run the linter on specific files or directories:
+
+```bash
+a11y-lint app/views/
+a11y-lint app/views/home.html.slim app/views/about.html.slim
+```
+
+With no arguments, it scans the current directory recursively for `.slim` files:
+
+```bash
+a11y-lint
+```
+
+### Ruby API
+
 ```ruby
 require "a11y/lint"
+
+source = File.read("app/views/home.html.slim")
+runner = A11y::Lint::Runner.new([A11y::Lint::Rules::ImgMissingAlt.new])
+offenses = runner.run(source, filename: "app/views/home.html.slim")
+
+offenses.each do |offense|
+  puts "#{offense.filename}:#{offense.line} [#{offense.rule}] #{offense.message}"
+end
 ```
 
 ## Requirements

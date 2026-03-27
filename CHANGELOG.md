@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Command-line interface (`exe/a11y-lint`) for running the linter from the terminal
+  - Accepts file paths and directories as arguments
+  - Recursively scans for `.slim` files when given a directory (defaults to current directory)
+  - Supports `--version` and `--help` flags
+
 ## [0.1.0] - 2026-03-27
 
 ### Added
