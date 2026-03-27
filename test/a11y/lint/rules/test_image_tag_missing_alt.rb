@@ -121,7 +121,9 @@ module A11y
         private
 
         def run_linter(source, filename: "test.slim")
-          Runner.new([ImageTagMissingAlt.new]).run(source, filename: filename)
+          SlimRunner
+            .new([ImageTagMissingAlt.new])
+            .run(source, filename: filename)
         end
       end
     end

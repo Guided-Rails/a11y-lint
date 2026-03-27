@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- ERB template support: scans `.erb` files using Nokogiri for HTML parsing
+  - Both `ImgMissingAlt` and `ImageTagMissingAlt` rules now work on ERB templates
+  - CLI automatically detects and routes `.slim` and `.erb` files to the appropriate runner
+
+### Changed
+
+- **Breaking:** `Runner` has been renamed to `SlimRunner`
+
 ## [0.3.1] - 2026-03-27
 
 ### Fixed
