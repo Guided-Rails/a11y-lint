@@ -28,15 +28,7 @@ module A11y
 
         def extract_image_tag_call(sexp)
           return unless sexp.is_a?(Array)
-
-          case sexp
-          in [:command, [:@ident, "image_tag", *], *]
-            return sexp
-          in [:method_add_arg, [:fcall, [:@ident, "image_tag", *]], *]
-            return sexp
-          else
-            nil
-          end
+          return sexp if image_tag_call?(sexp)
 
           sexp.each do |child|
             result = extract_image_tag_call(child)
@@ -44,6 +36,14 @@ module A11y
           end
 
           nil
+        end
+
+        def image_tag_call?(sexp)
+          case sexp
+          in [:command, [:@ident, "image_tag", *], *] then true
+          in [:method_add_arg, [:fcall, [:@ident, "image_tag", *]], *] then true
+          else false
+          end
         end
 
         def alt_key_within?(sexp)
