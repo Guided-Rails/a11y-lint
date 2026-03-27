@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `ImageTagMissingAlt` rule: detect `image_tag` nested inside `link_to` and other helper calls
+
 ## [0.3.0] - 2026-03-27
 
 ### Added
