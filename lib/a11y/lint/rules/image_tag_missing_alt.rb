@@ -27,16 +27,22 @@ module A11y
         end
 
         def extract_image_tag_call(sexp)
-          statement = sexp.dig(1, 0)
-          return unless statement.is_a?(Array)
+          return unless sexp.is_a?(Array)
+          return sexp if image_tag_call?(sexp)
 
-          case statement
-          in [:command, [:@ident, "image_tag", *], *]
-            statement
-          in [:method_add_arg, [:fcall, [:@ident, "image_tag", *]], *]
-            statement
-          else
-            nil
+          sexp.each do |child|
+            result = extract_image_tag_call(child)
+            return result if result
+          end
+
+          nil
+        end
+
+        def image_tag_call?(sexp)
+          case sexp
+          in [:command, [:@ident, "image_tag", *], *] then true
+          in [:method_add_arg, [:fcall, [:@ident, "image_tag", *]], *] then true
+          else false
           end
         end
 
