@@ -33,7 +33,7 @@ a11y-lint app/views/
 a11y-lint app/views/home.html.slim app/views/about.html.slim
 ```
 
-With no arguments, it scans the current directory recursively for `.slim` files:
+With no arguments, it scans the current directory recursively for `.slim` and `.erb` files:
 
 ```bash
 a11y-lint
@@ -45,7 +45,7 @@ a11y-lint
 require "a11y/lint"
 
 source = File.read("app/views/home.html.slim")
-runner = A11y::Lint::Runner.new([A11y::Lint::Rules::ImgMissingAlt.new])
+runner = A11y::Lint::SlimRunner.new([A11y::Lint::Rules::ImgMissingAlt.new])
 offenses = runner.run(source, filename: "app/views/home.html.slim")
 
 offenses.each do |offense|

@@ -4,10 +4,10 @@ require "test_helper"
 
 module A11y
   module Lint
-    class TestRunner < Minitest::Test
+    class TestSlimRunner < Minitest::Test
       def test_for_clean_source
         offenses =
-          Runner
+          SlimRunner
           .new([Rules::ImgMissingAlt.new])
           .run('img src="photo.jpg" alt="A photo"', filename: "test.slim")
 
@@ -16,7 +16,7 @@ module A11y
 
       def test_for_violations
         offenses =
-          Runner
+          SlimRunner
           .new([Rules::ImgMissingAlt.new])
           .run('img src="photo.jpg"', filename: "test.slim")
 
@@ -25,7 +25,7 @@ module A11y
 
       def test_rrule_name
         offenses =
-          Runner
+          SlimRunner
           .new([Rules::ImgMissingAlt.new])
           .run('img src="photo.jpg"', filename: "test.slim")
 
@@ -35,7 +35,7 @@ module A11y
       def test_filename
         filename = "app/views/show.slim"
         offenses =
-          Runner
+          SlimRunner
           .new([Rules::ImgMissingAlt.new])
           .run('img src="photo.jpg"', filename:)
 
@@ -44,7 +44,7 @@ module A11y
 
       def test_line_number
         offenses =
-          Runner
+          SlimRunner
           .new([Rules::ImgMissingAlt.new])
           .run("div\n  img src=\"photo.jpg\"", filename: "test.slim")
 
@@ -53,7 +53,7 @@ module A11y
 
       def test_message
         offenses =
-          Runner
+          SlimRunner
           .new([Rules::ImgMissingAlt.new])
           .run('img src="photo.jpg"', filename: "test.slim")
 
@@ -65,7 +65,7 @@ module A11y
 
       def test_line_numbers_across_multiple_elements
         offenses =
-          Runner
+          SlimRunner
           .new([Rules::ImgMissingAlt.new])
           .run(multiline_source, filename: "test.slim")
 
@@ -76,7 +76,7 @@ module A11y
 
       def test_non_tag_elements
         offenses =
-          Runner
+          SlimRunner
           .new([Rules::ImgMissingAlt.new])
           .run("| Plain text content", filename: "test.slim")
 
@@ -85,7 +85,7 @@ module A11y
 
       def test_slim_output_nodes
         offenses =
-          Runner
+          SlimRunner
           .new([Rules::ImageTagMissingAlt.new])
           .run('= image_tag "photo.jpg"', filename: "test.slim")
 

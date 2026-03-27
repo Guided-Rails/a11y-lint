@@ -14,13 +14,13 @@ module A11y
           _stdout, stderr = run_cli([], dir:)
 
           assert_equal(0, @exit_code)
-          assert_match(/No .slim files found/, stderr)
+          assert_match(/No .slim or .erb files found/, stderr)
         end
       end
 
       def test_clean_file
         Dir.mktmpdir do |dir|
-          write_slim(dir, "clean.slim", 'img src="photo.jpg" alt="A photo"')
+          write_file(dir, "clean.slim", 'img src="photo.jpg" alt="A photo"')
 
           stdout, _stderr = run_cli([dir])
 
@@ -31,7 +31,7 @@ module A11y
 
       def test_file_with_offense
         Dir.mktmpdir do |dir|
-          write_slim(dir, "bad.slim", 'img src="photo.jpg"')
+          write_file(dir, "bad.slim", 'img src="photo.jpg"')
 
           stdout, _stderr = run_cli([dir])
 
@@ -43,7 +43,7 @@ module A11y
 
       def test_output_format
         Dir.mktmpdir do |dir|
-          path = write_slim(dir, "bad.slim", 'img src="photo.jpg"')
+          path = write_file(dir, "bad.slim", 'img src="photo.jpg"')
 
           stdout, _stderr = run_cli([path])
 
@@ -56,7 +56,7 @@ module A11y
 
       def test_multiple_offenses
         Dir.mktmpdir do |dir|
-          write_slim(dir, "bad.slim", "img src=\"a.jpg\"\nimg src=\"b.jpg\"")
+          write_file(dir, "bad.slim", "img src=\"a.jpg\"\nimg src=\"b.jpg\"")
 
           stdout, _stderr = run_cli([dir])
 
@@ -67,7 +67,7 @@ module A11y
 
       def test_default_scans_current_directory
         Dir.mktmpdir do |dir|
-          write_slim(dir, "test.slim", 'img src="photo.jpg"')
+          write_file(dir, "test.slim", 'img src="photo.jpg"')
 
           stdout, _stderr = run_cli([], dir:)
 
@@ -80,7 +80,7 @@ module A11y
         Dir.mktmpdir do |dir|
           subdir = File.join(dir, "views", "admin")
           FileUtils.mkdir_p(subdir)
-          write_slim(subdir, "index.slim", 'img src="photo.jpg"')
+          write_file(subdir, "index.slim", 'img src="photo.jpg"')
 
           stdout, _stderr = run_cli([dir])
 
@@ -108,7 +108,7 @@ module A11y
 
       def test_explicit_file_argument
         Dir.mktmpdir do |dir|
-          path = write_slim(dir, "specific.slim", 'img src="photo.jpg"')
+          path = write_file(dir, "specific.slim", 'img src="photo.jpg"')
 
           stdout, _stderr = run_cli([path])
 
@@ -133,7 +133,7 @@ module A11y
         Dir.chdir(original_dir) if dir
       end
 
-      def write_slim(dir, name, content)
+      def write_file(dir, name, content)
         path = File.join(dir, name)
         File.write(path, content)
         path

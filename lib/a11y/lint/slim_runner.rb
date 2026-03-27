@@ -3,7 +3,7 @@
 module A11y
   module Lint
     # Parses Slim templates and checks them against accessibility rules.
-    class Runner
+    class SlimRunner
       def initialize(rules)
         @rules = rules
       end

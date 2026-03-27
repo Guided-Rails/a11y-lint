@@ -17,7 +17,7 @@ module A11y
         files = resolve_files(@argv)
 
         if files.empty?
-          @stderr.puts("No .slim files found")
+          @stderr.puts("No .slim or .erb files found")
           return 0
         end
 
@@ -56,7 +56,7 @@ module A11y
 
       def expand_path(path)
         if File.directory?(path)
-          Dir.glob(File.join(path, "**", "*.slim"))
+          Dir.glob(File.join(path, "**", "*.{slim,erb}"))
         elsif File.file?(path)
           [path]
         else
@@ -66,10 +66,13 @@ module A11y
       end
 
       def lint_files(files)
-        runner = Runner.new(all_rules)
+        rules = all_rules
+        slim_runner = SlimRunner.new(rules)
+        erb_runner = ErbRunner.new(rules)
 
         files.flat_map do |file|
           source = File.read(file)
+          runner = file.end_with?(".erb") ? erb_runner : slim_runner
           runner.run(source, filename: file)
         end
       end
