@@ -85,6 +85,22 @@ module A11y
           assert_equal(2, offenses[0].line)
         end
 
+        def test_image_tag_nested_in_link_to_without_alt_reports_offense
+          source = '= link_to(image_tag("logo.svg"), root_path)'
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_image_tag_nested_in_link_to_with_alt_passes
+          source = '= link_to(image_tag("logo.svg", alt: "Logo"), root_path)'
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
         def test_alt_in_filename_still_reports_offense
           source = '= image_tag "icons/alt:native.png"'
 
