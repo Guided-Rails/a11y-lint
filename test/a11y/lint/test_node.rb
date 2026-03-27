@@ -68,6 +68,21 @@ module A11y
 
         assert_equal({}, result)
       end
+
+      def test_ruby_code_for_slim_output_node
+        code = "image_tag \"photo.jpg\""
+        sexp = [:slim, :output, true, code, [:multi]]
+        node = Node.new(sexp, line: 1)
+
+        assert_equal(code, node.ruby_code)
+      end
+
+      def test_ruby_code_returns_nil_for_html_tag_node
+        sexp = [:html, :tag, "img", %i[html attrs]]
+        node = Node.new(sexp, line: 1)
+
+        assert_nil(node.ruby_code)
+      end
     end
   end
 end

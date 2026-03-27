@@ -26,12 +26,16 @@ module A11y
 
         @line += 1 if sexp[0] == :newline
         new_node = Node.new(sexp, line: @line)
-        check_node(new_node) if html_tag?(sexp)
+        check_node(new_node) if html_tag?(sexp) || slim_output?(sexp)
         sexp.each { |child| walk(child) }
       end
 
       def html_tag?(sexp)
         sexp[0] == :html && sexp[1] == :tag
+      end
+
+      def slim_output?(sexp)
+        sexp[0] == :slim && sexp[1] == :output
       end
 
       def node?(sexp)
