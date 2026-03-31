@@ -5,7 +5,7 @@ require "test_helper"
 module A11y
   module Lint
     module Rules
-      class TestLinkMissingAccessibleNameErb < Minitest::Test
+      class TestMissingAccessibleNameErb < Minitest::Test
         def test_link_to_with_empty_text_reports_offense
           source = '<%= link_to("", "/path", class: "icon") %>'
 
@@ -13,11 +13,11 @@ module A11y
 
           assert_equal(1, offenses.length)
           assert_equal(
-            "link missing an accessible name requires an aria-label (WCAG 4.1.2)",
+            "link_to missing an accessible name requires an aria-label (WCAG 4.1.2)",
             offenses[0].message
           )
           assert_equal(1, offenses[0].line)
-          assert_equal("LinkMissingAccessibleName", offenses[0].rule)
+          assert_equal("MissingAccessibleName", offenses[0].rule)
         end
 
         def test_external_link_to_with_empty_text_reports_offense
@@ -114,7 +114,7 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          assert_equal("link missing an accessible name requires an aria-label (WCAG 4.1.2)", offenses[0].message)
+          assert_equal("link_to missing an accessible name requires an aria-label (WCAG 4.1.2)", offenses[0].message)
         end
 
         def test_link_to_with_block_and_aria_label_passes
@@ -192,6 +192,118 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
+        def test_button_tag_with_empty_text_reports_offense
+          source = '<%= button_tag("", class: "icon") %>'
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+          assert_equal(
+            "button_tag missing an accessible name requires an aria-label (WCAG 4.1.2)",
+            offenses[0].message
+          )
+          assert_equal("MissingAccessibleName", offenses[0].rule)
+        end
+
+        def test_button_tag_with_text_passes
+          source = '<%= button_tag("Submit") %>'
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_tag_with_aria_hash_label_passes
+          source = '<%= button_tag("", class: "icon", aria: { label: "Submit" }) %>'
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_tag_with_string_aria_label_passes
+          source = '<%= button_tag("", class: "icon", "aria-label" => "Submit") %>'
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_tag_with_block_reports_offense
+          source = <<~ERB
+            <%= button_tag(class: "button-icon") do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+          assert_equal("button_tag missing an accessible name requires an aria-label (WCAG 4.1.2)", offenses[0].message)
+        end
+
+        def test_button_tag_with_block_and_aria_label_passes
+          source = <<~ERB
+            <%= button_tag(class: "button-icon", aria: { label: "Menu" }) do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_tag_with_block_without_parens_reports_offense
+          source = <<~ERB
+            <%= button_tag class: "button-icon" do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_button_tag_with_block_without_parens_and_aria_label_passes
+          source = <<~ERB
+            <%= button_tag class: "button-icon", aria: { label: "Menu" } do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_multiline_button_tag_with_block_reports_offense
+          source = <<~ERB
+            <%= button_tag(class: "button-icon",
+                           type: "button") do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_multiline_button_tag_with_block_and_aria_label_passes
+          source = <<~ERB
+            <%= button_tag(class: "button-icon",
+                           aria: { label: "Menu" }) do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
         def test_sets_filename_on_offense
           filename = "app/views/index.html.erb"
           source = '<%= link_to("", "/path") %>'
@@ -204,7 +316,7 @@ module A11y
         private
 
         def run_linter(source, filename: "test.html.erb")
-          ErbRunner.new([LinkMissingAccessibleName.new]).run(source, filename: filename)
+          ErbRunner.new([MissingAccessibleName.new]).run(source, filename: filename)
         end
       end
     end
