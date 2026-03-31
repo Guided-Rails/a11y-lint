@@ -13,7 +13,7 @@ module A11y
 
           assert_equal(1, offenses.length)
           assert_equal(
-            "link with empty text content requires an aria-label (WCAG 4.1.2)",
+            "link missing an accessible name requires an aria-label (WCAG 4.1.2)",
             offenses[0].message
           )
           assert_equal(1, offenses[0].line)
@@ -116,7 +116,7 @@ module A11y
 
           assert_equal(1, offenses.length)
           assert_equal(
-            "link with block content requires an aria-label (WCAG 4.1.2)",
+            "link missing an accessible name requires an aria-label (WCAG 4.1.2)",
             offenses[0].message
           )
           assert_equal(1, offenses[0].line)

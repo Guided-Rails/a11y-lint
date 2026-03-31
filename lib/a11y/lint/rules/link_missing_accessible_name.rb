@@ -15,22 +15,16 @@ module A11y
           return unless code
 
           clean_code = code.sub(/\s+do\s*\z/, "")
+          is_block = clean_code != code
           call = parse_link_call(clean_code)
           return unless call
           return if aria_label_within?(call)
+          return unless first_arg_empty_string?(call) || is_block
 
-          offense_message(call, block: clean_code != code)
+          "link missing an accessible name requires an aria-label (WCAG 4.1.2)"
         end
 
         private
-
-        def offense_message(call, block:)
-          if first_arg_empty_string?(call)
-            "link with empty text content requires an aria-label (WCAG 4.1.2)"
-          elsif block
-            "link with block content requires an aria-label (WCAG 4.1.2)"
-          end
-        end
 
         def parse_link_call(code)
           sexp = Ripper.sexp(code)
