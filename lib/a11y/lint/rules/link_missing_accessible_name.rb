@@ -6,29 +6,31 @@ module A11y
   module Lint
     module Rules
       # Checks that link_to / external_link_to calls with empty text
-      # include an aria-label (WCAG 4.1.2).
+      # or block content include an aria-label (WCAG 4.1.2).
       class LinkMissingAccessibleName < Rule
         LINK_METHODS = %w[link_to external_link_to].freeze
 
         def check(node)
-          return unless link_with_empty_text_and_no_accessible_name?(node)
+          code = node.ruby_code
+          return unless code
 
-          "link with empty text content requires an aria-label (WCAG 4.1.2)"
+          clean_code = code.sub(/\s+do\s*\z/, "")
+          is_block = clean_code != code
+          call = parse_link_call(clean_code)
+          return unless call
+          return if aria_label_within?(call)
+          return unless first_arg_empty_string?(call) || is_block
+
+          "link missing an accessible name requires an aria-label (WCAG 4.1.2)"
         end
 
         private
 
-        def link_with_empty_text_and_no_accessible_name?(node)
-          code = node.ruby_code
-          return false unless code
-
+        def parse_link_call(code)
           sexp = Ripper.sexp(code)
-          return false unless sexp
+          return unless sexp
 
-          call = extract_link_call(sexp)
-          return false unless call
-
-          first_arg_empty_string?(call) && !aria_label_within?(call)
+          extract_link_call(sexp)
         end
 
         def extract_link_call(sexp)

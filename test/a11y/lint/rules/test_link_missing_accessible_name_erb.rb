@@ -13,7 +13,7 @@ module A11y
 
           assert_equal(1, offenses.length)
           assert_equal(
-            "link with empty text content requires an aria-label (WCAG 4.1.2)",
+            "link missing an accessible name requires an aria-label (WCAG 4.1.2)",
             offenses[0].message
           )
           assert_equal(1, offenses[0].line)
@@ -102,6 +102,94 @@ module A11y
           offenses = run_linter(source)
 
           assert_empty(offenses)
+        end
+
+        def test_link_to_with_block_reports_offense
+          source = <<~ERB
+            <%= link_to("#", class: "icon") do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+          assert_equal("link missing an accessible name requires an aria-label (WCAG 4.1.2)", offenses[0].message)
+        end
+
+        def test_link_to_with_block_and_aria_label_passes
+          source = <<~ERB
+            <%= link_to("#", class: "icon", aria: { label: "Icon" }) do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_link_to_with_block_without_parens_reports_offense
+          source = <<~ERB
+            <%= link_to "#", class: "icon" do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_link_to_with_block_without_parens_and_aria_label_passes
+          source = <<~ERB
+            <%= link_to "#", class: "icon", aria: { label: "Icon" } do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_multiline_link_to_with_block_reports_offense
+          source = <<~ERB
+            <%= link_to("#",
+                        class: "icon") do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_multiline_link_to_with_block_and_aria_label_passes
+          source = <<~ERB
+            <%= link_to("#",
+                        class: "icon",
+                        aria: { label: "Icon" }) do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_external_link_to_with_block_reports_offense
+          source = <<~ERB
+            <%= external_link_to("https://example.com", class: "icon") do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
         end
 
         def test_sets_filename_on_offense
