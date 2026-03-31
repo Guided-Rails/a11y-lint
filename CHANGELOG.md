@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `ButtonTagMissingAccessibleName` rule: detects `button_tag` calls with empty text or block content missing an `aria-label`
+
 ## [0.6.0] - 2026-03-31
 
 ### Added
