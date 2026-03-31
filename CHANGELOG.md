@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-03-31
+
+### Added
+
+- `LinkMissingAccessibleName` rule: detects `<a>` tags without accessible text content
+
 ## [0.4.0] - 2026-03-27
 
 ### Added
