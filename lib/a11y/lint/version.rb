@@ -2,6 +2,6 @@
 
 module A11y
   module Lint
-    VERSION = "0.5.0"
+    VERSION = "0.5.1"
   end
 end
