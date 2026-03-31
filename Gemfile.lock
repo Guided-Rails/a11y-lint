@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    a11y-lint (0.4.0)
+    a11y-lint (0.5.0)
       nokogiri (>= 1.13)
       slim (>= 4.0)
 
