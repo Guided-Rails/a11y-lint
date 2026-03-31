@@ -9,7 +9,7 @@ require_relative "lint/erb_node"
 require_relative "lint/rule"
 require_relative "lint/rules/image_tag_missing_alt"
 require_relative "lint/rules/img_missing_alt"
-require_relative "lint/rules/link_missing_accessible_name"
+require_relative "lint/rules/missing_accessible_name"
 require_relative "lint/slim_runner"
 require_relative "lint/erb_runner"
 

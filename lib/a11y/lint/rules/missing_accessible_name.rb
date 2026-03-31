@@ -5,10 +5,10 @@ require "ripper"
 module A11y
   module Lint
     module Rules
-      # Checks that link_to / external_link_to calls with empty text
-      # or block content include an aria-label (WCAG 4.1.2).
-      class LinkMissingAccessibleName < Rule
-        LINK_METHODS = %w[link_to external_link_to].freeze
+      # Checks that link_to, external_link_to, and button_tag calls with
+      # empty text or block content include an aria-label (WCAG 4.1.2).
+      class MissingAccessibleName < Rule
+        METHODS = %w[link_to external_link_to button_tag].freeze
 
         def check(node)
           code = node.ruby_code
@@ -16,40 +16,48 @@ module A11y
 
           clean_code = code.sub(/\s+do\s*\z/, "")
           is_block = clean_code != code
-          call = parse_link_call(clean_code)
+          call = parse_call(clean_code)
           return unless call
           return if aria_label_within?(call)
           return unless first_arg_empty_string?(call) || is_block
 
-          "link missing an accessible name requires an aria-label (WCAG 4.1.2)"
+          method_name = extract_method_name(call)
+          "#{method_name} missing an accessible name requires an aria-label (WCAG 4.1.2)"
         end
 
         private
 
-        def parse_link_call(code)
+        def parse_call(code)
           sexp = Ripper.sexp(code)
           return unless sexp
 
-          extract_link_call(sexp)
+          extract_matching_call(sexp)
         end
 
-        def extract_link_call(sexp)
+        def extract_matching_call(sexp)
           return unless sexp.is_a?(Array)
-          return sexp if link_call?(sexp)
+          return sexp if matching_call?(sexp)
 
           sexp.each do |child|
-            result = extract_link_call(child)
+            result = extract_matching_call(child)
             return result if result
           end
 
           nil
         end
 
-        def link_call?(sexp)
+        def matching_call?(sexp)
           case sexp
-          in [:command, [:@ident, name, *], *] if LINK_METHODS.include?(name) then true
-          in [:method_add_arg, [:fcall, [:@ident, name, *]], *] if LINK_METHODS.include?(name) then true
+          in [:command, [:@ident, name, *], *] if METHODS.include?(name) then true
+          in [:method_add_arg, [:fcall, [:@ident, name, *]], *] if METHODS.include?(name) then true
           else false
+          end
+        end
+
+        def extract_method_name(call)
+          case call
+          in [:command, [:@ident, name, *], *] then name
+          in [:method_add_arg, [:fcall, [:@ident, name, *]], *] then name
           end
         end
 
