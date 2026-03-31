@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `LinkMissingAccessibleName` rule: detect block-style `link_to` calls missing an `aria-label`
+
 ## [0.5.1] - 2026-03-31
 
 ### Fixed
