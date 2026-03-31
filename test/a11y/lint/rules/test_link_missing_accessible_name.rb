@@ -85,6 +85,22 @@ module A11y
           assert_empty(offenses)
         end
 
+        def test_multiline_link_to_with_trailing_comma_reports_offense
+          source = "= link_to(\\\n    \"\",\n    \"/path\",\n    class: \"icon\",\n  )"
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_multiline_link_to_with_trailing_comma_and_aria_label_passes
+          source = "= link_to(\\\n    \"\",\n    \"/path\",\n    aria: { label: \"Facebook\" },\n  )"
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
         def test_sets_filename_on_offense
           filename = "app/views/index.html.slim"
           source = '= link_to("", "/path")'
