@@ -36,6 +36,14 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
+        def test_link_to_without_parens_and_aria_label_passes
+          source = '= link_to "", "/path", aria: { label: "Facebook" }'
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
         def test_link_to_with_text_passes
           source = '= link_to("Click here", "/path")'
 
