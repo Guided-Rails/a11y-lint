@@ -36,6 +36,14 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
+        def test_link_to_without_parens_and_aria_label_passes
+          source = '= link_to "", "/path", aria: { label: "Facebook" }'
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
         def test_link_to_with_text_passes
           source = '= link_to("Click here", "/path")'
 
@@ -79,6 +87,22 @@ module A11y
 
         def test_non_link_method_is_ignored
           source = '= button_to("", "/path")'
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_multiline_link_to_with_trailing_comma_reports_offense
+          source = "= link_to(\\\n    \"\",\n    \"/path\",\n    class: \"icon\",\n  )"
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_multiline_link_to_with_trailing_comma_and_aria_label_passes
+          source = "= link_to(\\\n    \"\",\n    \"/path\",\n    aria: { label: \"Facebook\" },\n  )"
 
           offenses = run_linter(source)
 

@@ -62,6 +62,7 @@ module A11y
           case call
           in [:command, _, [:args_add_block, args, *]] then args
           in [:method_add_arg, _, [:arg_paren, [:args_add_block, args, *]]] then args
+          in [:method_add_arg, _, [:arg_paren, Array => args]] then args
           else nil
           end
         end
