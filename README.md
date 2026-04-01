@@ -39,6 +39,26 @@ With no arguments, it scans the current directory recursively for `.slim` and `.
 a11y-lint
 ```
 
+### Configuration
+
+Create a `.a11y-lint.yml` file in your project root to enable or disable individual rules:
+
+```yaml
+ImgMissingAlt:
+  Enabled: false
+
+ImageTagMissingAlt:
+  Enabled: true
+```
+
+Rules not listed in the file are enabled by default. The linter searches for `.a11y-lint.yml` starting from the target directory and walking up to the filesystem root.
+
+To specify a config file explicitly:
+
+```bash
+a11y-lint --config path/to/.a11y-lint.yml app/views/
+```
+
 ### Ruby API
 
 ```ruby
