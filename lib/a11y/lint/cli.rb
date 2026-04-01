@@ -10,6 +10,7 @@ module A11y
         @argv = argv
         @stdout = stdout
         @stderr = stderr
+        @config_path = nil
       end
 
       def run
@@ -40,6 +41,10 @@ module A11y
           opts.on("-v", "--version", "Show version") do
             @stdout.puts(A11y::Lint::VERSION)
             exit 0
+          end
+
+          opts.on("-c", "--config PATH", "Path to configuration file") do |path|
+            @config_path = path
           end
 
           opts.on("-h", "--help", "Show help") do
@@ -78,9 +83,14 @@ module A11y
       end
 
       def all_rules
+        configuration = Configuration.load(@config_path)
+
         Rules.constants.filter_map do |name|
           klass = Rules.const_get(name)
-          klass.new if klass.is_a?(Class) && klass < Rule
+          next unless klass.is_a?(Class) && klass < Rule
+
+          rule = klass.new
+          rule if configuration.enabled?(rule.name)
         end
       end
 
