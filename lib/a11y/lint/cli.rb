@@ -83,7 +83,7 @@ module A11y
       end
 
       def all_rules
-        configuration = Configuration.load(@config_path)
+        configuration = Configuration.load(@config_path, search_path: @argv.first || ".")
 
         Rules.constants.filter_map do |name|
           klass = Rules.const_get(name)

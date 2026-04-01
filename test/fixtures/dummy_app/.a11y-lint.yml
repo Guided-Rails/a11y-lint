@@ -1,0 +1,11 @@
+# All rules enabled by default.
+# Uncomment to disable a rule:
+#
+# ImgMissingAlt:
+#   Enabled: false
+#
+# ImageTagMissingAlt:
+#   Enabled: false
+#
+# MissingAccessibleName:
+#   Enabled: false
