@@ -11,7 +11,11 @@ module A11y
     class TestCLIErb < Minitest::Test
       def test_erb_clean_file
         Dir.mktmpdir do |dir|
-          write_file(dir, "clean.html.erb", '<img src="photo.jpg" alt="A photo">')
+          write_file(
+            dir,
+            "clean.html.erb",
+            '<img src="photo.jpg" alt="A photo">'
+          )
 
           stdout, _stderr = run_cli([dir])
 

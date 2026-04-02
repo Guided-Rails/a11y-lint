@@ -2,7 +2,8 @@
 
 module A11y
   module Lint
-    # Wraps a Nokogiri node or extracted ERB output tag as a queryable node for lint rules.
+    # Wraps a Nokogiri node or extracted ERB output tag
+    # as a queryable node for lint rules.
     class ErbNode
       attr_reader :line
 
@@ -33,8 +34,10 @@ module A11y
       def extract_attributes
         return {} unless @nokogiri_node
 
-        @nokogiri_node.attributes.each_with_object({}) do |(name, _attr), result|
-          result[name] = true
+        @nokogiri_node
+          .attributes
+          .each_with_object({}) do |(name, _attr), result|
+            result[name] = true
         end
       end
     end

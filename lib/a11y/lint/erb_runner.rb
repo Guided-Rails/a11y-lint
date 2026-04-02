@@ -34,7 +34,10 @@ module A11y
         doc.traverse do |nokogiri_node|
           next unless nokogiri_node.element?
 
-          node = ErbNode.new(nokogiri_node: nokogiri_node, line: nokogiri_node.line)
+          node = ErbNode.new(
+            nokogiri_node: nokogiri_node,
+            line: nokogiri_node.line
+          )
           check_node(node)
         end
       end

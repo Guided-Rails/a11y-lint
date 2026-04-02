@@ -11,8 +11,7 @@ module A11y
         METHODS = %w[link_to external_link_to button_tag].freeze
 
         def check(node)
-          code = node.ruby_code
-          return unless code
+          return unless (code = node.ruby_code)
 
           clean_code = code.sub(/\s+do\s*\z/, "")
           is_block = clean_code != code
@@ -21,11 +20,17 @@ module A11y
           return if aria_label_within?(call)
           return unless first_arg_empty_string?(call) || is_block
 
-          method_name = extract_method_name(call)
-          "#{method_name} missing an accessible name requires an aria-label (WCAG 4.1.2)"
+          offense_message(extract_method_name(call))
         end
 
         private
+
+        def offense_message(method_name)
+          <<~MSG.strip
+            #{method_name} missing an accessible name \
+            requires an aria-label (WCAG 4.1.2)
+          MSG
+        end
 
         def parse_call(code)
           sexp = Ripper.sexp(code)
@@ -47,18 +52,23 @@ module A11y
         end
 
         def matching_call?(sexp)
+          name = call_method_name(sexp)
+          name ? METHODS.include?(name) : false
+        end
+
+        def call_method_name(sexp)
           case sexp
-          in [:command, [:@ident, name, *], *] if METHODS.include?(name) then true
-          in [:method_add_arg, [:fcall, [:@ident, name, *]], *] if METHODS.include?(name) then true
-          else false
+          in [:command, [:@ident, name, *], *]
+            name
+          in [:method_add_arg,
+              [:fcall, [:@ident, name, *]], *]
+            name
+          else nil
           end
         end
 
         def extract_method_name(call)
-          case call
-          in [:command, [:@ident, name, *], *] then name
-          in [:method_add_arg, [:fcall, [:@ident, name, *]], *] then name
-          end
+          call_method_name(call)
         end
 
         def first_arg_empty_string?(call)
@@ -71,7 +81,9 @@ module A11y
         def extract_args(call)
           case call
           in [:command, _, [:args_add_block, args, *]] then args
-          in [:method_add_arg, _, [:arg_paren, [:args_add_block, args, *]]] then args
+          in [:method_add_arg, _,
+             [:arg_paren, [:args_add_block, args, *]]]
+            then args
           in [:method_add_arg, _, [:arg_paren, Array => args]] then args
           else nil
           end
@@ -102,13 +114,17 @@ module A11y
         end
 
         def label_key?(sexp)
-          sexp.is_a?(Array) && sexp[0] == :assoc_new && (sexp[1] in [:@label, "label:", *])
+          sexp.is_a?(Array) &&
+            sexp[0] == :assoc_new &&
+            (sexp[1] in [:@label, "label:", *])
         end
 
         def aria_label_string_key?(sexp)
           return false unless sexp.is_a?(Array) && sexp[0] == :assoc_new
 
-          sexp[1] in [:string_literal, [:string_content, [:@tstring_content, "aria-label", *]]]
+          sexp[1] in [:string_literal,
+            [:string_content,
+              [:@tstring_content, "aria-label", *]]]
         end
       end
     end
