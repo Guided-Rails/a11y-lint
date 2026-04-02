@@ -348,19 +348,14 @@ module A11y
 
         private
 
-        FIXTURE_DIR = File.expand_path(
-          "../../../fixtures/missing_accessible_name/slim",
-          __dir__
-        )
-
         def offense_message(method_name)
           "#{method_name} missing an accessible name " \
             "requires an aria-label (WCAG 4.1.2)"
         end
 
         def run_fixture(name, filename: "test.slim")
-          source = File.read(
-            File.join(FIXTURE_DIR, "#{name}.slim")
+          source = file_fixture(
+            "missing_accessible_name/slim/#{name}.slim"
           )
           SlimRunner.new([MissingAccessibleName.new])
                     .run(source, filename: filename)

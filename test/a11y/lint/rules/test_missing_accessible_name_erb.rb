@@ -274,19 +274,14 @@ module A11y
 
         private
 
-        FIXTURE_DIR = File.expand_path(
-          "../../../fixtures/missing_accessible_name/erb",
-          __dir__
-        )
-
         def offense_message(method_name)
           "#{method_name} missing an accessible name " \
             "requires an aria-label (WCAG 4.1.2)"
         end
 
         def run_fixture(name, filename: "test.html.erb")
-          source = File.read(
-            File.join(FIXTURE_DIR, "#{name}.html.erb")
+          source = file_fixture(
+            "missing_accessible_name/erb/#{name}.html.erb"
           )
           ErbRunner.new([MissingAccessibleName.new])
                    .run(source, filename: filename)
