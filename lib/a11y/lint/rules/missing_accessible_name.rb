@@ -20,12 +20,17 @@ module A11y
           return if aria_label_within?(call)
           return unless first_arg_empty_string?(call) || is_block
 
-          "#{extract_method_name(call)} missing an " \
-            "accessible name requires an aria-label " \
-            "(WCAG 4.1.2)"
+          offense_message(extract_method_name(call))
         end
 
         private
+
+        def offense_message(method_name)
+          <<~MSG.strip
+            #{method_name} missing an accessible name \
+            requires an aria-label (WCAG 4.1.2)
+          MSG
+        end
 
         def parse_call(code)
           sexp = Ripper.sexp(code)
