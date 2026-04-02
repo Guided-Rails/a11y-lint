@@ -12,10 +12,10 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          msg = "link_to missing an accessible " \
-                "name requires an aria-label " \
-                "(WCAG 4.1.2)"
-          assert_equal(msg, offenses[0].message)
+          assert_equal(
+            offense_message("link_to"),
+            offenses[0].message
+          )
           assert_equal(1, offenses[0].line)
           assert_equal(
             "MissingAccessibleName",
@@ -31,10 +31,10 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          msg = "external_link_to missing an " \
-                "accessible name requires an " \
-                "aria-label (WCAG 4.1.2)"
-          assert_equal(msg, offenses[0].message)
+          assert_equal(
+            offense_message("external_link_to"),
+            offenses[0].message
+          )
         end
 
         def test_link_to_with_empty_text_without_parens_reports_offense
@@ -133,10 +133,10 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          msg = "link_to missing an accessible " \
-                "name requires an aria-label " \
-                "(WCAG 4.1.2)"
-          assert_equal(msg, offenses[0].message)
+          assert_equal(
+            offense_message("link_to"),
+            offenses[0].message
+          )
           assert_equal(1, offenses[0].line)
           assert_equal(
             "MissingAccessibleName",
@@ -224,10 +224,10 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          msg = "button_tag missing an " \
-                "accessible name requires an " \
-                "aria-label (WCAG 4.1.2)"
-          assert_equal(msg, offenses[0].message)
+          assert_equal(
+            offense_message("button_tag"),
+            offenses[0].message
+          )
           assert_equal(
             "MissingAccessibleName",
             offenses[0].rule
@@ -303,10 +303,10 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          msg = "button_tag missing an " \
-                "accessible name requires an " \
-                "aria-label (WCAG 4.1.2)"
-          assert_equal(msg, offenses[0].message)
+          assert_equal(
+            offense_message("button_tag"),
+            offenses[0].message
+          )
           assert_equal(
             "MissingAccessibleName",
             offenses[0].rule
@@ -384,6 +384,11 @@ module A11y
         end
 
         private
+
+        def offense_message(method_name)
+          "#{method_name} missing an accessible name " \
+            "requires an aria-label (WCAG 4.1.2)"
+        end
 
         def run_linter(source, filename: "test.slim")
           runner = SlimRunner.new(
