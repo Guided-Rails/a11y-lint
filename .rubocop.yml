@@ -9,6 +9,8 @@ Style/StringLiteralsInInterpolation:
 
 Layout/LineLength:
   Max: 80
+  Exclude:
+    - "a11y-lint.gemspec"
 
 Metrics/ClassLength:
   Exclude:
