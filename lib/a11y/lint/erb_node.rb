@@ -21,6 +21,10 @@ module A11y
         attributes.key?(name)
       end
 
+      def attribute_value(name)
+        attributes[name]
+      end
+
       def attributes
         @attributes ||= extract_attributes
       end
@@ -45,9 +49,7 @@ module A11y
 
         @nokogiri_node
           .attributes
-          .each_with_object({}) do |(name, _attr), result|
-            result[name] = true
-        end
+          .transform_values(&:value)
       end
     end
   end

@@ -5,7 +5,7 @@ module A11y
     module Rules
       # Checks that <ul> and <ol> only directly contain <li>, <script>,
       # or <template> elements (WCAG 1.3.1).
-      class ListInvalidChildren < Rule
+      class ListInvalidChildren < NodeRule
         LIST_TAGS = %w[ul ol].freeze
         ALLOWED_CHILDREN = %w[li script template].freeze
 

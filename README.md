@@ -59,13 +59,26 @@ To specify a config file explicitly:
 a11y-lint --config path/to/.a11y-lint.yml app/views/
 ```
 
+### Rules
+
+| Rule | WCAG | Description |
+|------|------|-------------|
+| `ImgMissingAlt` | 1.1.1 | `img` tags must have an `alt` attribute |
+| `ImageTagMissingAlt` | 1.1.1 | `image_tag` calls must have an `alt` option |
+| `MissingAccessibleName` | 4.1.2 | `link_to`, `external_link_to`, and `button_tag` with empty text must have an `aria-label` |
+| `SkipNavigationLink` | 2.4.1 | Layout files must include a skip navigation link (`<a href="#...">`) |
+
 ### Ruby API
 
 ```ruby
 require "a11y/lint"
 
 source = File.read("app/views/home.html.slim")
-runner = A11y::Lint::SlimRunner.new([A11y::Lint::Rules::ImgMissingAlt.new])
+
+node_rules = [A11y::Lint::Rules::ImgMissingAlt.new]
+template_rules = [A11y::Lint::Rules::SkipNavigationLink.new]
+
+runner = A11y::Lint::SlimRunner.new(node_rules, template_rules:)
 offenses = runner.run(source, filename: "app/views/home.html.slim")
 
 offenses.each do |offense|

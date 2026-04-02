@@ -72,9 +72,9 @@ module A11y
       end
 
       def lint_files(files)
-        rules = all_rules
-        slim_runner = SlimRunner.new(rules)
-        erb_runner = ErbRunner.new(rules)
+        node_rules, template_rules = partition_rules
+        slim_runner = SlimRunner.new(node_rules, template_rules:)
+        erb_runner = ErbRunner.new(node_rules, template_rules:)
 
         files.flat_map do |file|
           source = File.read(file)
@@ -83,18 +83,36 @@ module A11y
         end
       end
 
-      def all_rules
-        configuration = Configuration.load(
+      def partition_rules
+        configuration = load_configuration
+        node_rules = []
+        template_rules = []
+
+        Rules.constants.each do |name|
+          klass = Rules.const_get(name)
+          next unless rule_class?(klass)
+          next unless configuration.enabled?(klass.rule_name)
+
+          if klass < NodeRule
+            node_rules << klass
+          else
+            template_rules << klass.new
+          end
+        end
+
+        [node_rules, template_rules]
+      end
+
+      def load_configuration
+        Configuration.load(
           @config_path,
           search_path: @argv.first || "."
         )
+      end
 
-        Rules.constants.filter_map do |name|
-          klass = Rules.const_get(name)
-          next unless klass.is_a?(Class) && klass < Rule
-
-          klass if configuration.enabled?(klass.rule_name)
-        end
+      def rule_class?(klass)
+        klass.is_a?(Class) &&
+          (klass < NodeRule || klass < TemplateRule)
       end
 
       def print_results(offenses)
