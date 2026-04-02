@@ -12,28 +12,35 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          assert_equal(
-            "link_to missing an accessible name requires an aria-label (WCAG 4.1.2)",
-            offenses[0].message
-          )
+          msg = "link_to missing an accessible " \
+                "name requires an aria-label " \
+                "(WCAG 4.1.2)"
+          assert_equal(msg, offenses[0].message)
           assert_equal(1, offenses[0].line)
-          assert_equal("MissingAccessibleName", offenses[0].rule)
+          assert_equal(
+            "MissingAccessibleName",
+            offenses[0].rule
+          )
         end
 
         def test_external_link_to_with_empty_text_reports_offense
-          source = '= external_link_to("", "https://example.com", class: "icon")'
+          source =
+            '= external_link_to("", ' \
+            '"https://example.com", class: "icon")'
 
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          assert_equal(
-            "external_link_to missing an accessible name requires an aria-label (WCAG 4.1.2)",
-            offenses[0].message
-          )
+          msg = "external_link_to missing an " \
+                "accessible name requires an " \
+                "aria-label (WCAG 4.1.2)"
+          assert_equal(msg, offenses[0].message)
         end
 
         def test_link_to_with_empty_text_without_parens_reports_offense
-          source = '= external_link_to "", "https://example.com", class: "icon"'
+          source =
+            '= external_link_to "", ' \
+            '"https://example.com", class: "icon"'
 
           offenses = run_linter(source)
 
@@ -98,7 +105,9 @@ module A11y
         end
 
         def test_multiline_link_to_with_trailing_comma_reports_offense
-          source = "= link_to(\\\n    \"\",\n    \"/path\",\n    class: \"icon\",\n  )"
+          source = "= link_to(\\\n    \"\",\n" \
+                   "    \"/path\",\n" \
+                   "    class: \"icon\",\n  )"
 
           offenses = run_linter(source)
 
@@ -106,7 +115,10 @@ module A11y
         end
 
         def test_multiline_link_to_with_trailing_comma_and_aria_label_passes
-          source = "= link_to(\\\n    \"\",\n    \"/path\",\n    aria: { label: \"Facebook\" },\n  )"
+          source = "= link_to(\\\n    \"\",\n" \
+                   "    \"/path\",\n" \
+                   "    aria: { label: " \
+                   "\"Facebook\" },\n  )"
 
           offenses = run_linter(source)
 
@@ -114,21 +126,30 @@ module A11y
         end
 
         def test_link_to_with_block_reports_offense
-          source = "= link_to(\"#\", class: \"icon\") do\n  = inline_svg(\"icon.svg\")"
+          source = '= link_to("#", class: "icon")' \
+                   " do\n  " \
+                   '= inline_svg("icon.svg")'
 
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          assert_equal(
-            "link_to missing an accessible name requires an aria-label (WCAG 4.1.2)",
-            offenses[0].message
-          )
+          msg = "link_to missing an accessible " \
+                "name requires an aria-label " \
+                "(WCAG 4.1.2)"
+          assert_equal(msg, offenses[0].message)
           assert_equal(1, offenses[0].line)
-          assert_equal("MissingAccessibleName", offenses[0].rule)
+          assert_equal(
+            "MissingAccessibleName",
+            offenses[0].rule
+          )
         end
 
         def test_link_to_with_block_and_aria_label_passes
-          source = "= link_to(\"#\", class: \"icon\", aria: { label: \"Icon\" }) do\n  = inline_svg(\"icon.svg\")"
+          source =
+            '= link_to("#", class: "icon",' \
+            ' aria: { label: "Icon" })' \
+            " do\n  " \
+            '= inline_svg("icon.svg")'
 
           offenses = run_linter(source)
 
@@ -136,7 +157,10 @@ module A11y
         end
 
         def test_link_to_with_block_without_parens_reports_offense
-          source = "= link_to \"#\", class: \"icon\" do\n  = inline_svg(\"icon.svg\")"
+          source =
+            '= link_to "#", class: "icon"' \
+            " do\n  " \
+            '= inline_svg("icon.svg")'
 
           offenses = run_linter(source)
 
@@ -144,7 +168,11 @@ module A11y
         end
 
         def test_link_to_with_block_without_parens_and_aria_label_passes
-          source = "= link_to \"#\", class: \"icon\", aria: { label: \"Icon\" } do\n  = inline_svg(\"icon.svg\")"
+          source =
+            '= link_to "#", class: "icon",' \
+            ' aria: { label: "Icon" }' \
+            " do\n  " \
+            '= inline_svg("icon.svg")'
 
           offenses = run_linter(source)
 
@@ -152,7 +180,11 @@ module A11y
         end
 
         def test_multiline_link_to_with_block_reports_offense
-          source = "= link_to(\\\n    \"#\",\n    class: \"icon\",\n  ) do\n  = inline_svg(\"icon.svg\")"
+          source = "= link_to(\\\n" \
+                   "    \"#\",\n" \
+                   "    class: \"icon\",\n" \
+                   "  ) do\n" \
+                   "  = inline_svg(\"icon.svg\")"
 
           offenses = run_linter(source)
 
@@ -160,8 +192,13 @@ module A11y
         end
 
         def test_multiline_link_to_with_block_and_aria_label_passes
-          source = "= link_to(\\\n    \"#\",\n    class: \"icon\",\n" \
-                   "    aria: { label: \"Icon\" },\n  ) do\n  = inline_svg(\"icon.svg\")"
+          source = "= link_to(\\\n" \
+                   "    \"#\",\n" \
+                   "    class: \"icon\",\n" \
+                   "    aria: { label: \"Icon\" " \
+                   "},\n" \
+                   "  ) do\n" \
+                   "  = inline_svg(\"icon.svg\")"
 
           offenses = run_linter(source)
 
@@ -169,7 +206,12 @@ module A11y
         end
 
         def test_external_link_to_with_block_reports_offense
-          source = "= external_link_to(\"https://example.com\", class: \"icon\") do\n  = inline_svg(\"icon.svg\")"
+          source =
+            "= external_link_to(" \
+            '"https://example.com",' \
+            ' class: "icon")' \
+            " do\n  " \
+            '= inline_svg("icon.svg")'
 
           offenses = run_linter(source)
 
@@ -182,11 +224,14 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
+          msg = "button_tag missing an " \
+                "accessible name requires an " \
+                "aria-label (WCAG 4.1.2)"
+          assert_equal(msg, offenses[0].message)
           assert_equal(
-            "button_tag missing an accessible name requires an aria-label (WCAG 4.1.2)",
-            offenses[0].message
+            "MissingAccessibleName",
+            offenses[0].rule
           )
-          assert_equal("MissingAccessibleName", offenses[0].rule)
         end
 
         def test_button_tag_with_empty_text_without_parens_reports_offense
@@ -230,7 +275,11 @@ module A11y
         end
 
         def test_multiline_button_tag_with_trailing_comma_and_aria_label_passes
-          source = "= button_tag(\\\n    \"\",\n    class: \"icon\",\n    aria: { label: \"Submit\" },\n  )"
+          source = "= button_tag(\\\n" \
+                   "    \"\",\n" \
+                   "    class: \"icon\",\n" \
+                   "    aria: { label: " \
+                   "\"Submit\" },\n  )"
 
           offenses = run_linter(source)
 
@@ -246,20 +295,30 @@ module A11y
         end
 
         def test_button_tag_with_block_reports_offense
-          source = "= button_tag(class: \"button-icon\") do\n  = inline_svg(\"icon.svg\")"
+          source =
+            '= button_tag(class: "button-icon")' \
+            " do\n  " \
+            '= inline_svg("icon.svg")'
 
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
+          msg = "button_tag missing an " \
+                "accessible name requires an " \
+                "aria-label (WCAG 4.1.2)"
+          assert_equal(msg, offenses[0].message)
           assert_equal(
-            "button_tag missing an accessible name requires an aria-label (WCAG 4.1.2)",
-            offenses[0].message
+            "MissingAccessibleName",
+            offenses[0].rule
           )
-          assert_equal("MissingAccessibleName", offenses[0].rule)
         end
 
         def test_button_tag_with_block_and_aria_label_passes
-          source = "= button_tag(class: \"button-icon\", aria: { label: \"Menu\" }) do\n  = inline_svg(\"icon.svg\")"
+          source =
+            '= button_tag(class: "button-icon"' \
+            ', aria: { label: "Menu" })' \
+            " do\n  " \
+            '= inline_svg("icon.svg")'
 
           offenses = run_linter(source)
 
@@ -267,7 +326,10 @@ module A11y
         end
 
         def test_button_tag_with_block_without_parens_reports_offense
-          source = "= button_tag class: \"button-icon\" do\n  = inline_svg(\"icon.svg\")"
+          source =
+            '= button_tag class: "button-icon"' \
+            " do\n  " \
+            '= inline_svg("icon.svg")'
 
           offenses = run_linter(source)
 
@@ -275,7 +337,11 @@ module A11y
         end
 
         def test_button_tag_with_block_without_parens_and_aria_label_passes
-          source = "= button_tag class: \"button-icon\", aria: { label: \"Menu\" } do\n  = inline_svg(\"icon.svg\")"
+          source =
+            '= button_tag class: "button-icon"' \
+            ', aria: { label: "Menu" }' \
+            " do\n  " \
+            '= inline_svg("icon.svg")'
 
           offenses = run_linter(source)
 
@@ -283,7 +349,11 @@ module A11y
         end
 
         def test_multiline_button_tag_with_block_reports_offense
-          source = "= button_tag(\\\n    class: \"button-icon\",\n  ) do\n  = inline_svg(\"icon.svg\")"
+          source = "= button_tag(\\\n" \
+                   "    class: \"button-icon\"" \
+                   ",\n" \
+                   "  ) do\n" \
+                   "  = inline_svg(\"icon.svg\")"
 
           offenses = run_linter(source)
 
@@ -291,8 +361,13 @@ module A11y
         end
 
         def test_multiline_button_tag_with_block_and_aria_label_passes
-          source = "= button_tag(\\\n    class: \"button-icon\",\n" \
-                   "    aria: { label: \"Menu\" },\n  ) do\n  = inline_svg(\"icon.svg\")"
+          source = "= button_tag(\\\n" \
+                   "    class: " \
+                   "\"button-icon\",\n" \
+                   "    aria: { label: " \
+                   "\"Menu\" },\n" \
+                   "  ) do\n" \
+                   "  = inline_svg(\"icon.svg\")"
 
           offenses = run_linter(source)
 
@@ -311,7 +386,10 @@ module A11y
         private
 
         def run_linter(source, filename: "test.slim")
-          SlimRunner.new([MissingAccessibleName.new]).run(source, filename: filename)
+          runner = SlimRunner.new(
+            [MissingAccessibleName.new]
+          )
+          runner.run(source, filename: filename)
         end
       end
     end

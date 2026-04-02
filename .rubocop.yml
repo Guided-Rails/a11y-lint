@@ -7,6 +7,13 @@ Style/StringLiterals:
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
 
+Layout/LineLength:
+  Max: 80
+
 Metrics/ClassLength:
+  Exclude:
+    - "test/**/*"
+
+Metrics/MethodLength:
   Exclude:
     - "test/**/*"

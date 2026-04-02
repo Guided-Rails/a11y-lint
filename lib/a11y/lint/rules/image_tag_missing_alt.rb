@@ -58,7 +58,9 @@ module A11y
 
           key = sexp[1]
           (key in [:@label, "alt:", *]) ||
-            (key in [:string_literal, [:string_content, [:@tstring_content, "alt", *]]])
+            (key in [:string_literal,
+                     [:string_content,
+                      [:@tstring_content, "alt", *]]])
         end
       end
     end

@@ -4,7 +4,8 @@ require "optparse"
 
 module A11y
   module Lint
-    # Command-line interface for running accessibility linting on Slim templates.
+    # Command-line interface for running accessibility
+    # linting on Slim templates.
     class CLI
       def initialize(argv, stdout: $stdout, stderr: $stderr)
         @argv = argv
@@ -83,7 +84,8 @@ module A11y
       end
 
       def all_rules
-        configuration = Configuration.load(@config_path, search_path: @argv.first || ".")
+        configuration = Configuration.load(@config_path,
+                                           search_path: @argv.first || ".")
 
         Rules.constants.filter_map do |name|
           klass = Rules.const_get(name)

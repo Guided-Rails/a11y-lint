@@ -12,16 +12,16 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          assert_equal(
-            "link_to missing an accessible name requires an aria-label (WCAG 4.1.2)",
-            offenses[0].message
-          )
+          expected = "link_to missing an accessible " \
+            "name requires an aria-label (WCAG 4.1.2)"
+          assert_equal(expected, offenses[0].message)
           assert_equal(1, offenses[0].line)
           assert_equal("MissingAccessibleName", offenses[0].rule)
         end
 
         def test_external_link_to_with_empty_text_reports_offense
-          source = '<%= external_link_to("", "https://example.com", class: "icon") %>'
+          source = '<%= external_link_to("", ' \
+            '"https://example.com", class: "icon") %>'
 
           offenses = run_linter(source)
 
@@ -114,7 +114,9 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          assert_equal("link_to missing an accessible name requires an aria-label (WCAG 4.1.2)", offenses[0].message)
+          expected = "link_to missing an accessible " \
+            "name requires an aria-label (WCAG 4.1.2)"
+          assert_equal(expected, offenses[0].message)
         end
 
         def test_link_to_with_block_and_aria_label_passes
@@ -198,10 +200,9 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          assert_equal(
-            "button_tag missing an accessible name requires an aria-label (WCAG 4.1.2)",
-            offenses[0].message
-          )
+          expected = "button_tag missing an accessible " \
+            "name requires an aria-label (WCAG 4.1.2)"
+          assert_equal(expected, offenses[0].message)
           assert_equal("MissingAccessibleName", offenses[0].rule)
         end
 
@@ -214,7 +215,8 @@ module A11y
         end
 
         def test_button_tag_with_aria_hash_label_passes
-          source = '<%= button_tag("", class: "icon", aria: { label: "Submit" }) %>'
+          source = '<%= button_tag("", class: "icon", ' \
+            'aria: { label: "Submit" }) %>'
 
           offenses = run_linter(source)
 
@@ -222,7 +224,8 @@ module A11y
         end
 
         def test_button_tag_with_string_aria_label_passes
-          source = '<%= button_tag("", class: "icon", "aria-label" => "Submit") %>'
+          source = '<%= button_tag("", class: "icon", ' \
+            '"aria-label" => "Submit") %>'
 
           offenses = run_linter(source)
 
@@ -239,7 +242,9 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          assert_equal("button_tag missing an accessible name requires an aria-label (WCAG 4.1.2)", offenses[0].message)
+          expected = "button_tag missing an accessible " \
+            "name requires an aria-label (WCAG 4.1.2)"
+          assert_equal(expected, offenses[0].message)
         end
 
         def test_button_tag_with_block_and_aria_label_passes
@@ -316,7 +321,8 @@ module A11y
         private
 
         def run_linter(source, filename: "test.html.erb")
-          ErbRunner.new([MissingAccessibleName.new]).run(source, filename: filename)
+          ErbRunner.new([MissingAccessibleName.new]).run(source,
+                                                         filename: filename)
         end
       end
     end
