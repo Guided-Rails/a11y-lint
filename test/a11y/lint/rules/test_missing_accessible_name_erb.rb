@@ -6,16 +6,13 @@ module A11y
   module Lint
     module Rules
       class TestMissingAccessibleNameErb < Minitest::Test
-        LINK_TO_OFFENSE = "link_to missing an accessible name requires an aria-label (WCAG 4.1.2)" # rubocop:disable Layout/LineLength
-        BUTTON_TAG_OFFENSE = "button_tag missing an accessible name requires an aria-label (WCAG 4.1.2)" # rubocop:disable Layout/LineLength
-
         def test_link_to_with_empty_text_reports_offense
           source = '<%= link_to("", "/path", class: "icon") %>'
 
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          assert_equal(LINK_TO_OFFENSE, offenses[0].message)
+          assert_equal(offense_message("link_to"), offenses[0].message)
           assert_equal(1, offenses[0].line)
           assert_equal("MissingAccessibleName", offenses[0].rule)
         end
@@ -115,7 +112,7 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          assert_equal(LINK_TO_OFFENSE, offenses[0].message)
+          assert_equal(offense_message("link_to"), offenses[0].message)
         end
 
         def test_link_to_with_block_and_aria_label_passes
@@ -199,7 +196,7 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          assert_equal(BUTTON_TAG_OFFENSE, offenses[0].message)
+          assert_equal(offense_message("button_tag"), offenses[0].message)
           assert_equal("MissingAccessibleName", offenses[0].rule)
         end
 
@@ -239,7 +236,7 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          assert_equal(BUTTON_TAG_OFFENSE, offenses[0].message)
+          assert_equal(offense_message("button_tag"), offenses[0].message)
         end
 
         def test_button_tag_with_block_and_aria_label_passes
@@ -314,6 +311,11 @@ module A11y
         end
 
         private
+
+        def offense_message(method_name)
+          "#{method_name} missing an accessible name " \
+            "requires an aria-label (WCAG 4.1.2)"
+        end
 
         def run_linter(source, filename: "test.html.erb")
           ErbRunner.new([MissingAccessibleName.new]).run(source,
