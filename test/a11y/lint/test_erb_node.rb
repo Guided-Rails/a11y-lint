@@ -64,6 +64,32 @@ module A11y
         assert_nil(node.ruby_code)
       end
 
+      def test_children_returns_direct_element_children
+        doc = Nokogiri::HTML4::DocumentFragment.parse(
+          "<ul><li>one</li><li>two</li></ul>"
+        )
+        ul = doc.at_css("ul")
+        node = ErbNode.new(nokogiri_node: ul, line: ul.line)
+
+        assert_equal(%w[li li], node.children.map(&:tag_name))
+      end
+
+      def test_children_excludes_text_nodes
+        doc = Nokogiri::HTML4::DocumentFragment.parse(
+          "<ul>text<li>one</li></ul>"
+        )
+        ul = doc.at_css("ul")
+        node = ErbNode.new(nokogiri_node: ul, line: ul.line)
+
+        assert_equal(["li"], node.children.map(&:tag_name))
+      end
+
+      def test_children_returns_empty_for_ruby_code_node
+        node = ErbNode.new(ruby_code: "render \"items\"", line: 1)
+
+        assert_empty(node.children)
+      end
+
       private
 
       def make_element(tag, attrs = {})

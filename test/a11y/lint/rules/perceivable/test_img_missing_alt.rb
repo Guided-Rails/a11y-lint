@@ -78,7 +78,7 @@ module A11y
         private
 
         def run_linter(source, filename: "test.slim")
-          SlimRunner.new([ImgMissingAlt.new]).run(source, filename: filename)
+          SlimRunner.new([ImgMissingAlt]).run(source, filename: filename)
         end
       end
     end

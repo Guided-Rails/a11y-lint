@@ -23,3 +23,13 @@ img src="logo.png"
 
 / Bad: button_tag with empty string (MissingAccessibleName)
 = button_tag("", class: "close-btn")
+
+/ Good: ul with only li children
+ul
+  li First
+  li Second
+
+/ Bad: ul with a div child (ListInvalidChildren)
+ul
+  div Not allowed
+  li Item

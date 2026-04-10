@@ -93,8 +93,7 @@ module A11y
           klass = Rules.const_get(name)
           next unless klass.is_a?(Class) && klass < Rule
 
-          rule = klass.new
-          rule if configuration.enabled?(rule.name)
+          klass if configuration.enabled?(klass.rule_name)
         end
       end
 

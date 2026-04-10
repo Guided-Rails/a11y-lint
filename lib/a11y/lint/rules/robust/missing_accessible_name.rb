@@ -10,8 +10,8 @@ module A11y
       class MissingAccessibleName < Rule
         METHODS = %w[link_to external_link_to button_tag].freeze
 
-        def check(node)
-          return unless (code = node.ruby_code)
+        def check
+          return unless (code = @node.ruby_code)
 
           clean_code = code.sub(/\s+do\s*\z/, "")
           is_block = clean_code != code

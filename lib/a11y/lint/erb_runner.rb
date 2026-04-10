@@ -53,12 +53,12 @@ module A11y
       end
 
       def check_node(node)
-        rules.each do |rule|
-          message = rule.check(node)
+        rules.each do |rule_class|
+          message = rule_class.check(node)
           next unless message
 
           @offenses << Offense.new(
-            rule: rule.name,
+            rule: rule_class.rule_name,
             filename: @filename,
             line: node.line,
             message: message

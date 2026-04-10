@@ -309,7 +309,7 @@ module A11y
 
         def run_fixture(name, filename: "test.slim")
           source = file_fixture("missing_accessible_name/slim/#{name}.slim")
-          SlimRunner.new([MissingAccessibleName.new]).run(source, filename:)
+          SlimRunner.new([MissingAccessibleName]).run(source, filename:)
         end
       end
     end
