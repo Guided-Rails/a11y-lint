@@ -92,6 +92,64 @@ module A11y
         assert_equal(1, offenses.length)
       end
 
+      def test_line_number_after_multiline_output
+        source = <<~SLIM.chomp
+          = link_to(\\
+            "",
+            "/path",
+          )
+          img src="photo.jpg"
+        SLIM
+
+        offenses =
+          SlimRunner
+          .new([Rules::ImgMissingAlt])
+          .run(source, filename: "test.slim")
+
+        assert_equal(1, offenses.length)
+        assert_equal(5, offenses[0].line)
+      end
+
+      def test_line_number_after_multiline_control
+        source = <<~SLIM.chomp
+          - x = foo(\\
+            bar,
+            baz,
+          )
+          img src="photo.jpg"
+        SLIM
+
+        offenses =
+          SlimRunner
+          .new([Rules::ImgMissingAlt])
+          .run(source, filename: "test.slim")
+
+        assert_equal(1, offenses.length)
+        assert_equal(5, offenses[0].line)
+      end
+
+      def test_line_number_after_multiple_multiline_expressions
+        source = <<~SLIM.chomp
+          = form_for(\\
+            @user,
+            url: path,
+          ) do |f|
+            = f.input(\\
+              :name,
+              required: true,
+            )
+            img src="photo.jpg"
+        SLIM
+
+        offenses =
+          SlimRunner
+          .new([Rules::ImgMissingAlt])
+          .run(source, filename: "test.slim")
+
+        assert_equal(1, offenses.length)
+        assert_equal(9, offenses[0].line)
+      end
+
       private
 
       def multiline_source
