@@ -10,10 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `ListInvalidChildren` rule: detects invalid direct children of `<ul>` and `<ol>` elements (WCAG 1.3.1)
+- `SkipNavigationLink` rule: detects layout files missing a skip navigation link (WCAG 2.4.1)
+  - Only applies to files under a `layouts/` directory
+  - Checks for an `<a>` tag with an `href` starting with `#`
+- Template-level rule architecture: rules that inspect the full template after all nodes are visited
 - `MissingAccessibleName` rule: consolidates `LinkMissingAccessibleName` into a single rule covering `link_to`, `external_link_to`, and `button_tag`
 - Per-rule configuration via `.a11y-lint.yml` file: enable or disable individual rules
   - Place `.a11y-lint.yml` in the project root for automatic detection
   - Use `--config PATH` to specify a custom configuration file path
+
+### Changed
+
+- **Breaking:** `Rule` base class has been renamed to `NodeRule`
 
 ### Removed
 

@@ -92,7 +92,49 @@ module A11y
         assert_equal(1, offenses.length)
       end
 
+      def test_template_rules_receive_collected_nodes
+        received_nodes = nil
+        template_rule = make_template_rule do |nodes|
+          received_nodes = nodes
+          []
+        end
+
+        SlimRunner
+          .new([], template_rules: [template_rule])
+          .run("div\n  img src=\"photo.jpg\"", filename: "test.slim")
+
+        assert_instance_of(Array, received_nodes)
+        tag_names = received_nodes.map(&:tag_name).compact
+        assert_includes(tag_names, "div")
+        assert_includes(tag_names, "img")
+      end
+
+      def test_template_rule_offenses_included_in_results
+        offense = Offense.new(
+          rule: "TestRule",
+          filename: "test.slim",
+          line: 1,
+          message: "test offense"
+        )
+        template_rule = make_template_rule { |_| [offense] }
+
+        offenses =
+          SlimRunner
+          .new([], template_rules: [template_rule])
+          .run("div", filename: "test.slim")
+
+        assert_includes(offenses, offense)
+      end
+
       private
+
+      def make_template_rule(&block)
+        rule = TemplateRule.new
+        rule.define_singleton_method(:check_template) do |filename:, nodes:| # rubocop:disable Lint/UnusedBlockArgument
+          block.call(nodes)
+        end
+        rule
+      end
 
       def multiline_source
         <<~SLIM.chomp

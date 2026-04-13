@@ -69,6 +69,35 @@ module A11y
         assert_equal({}, result)
       end
 
+      def test_attribute_value_returns_string_value
+        sexp = [
+          :html, :tag, "a",
+          [:html, :attrs,
+           [:html, :attr, "href",
+            [:escape, true, [:slim, :interpolate, "#main"]]]]
+        ]
+        node = Node.new(sexp, line: 1)
+
+        assert_equal("#main", node.attribute_value("href"))
+      end
+
+      def test_attribute_value_returns_nil_when_absent
+        sexp = [:html, :tag, "a", %i[html attrs]]
+        node = Node.new(sexp, line: 1)
+
+        assert_nil(node.attribute_value("href"))
+      end
+
+      def test_attribute_value_returns_nil_for_boolean_attribute
+        sexp = [
+          :html, :tag, "img",
+          [:html, :attrs, [:html, :attr, "alt"]]
+        ]
+        node = Node.new(sexp, line: 1)
+
+        assert_nil(node.attribute_value("alt"))
+      end
+
       def test_ruby_code_for_slim_output_node
         code = "image_tag \"photo.jpg\""
         sexp = [:slim, :output, true, code, [:multi]]

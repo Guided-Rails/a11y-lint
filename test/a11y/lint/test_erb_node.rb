@@ -42,7 +42,24 @@ module A11y
         element = make_element("img", "src" => "photo.jpg", "alt" => "A photo")
         node = ErbNode.new(nokogiri_node: element, line: 1)
 
-        assert_equal({ "src" => true, "alt" => true }, node.attributes)
+        assert_equal(
+          { "src" => "photo.jpg", "alt" => "A photo" },
+          node.attributes
+        )
+      end
+
+      def test_attribute_value_returns_string_value
+        element = make_element("a", "href" => "#main")
+        node = ErbNode.new(nokogiri_node: element, line: 1)
+
+        assert_equal("#main", node.attribute_value("href"))
+      end
+
+      def test_attribute_value_returns_nil_when_absent
+        element = make_element("a")
+        node = ErbNode.new(nokogiri_node: element, line: 1)
+
+        assert_nil(node.attribute_value("href"))
       end
 
       def test_attributes_returns_empty_hash_for_ruby_code_node

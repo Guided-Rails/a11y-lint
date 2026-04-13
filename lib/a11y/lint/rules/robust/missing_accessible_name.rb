@@ -7,7 +7,7 @@ module A11y
     module Rules
       # Checks that link_to, external_link_to, and button_tag calls with
       # empty text or block content include an aria-label (WCAG 4.1.2).
-      class MissingAccessibleName < Rule
+      class MissingAccessibleName < NodeRule
         METHODS = %w[link_to external_link_to button_tag].freeze
 
         def check

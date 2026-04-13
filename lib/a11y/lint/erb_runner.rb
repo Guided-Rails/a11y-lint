@@ -9,16 +9,19 @@ module A11y
       ERB_TAG = /<%.*?%>/m
       ERB_OUTPUT_TAG = /<%=\s*(.*?)\s*-?%>/m
 
-      def initialize(rules)
+      def initialize(rules, template_rules: [])
         @rules = rules
+        @template_rules = template_rules
       end
 
       def run(source, filename:)
         @filename = filename
         @offenses = []
+        @nodes = []
 
         check_html_nodes(source)
         check_erb_output_tags(source)
+        check_template_rules
 
         @offenses
       end
@@ -28,28 +31,38 @@ module A11y
       attr_reader :rules
 
       def check_html_nodes(source)
-        html = source.gsub(ERB_TAG, "")
-        doc = Nokogiri::HTML4::DocumentFragment.parse(html)
+        doc = parse_html(source)
 
         doc.traverse do |nokogiri_node|
           next unless nokogiri_node.element?
 
-          node = ErbNode.new(
-            nokogiri_node: nokogiri_node,
-            line: nokogiri_node.line
+          register_and_check(
+            ErbNode.new(
+              nokogiri_node: nokogiri_node,
+              line: nokogiri_node.line
+            )
           )
-          check_node(node)
         end
+      end
+
+      def parse_html(source)
+        Nokogiri::HTML4::DocumentFragment.parse(
+          source.gsub(ERB_TAG, "")
+        )
       end
 
       def check_erb_output_tags(source)
         source.scan(ERB_OUTPUT_TAG) do
           match = Regexp.last_match
           code = match[1]
-          line_number = source[0...match.begin(0)].count("\n") + 1
-          node = ErbNode.new(ruby_code: code, line: line_number)
-          check_node(node)
+          line = source[0...match.begin(0)].count("\n") + 1
+          register_and_check(ErbNode.new(ruby_code: code, line:))
         end
+      end
+
+      def register_and_check(node)
+        @nodes << node
+        check_node(node)
       end
 
       def check_node(node)
@@ -62,6 +75,16 @@ module A11y
             filename: @filename,
             line: node.line,
             message: message
+          )
+        end
+      end
+
+      def check_template_rules
+        @template_rules.each do |rule|
+          @offenses.concat(
+            rule.check_template(
+              filename: @filename, nodes: @nodes
+            )
           )
         end
       end

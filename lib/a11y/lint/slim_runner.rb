@@ -4,8 +4,9 @@ module A11y
   module Lint
     # Parses Slim templates and checks them against accessibility rules.
     class SlimRunner
-      def initialize(rules)
+      def initialize(rules, template_rules: [])
         @rules = rules
+        @template_rules = template_rules
       end
 
       def run(source, filename:)
@@ -13,7 +14,9 @@ module A11y
         @line = 1
         @filename = filename
         @offenses = []
+        @nodes = []
         walk(sexp)
+        check_template_rules
         @offenses
       end
 
@@ -26,7 +29,10 @@ module A11y
 
         @line += 1 if sexp[0] == :newline
         new_node = Node.new(sexp, line: @line)
-        check_node(new_node) if html_tag?(sexp) || slim_output?(sexp)
+        if html_tag?(sexp) || slim_output?(sexp)
+          @nodes << new_node
+          check_node(new_node)
+        end
         sexp.each { |child| walk(child) }
       end
 
@@ -52,6 +58,16 @@ module A11y
             filename: @filename,
             line: node.line,
             message: message
+          )
+        end
+      end
+
+      def check_template_rules
+        @template_rules.each do |rule|
+          @offenses.concat(
+            rule.check_template(
+              filename: @filename, nodes: @nodes
+            )
           )
         end
       end

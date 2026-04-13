@@ -25,6 +25,11 @@ module A11y
         attributes.key?(name)
       end
 
+      def attribute_value(name)
+        val = attributes[name]
+        val == true ? nil : val
+      end
+
       def attributes
         @attributes ||= extract_attributes
       end
@@ -67,7 +72,20 @@ module A11y
         return {} unless html_attributes?
 
         sexp_attributes[2..].each_with_object({}) do |attr_sexp, result|
-          result[attr_sexp[2]] = true if html_attribute?(attr_sexp)
+          next unless html_attribute?(attr_sexp)
+
+          result[attr_sexp[2]] = extract_attribute_value(attr_sexp)
+        end
+      end
+
+      def extract_attribute_value(attr_sexp)
+        case attr_sexp[3]
+        in [:escape, _, [:slim, :interpolate, String => value]]
+          value
+        in [:slim, :interpolate, String => value]
+          value
+        else
+          true
         end
       end
 
