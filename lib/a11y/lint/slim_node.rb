@@ -40,10 +40,53 @@ module A11y
         collect_children(body)
       end
 
+      # Returns ruby_code strings from child :slim :output nodes
+      # inside a block body. Only meaningful for output nodes
+      # (e.g. `= button_tag(...) do`).
+      def block_body_codes
+        return unless slim_output?
+
+        collect_output_codes(@sexp[4])
+      end
+
+      # Returns true when the block body contains visible text or
+      # HTML tag children (i.e. content that provides an accessible name).
+      def block_has_text_children?
+        return false unless slim_output?
+
+        text_content?(@sexp[4])
+      end
+
       private
 
       def html_tag?
         @sexp[0] == :html && @sexp[1] == :tag
+      end
+
+      def slim_output?
+        @sexp[0] == :slim && @sexp[1] == :output
+      end
+
+      def collect_output_codes(sexp)
+        return [] unless sexp.is_a?(Array)
+        return [sexp[3]] if slim_output_sexp?(sexp)
+
+        sexp.flat_map { |child| collect_output_codes(child) }
+      end
+
+      def slim_output_sexp?(sexp)
+        sexp.is_a?(Array) && sexp[0] == :slim && sexp[1] == :output
+      end
+
+      def text_content?(sexp)
+        return false unless sexp.is_a?(Array)
+        return true if slim_text_sexp?(sexp) || html_tag_sexp?(sexp)
+
+        sexp.any? { |child| text_content?(child) }
+      end
+
+      def slim_text_sexp?(sexp)
+        sexp[0] == :slim && sexp[1] == :text
       end
 
       def collect_children(sexp)

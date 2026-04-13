@@ -53,10 +53,36 @@ module A11y
         source.scan(ERB_OUTPUT_TAG) do
           match = Regexp.last_match
           code = match[1]
-          line_number = source[0...match.begin(0)].count("\n") + 1
-          node = ErbNode.new(ruby_code: code, line: line_number)
-          check_node(node)
+          line = source[0...match.begin(0)].count("\n") + 1
+          check_node(
+            build_erb_output_node(source, code, line, match.end(0))
+          )
         end
+      end
+
+      def build_erb_output_node(source, code, line, match_end)
+        block_body_codes, block_has_text =
+          extract_block_info(source, code, match_end)
+
+        ErbNode.new(
+          ruby_code: code, line: line,
+          block_body_codes: block_body_codes,
+          block_has_text_children: block_has_text
+        )
+      end
+
+      def extract_block_info(source, code, match_end)
+        return [nil, false] unless code.match?(/\s+do\s*\z/)
+
+        rest = source[match_end..]
+        end_match = rest.match(/<%-?\s*end\s*-?%>/m)
+        return [nil, false] unless end_match
+
+        block_content = rest[0...end_match.begin(0)]
+        codes = block_content.scan(ERB_OUTPUT_TAG).map { |m| m[0].strip }
+        text_only = block_content.gsub(ERB_TAG, "").strip
+
+        [codes, !text_only.empty?]
       end
 
       def check_node(node)

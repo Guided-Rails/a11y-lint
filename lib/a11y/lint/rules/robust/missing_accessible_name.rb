@@ -9,6 +9,7 @@ module A11y
       # empty text or block content include an aria-label (WCAG 4.1.2).
       class MissingAccessibleName < Rule
         METHODS = %w[link_to external_link_to button_tag].freeze
+        ICON_HELPERS = %w[inline_svg icon image_tag svg_icon].freeze
 
         def check
           return unless (code = @node.ruby_code)
@@ -18,9 +19,10 @@ module A11y
           call = parse_call(clean_code)
           return unless call
           return if aria_label_within?(call)
-          return unless first_arg_empty_string?(call) || is_block
+          return unless first_arg_empty_string?(call) ||
+                        (is_block && icon_only_block?)
 
-          offense_message(extract_method_name(call))
+          offense_message(call_method_name(call))
         end
 
         private
@@ -41,7 +43,9 @@ module A11y
 
         def extract_matching_call(sexp)
           return unless sexp.is_a?(Array)
-          return sexp if matching_call?(sexp)
+
+          name = call_method_name(sexp)
+          return sexp if name && METHODS.include?(name)
 
           sexp.each do |child|
             result = extract_matching_call(child)
@@ -49,11 +53,6 @@ module A11y
           end
 
           nil
-        end
-
-        def matching_call?(sexp)
-          name = call_method_name(sexp)
-          name ? METHODS.include?(name) : false
         end
 
         def call_method_name(sexp)
@@ -65,10 +64,6 @@ module A11y
             name
           else nil
           end
-        end
-
-        def extract_method_name(call)
-          call_method_name(call)
         end
 
         def first_arg_empty_string?(call)
@@ -87,6 +82,25 @@ module A11y
           in [:method_add_arg, _, [:arg_paren, Array => args]] then args
           else nil
           end
+        end
+
+        def icon_only_block?
+          return false if @node.block_has_text_children?
+
+          codes = @node.block_body_codes
+          return true unless codes&.any?
+
+          codes.all? { |c| icon_helper_call?(c) }
+        end
+
+        def icon_helper_call?(code)
+          sexp = Ripper.sexp(code)
+          return false unless sexp
+
+          sexp in [:program, [call]] or return false
+
+          name = call_method_name(call)
+          name && ICON_HELPERS.include?(name)
         end
 
         def aria_label_within?(sexp)

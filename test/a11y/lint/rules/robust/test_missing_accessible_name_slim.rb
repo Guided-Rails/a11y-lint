@@ -300,6 +300,106 @@ module A11y
           assert_equal("app/views/index.html.slim", offenses[0].filename)
         end
 
+        # = button_tag(class: "button-icon") do
+        #   = inline_svg("icon.svg")
+        #   = t(".label")
+        def test_button_tag_with_block_and_text_passes
+          source = <<~SLIM.chomp
+            = button_tag(class: "button-icon") do
+              = inline_svg("icon.svg")
+              = t(".label")
+          SLIM
+
+          offenses = run_source(source)
+
+          assert_empty(offenses)
+        end
+
+        # = button_tag class: "button-icon" do
+        #   = inline_svg("icon.svg")
+        #   = t(".label")
+        def test_button_tag_with_block_without_parens_and_text_passes
+          source = <<~SLIM.chomp
+            = button_tag class: "button-icon" do
+              = inline_svg("icon.svg")
+              = t(".label")
+          SLIM
+
+          offenses = run_source(source)
+
+          assert_empty(offenses)
+        end
+
+        # = button_tag(\
+        #     class: "button-icon",
+        #   ) do
+        #   = inline_svg("icon.svg")
+        #   = t(".label")
+        def test_multiline_button_tag_with_block_and_text_passes
+          source = <<~SLIM.chomp
+            = button_tag(\
+                class: "button-icon",
+              ) do
+              = inline_svg("icon.svg")
+              = t(".label")
+          SLIM
+
+          offenses = run_source(source)
+
+          assert_empty(offenses)
+        end
+
+        # = link_to("#", class: "icon") do
+        #   = inline_svg("icon.svg")
+        #   = t(".label")
+        def test_link_to_with_block_and_text_passes
+          source = <<~SLIM.chomp
+            = link_to("#", class: "icon") do
+              = inline_svg("icon.svg")
+              = t(".label")
+          SLIM
+
+          offenses = run_source(source)
+
+          assert_empty(offenses)
+        end
+
+        # = link_to "#", class: "icon" do
+        #   = inline_svg("icon.svg")
+        #   = t(".label")
+        def test_link_to_with_block_without_parens_and_text_passes
+          source = <<~SLIM.chomp
+            = link_to "#", class: "icon" do
+              = inline_svg("icon.svg")
+              = t(".label")
+          SLIM
+
+          offenses = run_source(source)
+
+          assert_empty(offenses)
+        end
+
+        # = link_to(\
+        #     "#",
+        #     class: "icon",
+        #   ) do
+        #   = inline_svg("icon.svg")
+        #   = t(".label")
+        def test_multiline_link_to_with_block_and_text_passes
+          source = <<~SLIM.chomp
+            = link_to(\
+                "#",
+                class: "icon",
+              ) do
+              = inline_svg("icon.svg")
+              = t(".label")
+          SLIM
+
+          offenses = run_source(source)
+
+          assert_empty(offenses)
+        end
+
         private
 
         def offense_message(method_name)
@@ -309,6 +409,10 @@ module A11y
 
         def run_fixture(name, filename: "test.slim")
           source = file_fixture("missing_accessible_name/slim/#{name}.slim")
+          SlimRunner.new([MissingAccessibleName]).run(source, filename:)
+        end
+
+        def run_source(source, filename: "test.slim")
           SlimRunner.new([MissingAccessibleName]).run(source, filename:)
         end
       end

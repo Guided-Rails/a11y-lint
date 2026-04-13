@@ -272,6 +272,112 @@ module A11y
           )
         end
 
+        # <%= button_tag(class: "button-icon") do %>
+        #   <%= inline_svg("icon.svg") %>
+        #   <%= t(".label") %>
+        # <% end %>
+        def test_button_tag_with_block_and_text_passes
+          source = <<~ERB
+            <%= button_tag(class: "button-icon") do %>
+              <%= inline_svg("icon.svg") %>
+              <%= t(".label") %>
+            <% end %>
+          ERB
+
+          offenses = run_source(source)
+
+          assert_empty(offenses)
+        end
+
+        # <%= button_tag class: "button-icon" do %>
+        #   <%= inline_svg("icon.svg") %>
+        #   <%= t(".label") %>
+        # <% end %>
+        def test_button_tag_with_block_without_parens_and_text_passes
+          source = <<~ERB
+            <%= button_tag class: "button-icon" do %>
+              <%= inline_svg("icon.svg") %>
+              <%= t(".label") %>
+            <% end %>
+          ERB
+
+          offenses = run_source(source)
+
+          assert_empty(offenses)
+        end
+
+        # <%= button_tag(class: "button-icon",
+        #                type: "button") do %>
+        #   <%= inline_svg("icon.svg") %>
+        #   <%= t(".label") %>
+        # <% end %>
+        def test_multiline_button_tag_with_block_and_text_passes
+          source = <<~ERB
+            <%= button_tag(class: "button-icon",
+                           type: "button") do %>
+              <%= inline_svg("icon.svg") %>
+              <%= t(".label") %>
+            <% end %>
+          ERB
+
+          offenses = run_source(source)
+
+          assert_empty(offenses)
+        end
+
+        # <%= link_to("#", class: "icon") do %>
+        #   <%= inline_svg("icon.svg") %>
+        #   <%= t(".label") %>
+        # <% end %>
+        def test_link_to_with_block_and_text_passes
+          source = <<~ERB
+            <%= link_to("#", class: "icon") do %>
+              <%= inline_svg("icon.svg") %>
+              <%= t(".label") %>
+            <% end %>
+          ERB
+
+          offenses = run_source(source)
+
+          assert_empty(offenses)
+        end
+
+        # <%= link_to "#", class: "icon" do %>
+        #   <%= inline_svg("icon.svg") %>
+        #   <%= t(".label") %>
+        # <% end %>
+        def test_link_to_with_block_without_parens_and_text_passes
+          source = <<~ERB
+            <%= link_to "#", class: "icon" do %>
+              <%= inline_svg("icon.svg") %>
+              <%= t(".label") %>
+            <% end %>
+          ERB
+
+          offenses = run_source(source)
+
+          assert_empty(offenses)
+        end
+
+        # <%= link_to("#",
+        #             class: "icon") do %>
+        #   <%= inline_svg("icon.svg") %>
+        #   <%= t(".label") %>
+        # <% end %>
+        def test_multiline_link_to_with_block_and_text_passes
+          source = <<~ERB
+            <%= link_to("#",
+                        class: "icon") do %>
+              <%= inline_svg("icon.svg") %>
+              <%= t(".label") %>
+            <% end %>
+          ERB
+
+          offenses = run_source(source)
+
+          assert_empty(offenses)
+        end
+
         private
 
         def offense_message(method_name)
@@ -283,6 +389,10 @@ module A11y
           source = file_fixture(
             "missing_accessible_name/erb/#{name}.html.erb"
           )
+          ErbRunner.new([MissingAccessibleName]).run(source, filename:)
+        end
+
+        def run_source(source, filename: "test.html.erb")
           ErbRunner.new([MissingAccessibleName]).run(source, filename:)
         end
       end
