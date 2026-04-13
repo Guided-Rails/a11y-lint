@@ -83,6 +83,38 @@ module A11y
 
         assert_nil(node.ruby_code)
       end
+
+      def test_children_returns_direct_html_children
+        sexp = Slim::Parser.new.call("ul\n  li one\n  li two\n")
+        ul = sexp[1]
+        node = Node.new(ul, line: 1)
+
+        assert_equal(%w[li li], node.children.map(&:tag_name))
+      end
+
+      def test_children_walks_through_slim_control_blocks
+        source = "ul\n  - items.each do |item|\n    li= item\n"
+        sexp = Slim::Parser.new.call(source)
+        ul = sexp[1]
+        node = Node.new(ul, line: 1)
+
+        assert_equal(["li"], node.children.map(&:tag_name))
+      end
+
+      def test_children_skips_slim_output_blocks
+        source = "ul\n  = render \"items\"\n"
+        sexp = Slim::Parser.new.call(source)
+        ul = sexp[1]
+        node = Node.new(ul, line: 1)
+
+        assert_empty(node.children)
+      end
+
+      def test_children_returns_empty_for_non_html_nodes
+        node = Node.new([:slim, :output, true, "code", [:multi]], line: 1)
+
+        assert_empty(node.children)
+      end
     end
   end
 end

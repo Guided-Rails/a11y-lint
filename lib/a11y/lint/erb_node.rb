@@ -29,6 +29,15 @@ module A11y
         @ruby_code_string
       end
 
+      # Returns direct element children wrapped as ErbNode objects.
+      def children
+        return [] unless @nokogiri_node
+
+        @nokogiri_node.element_children.map do |child|
+          ErbNode.new(nokogiri_node: child, line: child.line)
+        end
+      end
+
       private
 
       def extract_attributes

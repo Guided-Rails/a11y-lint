@@ -143,7 +143,7 @@ module A11y
       end
 
       def run_linter(source, filename: "test.html.erb")
-        rules = [Rules::ImgMissingAlt.new, Rules::ImageTagMissingAlt.new]
+        rules = [Rules::ImgMissingAlt, Rules::ImageTagMissingAlt]
         ErbRunner.new(rules).run(source, filename: filename)
       end
     end

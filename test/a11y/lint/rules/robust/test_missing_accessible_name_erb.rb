@@ -283,7 +283,7 @@ module A11y
           source = file_fixture(
             "missing_accessible_name/erb/#{name}.html.erb"
           )
-          ErbRunner.new([MissingAccessibleName.new]).run(source, filename:)
+          ErbRunner.new([MissingAccessibleName]).run(source, filename:)
         end
       end
     end

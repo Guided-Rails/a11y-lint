@@ -29,7 +29,39 @@ module A11y
         @attributes ||= extract_attributes
       end
 
+      # Returns direct HTML element children as Node objects.
+      # Walks through [:multi] and [:slim, :control] wrappers so that tags
+      # nested inside control flow are still treated as direct children.
+      # Opaque [:slim, :output] blocks are skipped.
+      def children
+        return [] unless html_tag?
+
+        body = @sexp[4]
+        collect_children(body)
+      end
+
       private
+
+      def html_tag?
+        @sexp[0] == :html && @sexp[1] == :tag
+      end
+
+      def collect_children(sexp)
+        return [] unless sexp.is_a?(Array)
+        return [Node.new(sexp, line: @line)] if html_tag_sexp?(sexp)
+        return collect_children(sexp[3]) if slim_control_sexp?(sexp)
+        return [] unless sexp[0] == :multi
+
+        sexp[1..].flat_map { |c| collect_children(c) }
+      end
+
+      def html_tag_sexp?(sexp)
+        sexp[0] == :html && sexp[1] == :tag
+      end
+
+      def slim_control_sexp?(sexp)
+        sexp[0] == :slim && sexp[1] == :control
+      end
 
       def extract_attributes
         return {} unless html_attributes?

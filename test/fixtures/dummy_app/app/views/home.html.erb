@@ -23,3 +23,15 @@
 
 <!-- Bad: button_tag with empty string (MissingAccessibleName) -->
 <%= button_tag("", class: "close-btn") %>
+
+<!-- Good: ul with only li children -->
+<ul>
+  <li>First</li>
+  <li>Second</li>
+</ul>
+
+<!-- Bad: ul with a div child (ListInvalidChildren) -->
+<ul>
+  <div>Not allowed</div>
+  <li>Item</li>
+</ul>

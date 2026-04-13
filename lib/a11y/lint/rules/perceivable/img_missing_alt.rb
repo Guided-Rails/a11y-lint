@@ -5,16 +5,16 @@ module A11y
     module Rules
       # Checks that img tags include an alt attribute (WCAG 1.1.1).
       class ImgMissingAlt < Rule
-        def check(node)
-          return unless an_image_without_an_alt_attribute?(node)
+        def check
+          return unless an_image_without_an_alt_attribute?
 
           "img tag is missing an alt attribute (WCAG 1.1.1)"
         end
 
         private
 
-        def an_image_without_an_alt_attribute?(node)
-          node.tag_name == "img" && !node.attribute?("alt")
+        def an_image_without_an_alt_attribute?
+          @node.tag_name == "img" && !@node.attribute?("alt")
         end
       end
     end

@@ -8,7 +8,7 @@ module A11y
       def test_for_clean_source
         offenses =
           SlimRunner
-          .new([Rules::ImgMissingAlt.new])
+          .new([Rules::ImgMissingAlt])
           .run('img src="photo.jpg" alt="A photo"', filename: "test.slim")
 
         assert_empty(offenses)
@@ -17,7 +17,7 @@ module A11y
       def test_for_violations
         offenses =
           SlimRunner
-          .new([Rules::ImgMissingAlt.new])
+          .new([Rules::ImgMissingAlt])
           .run('img src="photo.jpg"', filename: "test.slim")
 
         assert_equal(1, offenses.length)
@@ -26,7 +26,7 @@ module A11y
       def test_rrule_name
         offenses =
           SlimRunner
-          .new([Rules::ImgMissingAlt.new])
+          .new([Rules::ImgMissingAlt])
           .run('img src="photo.jpg"', filename: "test.slim")
 
         assert_equal("ImgMissingAlt", offenses[0].rule)
@@ -36,7 +36,7 @@ module A11y
         filename = "app/views/show.slim"
         offenses =
           SlimRunner
-          .new([Rules::ImgMissingAlt.new])
+          .new([Rules::ImgMissingAlt])
           .run('img src="photo.jpg"', filename:)
 
         assert_equal(filename, offenses[0].filename)
@@ -45,7 +45,7 @@ module A11y
       def test_line_number
         offenses =
           SlimRunner
-          .new([Rules::ImgMissingAlt.new])
+          .new([Rules::ImgMissingAlt])
           .run("div\n  img src=\"photo.jpg\"", filename: "test.slim")
 
         assert_equal(2, offenses[0].line)
@@ -54,7 +54,7 @@ module A11y
       def test_message
         offenses =
           SlimRunner
-          .new([Rules::ImgMissingAlt.new])
+          .new([Rules::ImgMissingAlt])
           .run('img src="photo.jpg"', filename: "test.slim")
 
         assert_equal(
@@ -66,7 +66,7 @@ module A11y
       def test_line_numbers_across_multiple_elements
         offenses =
           SlimRunner
-          .new([Rules::ImgMissingAlt.new])
+          .new([Rules::ImgMissingAlt])
           .run(multiline_source, filename: "test.slim")
 
         assert_equal(2, offenses.length)
@@ -77,7 +77,7 @@ module A11y
       def test_non_tag_elements
         offenses =
           SlimRunner
-          .new([Rules::ImgMissingAlt.new])
+          .new([Rules::ImgMissingAlt])
           .run("| Plain text content", filename: "test.slim")
 
         assert_empty(offenses)
@@ -86,7 +86,7 @@ module A11y
       def test_slim_output_nodes
         offenses =
           SlimRunner
-          .new([Rules::ImageTagMissingAlt.new])
+          .new([Rules::ImageTagMissingAlt])
           .run('= image_tag "photo.jpg"', filename: "test.slim")
 
         assert_equal(1, offenses.length)

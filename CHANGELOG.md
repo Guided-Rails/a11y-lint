@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `ListInvalidChildren` rule: detects invalid direct children of `<ul>` and `<ol>` elements (WCAG 1.3.1)
 - `MissingAccessibleName` rule: consolidates `LinkMissingAccessibleName` into a single rule covering `link_to`, `external_link_to`, and `button_tag`
 - Per-rule configuration via `.a11y-lint.yml` file: enable or disable individual rules
   - Place `.a11y-lint.yml` in the project root for automatic detection

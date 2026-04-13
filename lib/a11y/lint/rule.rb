@@ -4,11 +4,19 @@ module A11y
   module Lint
     # Base class for accessibility lint rules.
     class Rule
-      def name
-        self.class.name.split("::").last
+      def self.check(node)
+        new(node).check
       end
 
-      def check(node)
+      def self.rule_name
+        name.split("::").last
+      end
+
+      def initialize(node)
+        @node = node
+      end
+
+      def check
         raise NotImplementedError
       end
     end

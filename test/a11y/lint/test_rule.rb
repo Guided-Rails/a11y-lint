@@ -5,25 +5,29 @@ require "test_helper"
 module A11y
   module Lint
     class TestRule < Minitest::Test
-      def test_name
-        rule = Rule.new
-
-        assert_equal("Rule", rule.name)
+      def test_rule_name
+        assert_equal("Rule", Rule.rule_name)
       end
 
-      def test_name_with_subclass
+      def test_rule_name_with_subclass
         subclass = Class.new(Rule)
         stub_const(subclass, "A11y::Lint::Rules::ImgMissingAlt")
 
-        rule = subclass.new
-
-        assert_equal("ImgMissingAlt", rule.name)
+        assert_equal("ImgMissingAlt", subclass.rule_name)
       end
 
-      def test_check
-        rule = Rule.new
+      def test_check_class_method_dispatches_to_instance
+        subclass = Class.new(Rule) do
+          def check
+            "saw #{@node}"
+          end
+        end
 
-        assert_raises(NotImplementedError) { rule.check(nil) }
+        assert_equal("saw a-node", subclass.check("a-node"))
+      end
+
+      def test_check_instance_method_raises_when_not_overridden
+        assert_raises(NotImplementedError) { Rule.check(nil) }
       end
 
       private

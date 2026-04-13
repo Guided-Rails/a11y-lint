@@ -7,16 +7,16 @@ module A11y
     module Rules
       # Checks that image_tag calls include an alt option (WCAG 1.1.1).
       class ImageTagMissingAlt < Rule
-        def check(node)
-          return unless an_image_tag_without_an_alt_attribute?(node)
+        def check
+          return unless an_image_tag_without_an_alt_attribute?
 
           "image_tag is missing an alt option (WCAG 1.1.1)"
         end
 
         private
 
-        def an_image_tag_without_an_alt_attribute?(node)
-          code = node.ruby_code
+        def an_image_tag_without_an_alt_attribute?
+          code = @node.ruby_code
           return false unless code
 
           sexp = Ripper.sexp(code)
