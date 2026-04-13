@@ -84,23 +84,20 @@ module A11y
       end
 
       def partition_rules
-        configuration = load_configuration
-        node_rules = []
-        template_rules = []
+        node_rules, template_rules =
+          all_rules.partition { |k| k < NodeRule }
+        [node_rules, template_rules.map(&:new)]
+      end
 
-        Rules.constants.each do |name|
+      def all_rules
+        configuration = load_configuration
+
+        Rules.constants.filter_map do |name|
           klass = Rules.const_get(name)
           next unless rule_class?(klass)
-          next unless configuration.enabled?(klass.rule_name)
 
-          if klass < NodeRule
-            node_rules << klass
-          else
-            template_rules << klass.new
-          end
+          klass if configuration.enabled?(klass.rule_name)
         end
-
-        [node_rules, template_rules]
       end
 
       def load_configuration
