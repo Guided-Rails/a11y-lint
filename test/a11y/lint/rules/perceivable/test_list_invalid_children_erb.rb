@@ -136,6 +136,16 @@ module A11y
           assert_empty(offenses)
         end
 
+        def test_html_tags_mentioned_in_text_do_not_report_offense
+          source = <<~ERB
+            can only use these elements: <h1>, <div>, <br>, <ol>, <ul>, <li>, <em>, <strong>.
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
         def test_unrelated_div_with_div_children_passes
           source = <<~ERB
             <div>

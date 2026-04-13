@@ -8,6 +8,10 @@ module A11y
     class ErbRunner
       ERB_TAG = /<%.*?%>/m
       ERB_OUTPUT_TAG = /<%=\s*(.*?)\s*-?%>/m
+      VOID_ELEMENTS = %w[
+        area base br col embed hr img input
+        link meta param source track wbr
+      ].freeze
 
       def initialize(rules)
         @rules = rules
@@ -33,13 +37,16 @@ module A11y
 
         doc.traverse do |nokogiri_node|
           next unless nokogiri_node.element?
+          next unless source_confirmed_element?(html, nokogiri_node.name)
 
-          node = ErbNode.new(
-            nokogiri_node: nokogiri_node,
-            line: nokogiri_node.line
+          check_node(
+            ErbNode.new(nokogiri_node: nokogiri_node, line: nokogiri_node.line)
           )
-          check_node(node)
         end
+      end
+
+      def source_confirmed_element?(html, tag_name)
+        VOID_ELEMENTS.include?(tag_name) || html.include?("</#{tag_name}>")
       end
 
       def check_erb_output_tags(source)
