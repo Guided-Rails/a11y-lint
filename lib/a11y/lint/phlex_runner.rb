@@ -8,7 +8,7 @@ module A11y
     # against accessibility rules.
     class PhlexRunner
       PHLEX_PATTERN =
-        /class\s+\S+\s*<\s*(Phlex::(HTML|SVG)|App\w+)/
+        /\bdef\s+view_template\b|class\s+\S+\s*<\s*Phlex::/
 
       def initialize(rules)
         @rules = rules

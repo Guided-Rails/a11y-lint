@@ -179,6 +179,20 @@ module A11y
         assert_equal(1, offenses.length)
       end
 
+      def test_custom_base_class_subclass
+        source = <<~RUBY
+          class HomeView < Component::Base
+            def view_template
+              img(src: "photo.jpg")
+            end
+          end
+        RUBY
+
+        offenses = run_linter(source)
+
+        assert_equal(1, offenses.length)
+      end
+
       def test_mixed_tags_and_helpers
         source = <<~RUBY
           class HomeView < Phlex::HTML
