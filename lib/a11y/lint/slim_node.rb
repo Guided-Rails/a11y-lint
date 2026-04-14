@@ -3,7 +3,7 @@
 module A11y
   module Lint
     # Wraps a Slim AST s-expression as a queryable node for lint rules.
-    class Node
+    class SlimNode
       attr_reader :line
 
       def initialize(sexp, line:)
@@ -29,7 +29,7 @@ module A11y
         @attributes ||= extract_attributes
       end
 
-      # Returns direct HTML element children as Node objects.
+      # Returns direct HTML element children as SlimNode objects.
       # Walks through [:multi] and [:slim, :control] wrappers so that tags
       # nested inside control flow are still treated as direct children.
       # Opaque [:slim, :output] blocks are skipped.
@@ -48,7 +48,7 @@ module A11y
 
       def collect_children(sexp)
         return [] unless sexp.is_a?(Array)
-        return [Node.new(sexp, line: @line)] if html_tag_sexp?(sexp)
+        return [SlimNode.new(sexp, line: @line)] if html_tag_sexp?(sexp)
         return collect_children(sexp[3]) if slim_control_sexp?(sexp)
         return [] unless sexp[0] == :multi
 
