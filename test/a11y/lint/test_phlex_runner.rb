@@ -151,6 +151,20 @@ module A11y
         assert_empty(offenses)
       end
 
+      def test_ruby_file_without_view_template_is_skipped
+        source = <<~RUBY
+          class ImageHelper
+            def img(src:)
+              "<img src=\\"\#{src}\\">"
+            end
+          end
+        RUBY
+
+        offenses = run_linter(source)
+
+        assert_empty(offenses)
+      end
+
       def test_application_component_subclass
         source = <<~RUBY
           class CardComponent < ApplicationComponent
