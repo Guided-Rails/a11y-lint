@@ -3,6 +3,7 @@ PATH
   specs:
     a11y-lint (0.7.2)
       nokogiri (>= 1.13)
+      prism
       slim (>= 4.0)
 
 GEM

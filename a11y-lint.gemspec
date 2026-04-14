@@ -34,6 +34,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "nokogiri", ">= 1.13"
+  spec.add_dependency "prism"
   spec.add_dependency "slim", ">= 4.0"
 
   # For more information and examples about making a new gem, check out our

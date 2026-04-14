@@ -14,7 +14,7 @@ module A11y
           _stdout, stderr = run_cli([], dir:)
 
           assert_equal(0, @exit_code)
-          assert_match(/No .slim or .erb files found/, stderr)
+          assert_match(/No .slim, .erb, or .rb files found/, stderr)
         end
       end
 
@@ -114,6 +114,71 @@ module A11y
 
           assert_equal(1, @exit_code)
           assert_match(/specific\.slim/, stdout)
+        end
+      end
+
+      def test_phlex_file_with_offense
+        Dir.mktmpdir do |dir|
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                img(src: "photo.jpg")
+              end
+            end
+          RUBY
+          write_file(dir, "test_view.rb", source)
+
+          stdout, _stderr = run_cli([dir])
+
+          assert_equal(1, @exit_code)
+          assert_match(/\[ImgMissingAlt\]/, stdout)
+        end
+      end
+
+      def test_phlex_clean_file
+        Dir.mktmpdir do |dir|
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                img(src: "photo.jpg", alt: "A photo")
+              end
+            end
+          RUBY
+          write_file(dir, "test_view.rb", source)
+
+          stdout, _stderr = run_cli([dir])
+
+          assert_equal(0, @exit_code)
+          assert_match(/No offenses found/, stdout)
+        end
+      end
+
+      def test_non_phlex_rb_file_is_skipped
+        Dir.mktmpdir do |dir|
+          write_file(dir, "user.rb", "class User < ApplicationRecord; end")
+
+          stdout, _stderr = run_cli([dir])
+
+          assert_equal(0, @exit_code)
+          assert_match(/No offenses found/, stdout)
+        end
+      end
+
+      def test_explicit_phlex_file_argument
+        Dir.mktmpdir do |dir|
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                img(src: "photo.jpg")
+              end
+            end
+          RUBY
+          path = write_file(dir, "test_view.rb", source)
+
+          stdout, _stderr = run_cli([path])
+
+          assert_equal(1, @exit_code)
+          assert_match(/test_view\.rb/, stdout)
         end
       end
 
