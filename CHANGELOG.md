@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Phlex view support: scans `.rb` files containing Phlex components
+  - Detects Phlex files by the presence of a `def view_template` method
+  - All existing rules (`ImgMissingAlt`, `ImageTagMissingAlt`, `ListInvalidChildren`, `MissingAccessibleName`) work with Phlex views
+  - CLI automatically discovers `.rb` files when scanning directories
+
+### Changed
+
+- **Breaking:** `Node` has been renamed to `SlimNode` for consistency with `ErbNode` and `PhlexNode`
+
+### Dependencies
+
+- Added `prism` gem for Ruby AST parsing
+
 ## [0.7.2] - 2026-04-13
 
 ### Fixed

@@ -33,7 +33,7 @@ a11y-lint app/views/
 a11y-lint app/views/home.html.slim app/views/about.html.slim
 ```
 
-With no arguments, it scans the current directory recursively for `.slim` and `.erb` files:
+With no arguments, it scans the current directory recursively for `.slim`, `.erb`, and `.rb` (Phlex) files:
 
 ```bash
 a11y-lint
@@ -64,9 +64,20 @@ a11y-lint --config path/to/.a11y-lint.yml app/views/
 ```ruby
 require "a11y/lint"
 
+# Slim
 source = File.read("app/views/home.html.slim")
-runner = A11y::Lint::SlimRunner.new([A11y::Lint::Rules::ImgMissingAlt.new])
+runner = A11y::Lint::SlimRunner.new([A11y::Lint::Rules::ImgMissingAlt])
 offenses = runner.run(source, filename: "app/views/home.html.slim")
+
+# ERB
+source = File.read("app/views/home.html.erb")
+runner = A11y::Lint::ErbRunner.new([A11y::Lint::Rules::ImgMissingAlt])
+offenses = runner.run(source, filename: "app/views/home.html.erb")
+
+# Phlex
+source = File.read("app/views/home_view.rb")
+runner = A11y::Lint::PhlexRunner.new([A11y::Lint::Rules::ImgMissingAlt])
+offenses = runner.run(source, filename: "app/views/home_view.rb")
 
 offenses.each do |offense|
   puts "#{offense.filename}:#{offense.line} [#{offense.rule}] #{offense.message}"
