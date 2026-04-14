@@ -12,20 +12,30 @@ module A11y
         ICON_HELPERS = %w[inline_svg icon image_tag svg_icon].freeze
 
         def check
-          return unless (code = @node.ruby_code)
+          return unless source_code
 
-          clean_code = code.sub(/\s+do\s*\z/, "")
-          is_block = clean_code != code
-          call = parse_call(clean_code)
+          call = parse_call(clean_source_code)
           return unless call
           return if aria_label_within?(call)
           return unless first_arg_empty_string?(call) ||
-                        (is_block && icon_only_block?)
+                        (block? && icon_only_block?)
 
           offense_message(call_method_name(call))
         end
 
         private
+
+        def source_code
+          @node.ruby_code
+        end
+
+        def clean_source_code
+          source_code&.sub(/\s+do\s*\z/, "")
+        end
+
+        def block?
+          source_code != clean_source_code
+        end
 
         def offense_message(method_name)
           <<~MSG.strip
