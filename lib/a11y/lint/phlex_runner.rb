@@ -7,8 +7,7 @@ module A11y
     # Parses Phlex view classes and checks them
     # against accessibility rules.
     class PhlexRunner
-      PHLEX_PATTERN =
-        /\bdef\s+view_template\b|class\s+\S+\s*<\s*Phlex::/
+      PHLEX_PATTERN = /\bdef\s+view_template\b/
 
       def initialize(rules)
         @rules = rules
