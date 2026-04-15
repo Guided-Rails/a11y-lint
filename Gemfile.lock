@@ -79,7 +79,6 @@ DEPENDENCIES
   a11y-lint!
   irb
   minitest (~> 5.16)
-  prism
   rake (~> 13.0)
   rubocop (~> 1.21)
   slim (>= 4.0)
