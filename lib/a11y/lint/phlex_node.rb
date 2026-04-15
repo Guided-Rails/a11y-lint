@@ -6,7 +6,7 @@ module A11y
     # as a queryable node for lint rules.
     class PhlexNode
       attr_reader :line, :children, :tag_name,
-                  :attributes, :ruby_code,
+                  :attributes, :call_node,
                   :block_body_codes
 
       # Phlex method names that map to a different HTML tag.
@@ -37,19 +37,23 @@ module A11y
       # rubocop:disable Metrics/ParameterLists
       def initialize(
         line:, tag_name: nil, attributes: {},
-        ruby_code: nil, children: [],
+        call_node: nil, children: [],
         block_body_codes: nil,
         block_has_text_children: false
       )
         @tag_name = tag_name
         @attributes = attributes
-        @ruby_code = ruby_code
+        @call_node = call_node
         @line = line
         @children = children
         @block_body_codes = block_body_codes
         @block_has_text_children = block_has_text_children
       end
       # rubocop:enable Metrics/ParameterLists
+
+      def ruby_code
+        nil
+      end
 
       def attribute?(name)
         attributes.key?(name)
@@ -78,12 +82,12 @@ module A11y
       end
 
       def self.build_helper(
-        call_node, source,
+        call_node,
         block_body_codes: nil,
         block_has_text_children: false
       )
         new(
-          ruby_code: ruby_code_for(call_node, source),
+          call_node: call_node,
           line: call_node.location.start_line,
           block_body_codes: block_body_codes,
           block_has_text_children: block_has_text_children
@@ -112,16 +116,7 @@ module A11y
         end
       end
 
-      def self.ruby_code_for(call_node, source)
-        return call_node.slice unless call_node.block
-
-        stop = call_node.block.location.start_offset
-        start = call_node.location.start_offset
-        "#{source[start...stop].rstrip} do"
-      end
-
       private_class_method :kwarg_key, :kwarg_nodes,
-                           :ruby_code_for,
                            :extract_attributes
     end
   end

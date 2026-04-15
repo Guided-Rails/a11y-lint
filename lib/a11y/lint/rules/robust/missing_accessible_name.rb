@@ -12,9 +12,7 @@ module A11y
         ICON_HELPERS = %w[inline_svg icon image_tag svg_icon].freeze
 
         def check
-          return unless @node.ruby_code
-
-          call = find_matching_call(clean_source_code)
+          call = find_matching_call
           return unless call
           return if aria_label?(call)
           return unless first_arg_empty_string?(call) ||
@@ -25,12 +23,25 @@ module A11y
 
         private
 
+        def find_matching_call
+          if @node.respond_to?(:call_node) && @node.call_node
+            call = @node.call_node
+            call if METHODS.include?(call.name.to_s)
+          elsif @node.ruby_code
+            find_matching_call_from_source(clean_source_code)
+          end
+        end
+
         def clean_source_code
           @node.ruby_code&.sub(/\s+do\s*\z/, "")
         end
 
         def block?
-          @node.ruby_code != clean_source_code
+          if @node.respond_to?(:call_node) && @node.call_node
+            !@node.call_node.block.nil?
+          else
+            @node.ruby_code != clean_source_code
+          end
         end
 
         def offense_message(method_name)
@@ -40,7 +51,7 @@ module A11y
           MSG
         end
 
-        def find_matching_call(code)
+        def find_matching_call_from_source(code)
           result = Prism.parse(code)
           return unless result.success?
 

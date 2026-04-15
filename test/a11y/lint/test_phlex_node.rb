@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "prism"
 
 module A11y
   module Lint
@@ -12,7 +13,9 @@ module A11y
       end
 
       def test_tag_name_nil_for_helper
-        node = PhlexNode.new(ruby_code: "link_to(\"Home\", root_path)", line: 1)
+        parsed = Prism.parse("link_to(\"Home\", root_path)")
+        call_node = parsed.value.statements.body.first
+        node = PhlexNode.new(call_node: call_node, line: 1)
 
         assert_nil(node.tag_name)
       end
@@ -59,13 +62,12 @@ module A11y
         assert_equal({}, node.attributes)
       end
 
-      def test_ruby_code
-        node = PhlexNode.new(
-          ruby_code: "image_tag(\"photo.jpg\")",
-          line: 1
-        )
+      def test_call_node
+        parsed = Prism.parse("image_tag(\"photo.jpg\")")
+        call_node = parsed.value.statements.body.first
+        node = PhlexNode.new(call_node: call_node, line: 1)
 
-        assert_equal("image_tag(\"photo.jpg\")", node.ruby_code)
+        assert_equal("image_tag", node.call_node.name.to_s)
       end
 
       def test_ruby_code_nil_for_tag
