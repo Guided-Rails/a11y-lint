@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `AreaMissingAlt` rule: detects `<area>` tags without `alt` attributes (WCAG 1.1.1)
+- `InputImageMissingAlt` rule: detects `<input type="image">` tags without `alt` attributes (WCAG 1.1.1)
+- `ImageSubmitTagMissingAlt` rule: detects `image_submit_tag` calls without an `alt` option (WCAG 1.1.1)
+
+### Changed
+
+- Node attribute storage now preserves string values, enabling rules to check attribute values (not just existence)
 
 ## [0.10.0] - 2026-04-15
 
