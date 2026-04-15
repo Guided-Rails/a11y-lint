@@ -16,7 +16,7 @@ module A11y
           return unless call
           return if aria_label?(call)
           return unless first_arg_empty_string?(call) ||
-                        (block? && icon_only_block?)
+                        (call.block && icon_only_block?)
 
           offense_message(call.name.to_s)
         end
@@ -24,24 +24,9 @@ module A11y
         private
 
         def find_matching_call
-          if @node.respond_to?(:call_node) && @node.call_node
-            call = @node.call_node
-            call if METHODS.include?(call.name.to_s)
-          elsif @node.ruby_code
-            find_matching_call_from_source(clean_source_code)
-          end
-        end
+          return unless @node.call_node
 
-        def clean_source_code
-          @node.ruby_code&.sub(/\s+do\s*\z/, "")
-        end
-
-        def block?
-          if @node.respond_to?(:call_node) && @node.call_node
-            !@node.call_node.block.nil?
-          else
-            @node.ruby_code != clean_source_code
-          end
+          find_call(@node.call_node)
         end
 
         def offense_message(method_name)
@@ -49,13 +34,6 @@ module A11y
             #{method_name} missing an accessible name \
             requires an aria-label (WCAG 4.1.2)
           MSG
-        end
-
-        def find_matching_call_from_source(code)
-          result = Prism.parse(code)
-          return unless result.success?
-
-          find_call(result.value)
         end
 
         def find_call(node)

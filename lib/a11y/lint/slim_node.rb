@@ -16,9 +16,15 @@ module A11y
       end
 
       def ruby_code
-        return unless @sexp[0] == :slim && @sexp[1] == :output
+        return unless slim_output?
 
         @sexp[3]
+      end
+
+      def call_node
+        return unless slim_output?
+
+        @call_node ||= parse_call_node
       end
 
       def attribute?(name)
@@ -65,6 +71,10 @@ module A11y
 
       def slim_output?
         @sexp[0] == :slim && @sexp[1] == :output
+      end
+
+      def parse_call_node
+        RubyCode.new(@sexp[3]).call_node
       end
 
       def collect_output_codes(sexp)

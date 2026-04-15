@@ -21,15 +21,9 @@ module A11y
         end
 
         def find_image_tag_call
-          if @node.respond_to?(:call_node) && @node.call_node
-            call = @node.call_node
-            call if call.name.to_s == "image_tag"
-          elsif @node.ruby_code
-            result = Prism.parse(@node.ruby_code)
-            return unless result.success?
+          return unless @node.call_node
 
-            find_call(result.value, "image_tag")
-          end
+          find_call(@node.call_node, "image_tag")
         end
 
         def find_call(node, method_name)

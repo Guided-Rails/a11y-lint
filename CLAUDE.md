@@ -24,8 +24,9 @@ a11y-lint is a Ruby gem (v0.1.0) for accessibility linting. It uses the `A11y::L
 - **Slim pipeline:** `SlimRunner` parses Slim templates via `Slim::Parser`; `SlimNode` wraps Slim S-expressions
 - **ERB pipeline:** `ErbRunner` parses ERB templates via Nokogiri; `ErbNode` wraps Nokogiri nodes and extracted `<%= %>` Ruby code
 - **Phlex pipeline:** `PhlexRunner` parses Phlex view classes via Prism; `PhlexNode` wraps Prism AST call nodes; detects Phlex files by the presence of `def view_template`
+- **Ruby code parsing:** `RubyCode` (`lib/a11y/lint/ruby_code.rb`) — parses a Ruby code string once with Prism and exposes the resulting `CallNode`; used by `SlimNode` and `ErbNode` so rules work against a parsed AST instead of re-parsing strings
 - **Configuration:** `lib/a11y/lint/configuration.rb` — loads `.a11y-lint.yml` to enable/disable individual rules; searches upward from the target path
-- **Rules:** `lib/a11y/lint/rules/` — organized by WCAG principle (`perceivable/`, `operable/`, `understandable/`, `robust/`); rules implement `check(node)` against the shared node interface (`tag_name`, `attribute?`, `attributes`, `ruby_code`, `line`)
+- **Rules:** `lib/a11y/lint/rules/` — organized by WCAG principle (`perceivable/`, `operable/`, `understandable/`, `robust/`); rules implement `check(node)` against the shared node interface (`tag_name`, `attribute?`, `attributes`, `call_node`, `line`)
 - **Version:** `lib/a11y/lint/version.rb`
 - **Type signatures (RBS):** `sig/a11y/lint.rbs`
 - **Tests:** `test/` directory using Minitest; test helper at `test/test_helper.rb`
