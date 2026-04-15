@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require "prism"
-
 module A11y
   module Lint
     # Wraps a Nokogiri node or extracted ERB output tag
     # as a queryable node for lint rules.
     class ErbNode
+      include RubyCodeParser
+
       attr_reader :line, :block_body_codes
 
       def initialize(
@@ -58,22 +58,7 @@ module A11y
       private
 
       def parse_call_node
-        code = @ruby_code_string
-        source = code.match?(/\s+do\s*\z/) ? "#{code}\nend" : code
-        result = Prism.parse(source)
-        return unless result.success?
-
-        find_receiverless_call(result.value)
-      end
-
-      def find_receiverless_call(node)
-        return node if node.is_a?(Prism::CallNode) && node.receiver.nil?
-
-        node.child_nodes.compact.each do |child|
-          found = find_receiverless_call(child)
-          return found if found
-        end
-        nil
+        parse_call_node_from(@ruby_code_string)
       end
 
       def extract_attributes
