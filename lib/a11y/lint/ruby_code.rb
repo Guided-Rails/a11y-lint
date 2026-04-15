@@ -5,8 +5,7 @@ require "prism"
 module A11y
   module Lint
     # Represents a Ruby code string extracted from a template.
-    # Parses the code once with Prism and exposes the resulting CallNode.
-    # Used by SlimNode and ErbNode to avoid re-parsing in rules.
+    # Parses the code with Prism and exposes the resulting CallNode.
     class RubyCode
       def initialize(code)
         @code = code
