@@ -90,6 +90,35 @@ module A11y
         assert_empty(node.children)
       end
 
+      def test_call_node_for_erb_output_node
+        node = ErbNode.new(ruby_code: 'image_tag("photo.jpg")', line: 1)
+
+        assert_instance_of(Prism::CallNode, node.call_node)
+        assert_equal("image_tag", node.call_node.name.to_s)
+      end
+
+      def test_call_node_returns_nil_for_html_element_node
+        node = ErbNode.new(nokogiri_node: make_element("img"), line: 1)
+
+        assert_nil(node.call_node)
+      end
+
+      def test_call_node_with_block_form
+        node = ErbNode.new(ruby_code: 'link_to("#") do', line: 1)
+
+        assert_instance_of(Prism::CallNode, node.call_node)
+        assert_equal("link_to", node.call_node.name.to_s)
+        refute_nil(node.call_node.block)
+      end
+
+      def test_call_node_with_multiline_code
+        code = "link_to(\"#\",\n            class: \"icon\")"
+        node = ErbNode.new(ruby_code: code, line: 1)
+
+        assert_instance_of(Prism::CallNode, node.call_node)
+        assert_equal("link_to", node.call_node.name.to_s)
+      end
+
       private
 
       def make_element(tag, attrs = {})

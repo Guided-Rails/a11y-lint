@@ -116,6 +116,39 @@ module A11y
 
         assert_empty(node.children)
       end
+
+      def test_call_node_for_slim_output_node
+        sexp = [:slim, :output, true, 'image_tag("photo.jpg")', [:multi]]
+        node = SlimNode.new(sexp, line: 1)
+
+        assert_instance_of(Prism::CallNode, node.call_node)
+        assert_equal("image_tag", node.call_node.name.to_s)
+      end
+
+      def test_call_node_returns_nil_for_html_tag_node
+        sexp = [:html, :tag, "img", %i[html attrs]]
+        node = SlimNode.new(sexp, line: 1)
+
+        assert_nil(node.call_node)
+      end
+
+      def test_call_node_with_block_form
+        sexp = [:slim, :output, true, 'link_to("#") do', [:multi]]
+        node = SlimNode.new(sexp, line: 1)
+
+        assert_instance_of(Prism::CallNode, node.call_node)
+        assert_equal("link_to", node.call_node.name.to_s)
+        refute_nil(node.call_node.block)
+      end
+
+      def test_call_node_with_multiline_code
+        code = "link_to(\n    \"\",\n    \"/path\",\n    class: \"icon\",\n  )"
+        sexp = [:slim, :output, true, code, [:multi]]
+        node = SlimNode.new(sexp, line: 1)
+
+        assert_instance_of(Prism::CallNode, node.call_node)
+        assert_equal("link_to", node.call_node.name.to_s)
+      end
     end
   end
 end

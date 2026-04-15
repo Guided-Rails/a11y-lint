@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "prism"
+
 module A11y
   module Lint
     # Wraps a Slim AST s-expression as a queryable node for lint rules.
@@ -16,9 +18,15 @@ module A11y
       end
 
       def ruby_code
-        return unless @sexp[0] == :slim && @sexp[1] == :output
+        return unless slim_output?
 
         @sexp[3]
+      end
+
+      def call_node
+        return unless slim_output?
+
+        @call_node ||= parse_call_node
       end
 
       def attribute?(name)
@@ -65,6 +73,25 @@ module A11y
 
       def slim_output?
         @sexp[0] == :slim && @sexp[1] == :output
+      end
+
+      def parse_call_node
+        code = @sexp[3]
+        source = code.match?(/\s+do\s*\z/) ? "#{code}\nend" : code
+        result = Prism.parse(source)
+        return unless result.success?
+
+        find_receiverless_call(result.value)
+      end
+
+      def find_receiverless_call(node)
+        return node if node.is_a?(Prism::CallNode) && node.receiver.nil?
+
+        node.child_nodes.compact.each do |child|
+          found = find_receiverless_call(child)
+          return found if found
+        end
+        nil
       end
 
       def collect_output_codes(sexp)
