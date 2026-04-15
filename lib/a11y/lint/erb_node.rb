@@ -5,21 +5,24 @@ module A11y
     # Wraps a Nokogiri node or extracted ERB output tag
     # as a queryable node for lint rules.
     class ErbNode
-      attr_reader :line, :block_body_codes
+      attr_reader(:block_body_codes, :line, :ruby_code)
 
       def initialize(
-        line:, nokogiri_node: nil, ruby_code: nil,
-        block_body_codes: nil, block_has_text_children: false
+        line:,
+        block_body_codes: nil,
+        block_has_text_children: false,
+        nokogiri_node: nil,
+        ruby_code: nil
       )
-        @nokogiri_node = nokogiri_node
-        @ruby_code_string = ruby_code
+        @line = line
         @block_body_codes = block_body_codes
         @block_has_text_children = block_has_text_children
-        @line = line
+        @nokogiri_node = nokogiri_node
+        @ruby_code = ruby_code
       end
 
       def tag_name
-        @nokogiri_node&.name
+        nokogiri_node&.name
       end
 
       def attribute?(name)
@@ -30,14 +33,8 @@ module A11y
         @attributes ||= extract_attributes
       end
 
-      def ruby_code
-        @ruby_code_string
-      end
-
       def call_node
-        return unless @ruby_code_string
-
-        @call_node ||= parse_call_node
+        @call_node ||= RubyCode.new(ruby_code).call_node
       end
 
       def block_has_text_children?
@@ -46,23 +43,21 @@ module A11y
 
       # Returns direct element children wrapped as ErbNode objects.
       def children
-        return [] unless @nokogiri_node
+        return [] unless nokogiri_node
 
-        @nokogiri_node.element_children.map do |child|
+        nokogiri_node.element_children.map do |child|
           ErbNode.new(nokogiri_node: child, line: child.line)
         end
       end
 
       private
 
-      def parse_call_node
-        RubyCode.new(@ruby_code_string).call_node
-      end
+      attr_reader(:nokogiri_node)
 
       def extract_attributes
-        return {} unless @nokogiri_node
+        return {} unless nokogiri_node
 
-        @nokogiri_node
+        nokogiri_node
           .attributes
           .each_with_object({}) do |(name, _attr), result|
             result[name] = true

@@ -44,6 +44,22 @@ module A11y
         assert_equal("link_to", result.name.to_s)
       end
 
+      def test_call_node_returns_nil_for_nil
+        ruby_code = RubyCode.new(nil)
+
+        result = ruby_code.call_node
+
+        assert_nil(result)
+      end
+
+      def test_call_node_returns_nil_for_empty_string
+        ruby_code = RubyCode.new("")
+
+        result = ruby_code.call_node
+
+        assert_nil(result)
+      end
+
       def test_call_node_returns_nil_for_non_method_code
         ruby_code = RubyCode.new("42")
 

@@ -22,9 +22,10 @@ module A11y
       attr_reader(:code)
 
       # Parses the code string into a Prism AST and returns the first
-      # receiverless CallNode, or nil if the code is invalid or
-      # contains no method calls (e.g. a plain variable or literal).
+      # receiverless CallNode, or nil if the code is empty, invalid,
+      # or contains no method calls (e.g. a plain variable or literal).
       def parse
+        return if code.nil? || code.empty?
         return unless prism_parse_result.success?
 
         find_receiverless_call(prism_parse_result.value)
