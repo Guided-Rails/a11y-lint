@@ -5,7 +5,6 @@ require "prism"
 module A11y
   module Lint
     # Wraps a Prism::CallNode with a rule-friendly query API.
-    # Rules work against this class instead of Prism types directly.
     class CallNode
       attr_reader :prism_node
 
