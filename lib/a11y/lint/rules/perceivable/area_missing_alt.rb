@@ -15,7 +15,7 @@ module A11y
         private
 
         def an_area_without_an_alt_attribute?
-          @node.tag_name == "area" && !@node.attribute?("alt")
+          node.tag_name == "area" && !node.attribute?("alt")
         end
       end
     end
