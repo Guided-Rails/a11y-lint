@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "ripper"
+require "prism"
 
 module A11y
   module Lint
@@ -19,70 +19,49 @@ module A11y
           code = @node.ruby_code
           return false unless code
 
-          sexp = Ripper.sexp(code)
-          return false unless sexp
-
-          call = extract_image_tag_call(sexp)
-          call && !alt_key_within?(call)
+          call = find_image_tag_call(code)
+          call && !alt_keyword?(call)
         end
 
-        # Walks the Ripper S-expression tree to find
-        # the image_tag call node, if present.
-        def extract_image_tag_call(sexp)
-          return unless sexp.is_a?(Array)
-          return sexp if image_tag_call?(sexp)
+        def find_image_tag_call(code)
+          result = Prism.parse(code)
+          return unless result.success?
 
-          sexp.each do |child|
-            result = extract_image_tag_call(child)
-            return result if result
+          find_call(result.value, "image_tag")
+        end
+
+        def find_call(node, method_name)
+          if node.is_a?(Prism::CallNode) &&
+             node.receiver.nil? &&
+             node.name.to_s == method_name
+            return node
           end
 
+          node.child_nodes.compact.each do |child|
+            found = find_call(child, method_name)
+            return found if found
+          end
           nil
         end
 
-        # Matches both calling styles:
-        #   image_tag "photo.jpg"  => :command
-        #   image_tag("photo.jpg") => :method_add_arg
-        def image_tag_call?(sexp)
-          case sexp
-          in [:command, [:@ident, "image_tag", *], *] then true
-          in [:method_add_arg, [:fcall, [:@ident, "image_tag", *]], *] then true
-          else false
+        def alt_keyword?(call)
+          keyword_hash = find_keyword_hash(call)
+          return false unless keyword_hash
+
+          keyword_hash.elements.any? { |assoc| key_name(assoc) == "alt" }
+        end
+
+        def find_keyword_hash(call)
+          return unless call.arguments
+
+          call.arguments.arguments.find { |arg| arg.is_a?(Prism::KeywordHashNode) }
+        end
+
+        def key_name(assoc)
+          case assoc.key
+          when Prism::SymbolNode then assoc.key.unescaped
+          when Prism::StringNode then assoc.key.unescaped
           end
-        end
-
-        # Recursively searches the sexp for an
-        # :assoc_new node whose key is "alt".
-        def alt_key_within?(sexp)
-          return true if alt_key?(sexp)
-          return false unless sexp.is_a?(Array)
-
-          sexp.any? { |child| alt_key_within?(child) }
-        end
-
-        # Checks if a sexp is a hash pair (assoc_new)
-        # with "alt" as the key.
-        def alt_key?(sexp)
-          return false unless sexp.is_a?(Array) && sexp[0] == :assoc_new
-
-          alt_key_value?(sexp[1])
-        end
-
-        def alt_key_value?(key)
-          alt_symbol_key?(key) || alt_string_key?(key)
-        end
-
-        # Matches symbol-style key: `alt: "..."`
-        def alt_symbol_key?(key)
-          key in [:@label, "alt:", *]
-        end
-
-        # Matches string-style key: `"alt" => "..."`
-        def alt_string_key?(key)
-          key in [
-            :string_literal,
-            [:string_content, [:@tstring_content, "alt", *]]
-          ]
         end
       end
     end
