@@ -22,8 +22,8 @@ module A11y
         private
 
         def aria_label?(call)
-          call.has_keyword?(:aria, :label) ||
-            call.has_keyword?(:"aria-label")
+          call.keyword?(:aria, :label) ||
+            call.keyword?(:"aria-label")
         end
 
         def offense_message(method_name)

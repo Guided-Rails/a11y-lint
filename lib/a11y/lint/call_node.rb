@@ -18,10 +18,10 @@ module A11y
       end
 
       # Checks for a keyword argument by name.
-      #   has_keyword?(:alt)          => alt: or "alt" =>
-      #   has_keyword?(:aria, :label) => aria: { label: ... }
-      #   has_keyword?(:"aria-label") => "aria-label" =>
-      def has_keyword?(*keys) # rubocop:disable Naming/PredicatePrefix
+      #   keyword?(:alt)          => alt: or "alt" =>
+      #   keyword?(:aria, :label) => aria: { label: ... }
+      #   keyword?(:"aria-label") => "aria-label" =>
+      def keyword?(*keys)
         return false unless (kw_hash = find_keyword_hash)
 
         if keys.length == 1

@@ -14,7 +14,7 @@ module A11y
         private
 
         def no_image_tag_offense?
-          !image_tag || image_tag.has_keyword?(:alt)
+          !image_tag || image_tag.keyword?(:alt)
         end
 
         def image_tag

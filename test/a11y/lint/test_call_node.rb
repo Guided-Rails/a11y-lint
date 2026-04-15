@@ -11,50 +11,50 @@ module A11y
         assert_equal("image_tag", call.method_name)
       end
 
-      def test_has_keyword_with_symbol_key
+      def test_keyword_with_symbol_key
         call = parse('image_tag("photo.jpg", alt: "A photo")')
 
-        assert(call.has_keyword?(:alt))
+        assert(call.keyword?(:alt))
       end
 
-      def test_has_keyword_with_string_key
+      def test_keyword_with_string_key
         code = 'image_tag("photo.jpg", "alt" => "A photo")'
         call = parse(code)
 
-        assert(call.has_keyword?(:alt))
+        assert(call.keyword?(:alt))
       end
 
-      def test_has_keyword_returns_false_when_missing
+      def test_keyword_returns_false_when_missing
         call = parse('image_tag("photo.jpg", class: "hero")')
 
-        refute(call.has_keyword?(:alt))
+        refute(call.keyword?(:alt))
       end
 
-      def test_has_keyword_with_nested_hash
+      def test_keyword_with_nested_hash
         code = 'link_to("", "/path", aria: { label: "Go" })'
         call = parse(code)
 
-        assert(call.has_keyword?(:aria, :label))
+        assert(call.keyword?(:aria, :label))
       end
 
-      def test_has_keyword_with_nested_hash_without_matching_inner_key
+      def test_keyword_with_nested_hash_without_matching_inner_key
         code = 'link_to("", aria: { describedby: "desc" })'
         call = parse(code)
 
-        refute(call.has_keyword?(:aria, :label))
+        refute(call.keyword?(:aria, :label))
       end
 
-      def test_has_keyword_with_missing_outer_key
+      def test_keyword_with_missing_outer_key
         call = parse('link_to("", "/path", class: "icon")')
 
-        refute(call.has_keyword?(:aria, :label))
+        refute(call.keyword?(:aria, :label))
       end
 
-      def test_has_keyword_with_string_aria_label
+      def test_keyword_with_string_aria_label
         code = 'link_to("", "aria-label" => "Facebook")'
         call = parse(code)
 
-        assert(call.has_keyword?(:"aria-label"))
+        assert(call.keyword?(:"aria-label"))
       end
 
       def test_positional_args
