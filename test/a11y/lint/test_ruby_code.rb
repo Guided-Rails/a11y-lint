@@ -10,8 +10,8 @@ module A11y
 
         result = ruby_code.call_node
 
-        assert_instance_of(Prism::CallNode, result)
-        assert_equal("image_tag", result.name.to_s)
+        assert_instance_of(CallNode, result)
+        assert_equal("image_tag", result.method_name)
       end
 
       def test_call_node_for_method_call_without_parentheses
@@ -19,8 +19,8 @@ module A11y
 
         result = ruby_code.call_node
 
-        assert_instance_of(Prism::CallNode, result)
-        assert_equal("image_tag", result.name.to_s)
+        assert_instance_of(CallNode, result)
+        assert_equal("image_tag", result.method_name)
       end
 
       def test_call_node_for_block_form
@@ -28,10 +28,9 @@ module A11y
 
         result = ruby_code.call_node
 
-        assert_instance_of(Prism::CallNode, result)
-        assert_equal("link_to", result.name.to_s)
-
-        refute_nil(result.block)
+        assert_instance_of(CallNode, result)
+        assert_equal("link_to", result.method_name)
+        assert(result.block?)
       end
 
       def test_call_node_for_multiline_code
@@ -40,8 +39,8 @@ module A11y
 
         result = ruby_code.call_node
 
-        assert_instance_of(Prism::CallNode, result)
-        assert_equal("link_to", result.name.to_s)
+        assert_instance_of(CallNode, result)
+        assert_equal("link_to", result.method_name)
       end
 
       def test_call_node_returns_nil_for_nil
@@ -81,7 +80,7 @@ module A11y
 
         result = ruby_code.call_node
 
-        assert_equal("link_to", result.name.to_s)
+        assert_equal("link_to", result.method_name)
       end
     end
   end

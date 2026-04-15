@@ -19,6 +19,10 @@ module A11y
       def check
         raise NotImplementedError
       end
+
+      private
+
+      attr_reader(:node)
     end
   end
 end

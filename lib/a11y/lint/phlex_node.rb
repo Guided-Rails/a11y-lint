@@ -5,6 +5,7 @@ module A11y
     # Wraps a Phlex HTML tag call or helper method call
     # as a queryable node for lint rules.
     class PhlexNode
+      include BlockInspection
       extend PhlexTags
 
       attr_reader(
@@ -61,7 +62,7 @@ module A11y
         block_has_text_children: false
       )
         new(
-          call_node: call_node,
+          call_node: CallNode.new(call_node),
           line: call_node.location.start_line,
           block_body_codes: block_body_codes,
           block_has_text_children: block_has_text_children

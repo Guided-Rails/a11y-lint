@@ -4,6 +4,8 @@ module A11y
   module Lint
     # Wraps a Slim AST s-expression as a queryable node for lint rules.
     class SlimNode
+      include BlockInspection
+
       attr_reader :line
 
       def initialize(sexp, line:)

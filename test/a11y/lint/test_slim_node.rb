@@ -137,8 +137,8 @@ module A11y
 
         result = node.call_node
 
-        assert_instance_of(Prism::CallNode, result)
-        assert_equal("image_tag", result.name.to_s)
+        assert_instance_of(CallNode, result)
+        assert_equal("image_tag", result.method_name)
       end
 
       def test_call_node_returns_nil_for_html_tag_node
@@ -156,10 +156,9 @@ module A11y
 
         result = node.call_node
 
-        assert_instance_of(Prism::CallNode, result)
-        assert_equal("link_to", result.name.to_s)
-
-        refute_nil(result.block)
+        assert_instance_of(CallNode, result)
+        assert_equal("link_to", result.method_name)
+        assert(result.block?)
       end
 
       def test_call_node_with_multiline_code
@@ -169,8 +168,8 @@ module A11y
 
         result = node.call_node
 
-        assert_instance_of(Prism::CallNode, result)
-        assert_equal("link_to", result.name.to_s)
+        assert_instance_of(CallNode, result)
+        assert_equal("link_to", result.method_name)
       end
     end
   end
