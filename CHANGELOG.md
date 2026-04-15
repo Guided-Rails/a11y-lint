@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MissingAccessibleName`: fix false positive when block contains visible text or HTML tags (e.g. `link_to do` with a `span` or plain text inside)
 - Add `block_body_codes` and `block_has_text_children?` to all three node types (Slim, ERB, Phlex) so block content inspection works across all pipelines
 
+### Changed
+
+- Replace Ripper with Prism for Ruby code parsing in `ImageTagMissingAlt` and `MissingAccessibleName` rules
+
 ## [0.8.0] - 2026-04-14
 
 ### Added

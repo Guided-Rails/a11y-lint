@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "ripper"
+require "prism"
 
 module A11y
   module Lint
@@ -14,13 +14,13 @@ module A11y
         def check
           return unless @node.ruby_code
 
-          call = parse_call(clean_source_code)
+          call = find_matching_call(clean_source_code)
           return unless call
-          return if aria_label_within?(call)
+          return if aria_label?(call)
           return unless first_arg_empty_string?(call) ||
                         (block? && icon_only_block?)
 
-          offense_message(call_method_name(call))
+          offense_message(call.name.to_s)
         end
 
         private
@@ -40,51 +40,39 @@ module A11y
           MSG
         end
 
-        def parse_call(code)
-          sexp = Ripper.sexp(code)
-          sexp && extract_matching_call(sexp)
+        def find_matching_call(code)
+          result = Prism.parse(code)
+          return unless result.success?
+
+          find_call(result.value)
         end
 
-        def extract_matching_call(sexp)
-          return unless sexp.is_a?(Array)
+        def find_call(node)
+          if node.is_a?(Prism::CallNode) &&
+             node.receiver.nil? &&
+             METHODS.include?(node.name.to_s)
+            return node
+          end
 
-          name = call_method_name(sexp)
-          return sexp if name && METHODS.include?(name)
-
-          sexp.each do |child|
-            result = extract_matching_call(child)
-            return result if result
+          node.child_nodes.compact.each do |child|
+            found = find_call(child)
+            return found if found
           end
           nil
         end
 
-        def call_method_name(sexp)
-          case sexp
-          in [:command, [:@ident, name, *], *]
-            name
-          in [:method_add_arg,
-              [:fcall, [:@ident, name, *]], *]
-            name
-          else nil
-          end
-        end
-
         def first_arg_empty_string?(call)
-          args = extract_args(call)
+          args = positional_args(call)
           return false unless args&.first
 
-          args.first in [:string_literal, [:string_content]]
+          first = args.first
+          first.is_a?(Prism::StringNode) && first.unescaped.empty?
         end
 
-        def extract_args(call)
-          case call
-          in [:command, _, [:args_add_block, args, *]] then args
-          in [:method_add_arg, _,
-             [:arg_paren, [:args_add_block, args, *]]]
-            then args
-          in [:method_add_arg, _, [:arg_paren, Array => args]] then args
-          else nil
-          end
+        def positional_args(call)
+          return unless call.arguments
+
+          call.arguments.arguments.reject { |a| a.is_a?(Prism::KeywordHashNode) }
         end
 
         def icon_only_block?
@@ -97,43 +85,45 @@ module A11y
         end
 
         def icon_helper_call?(code)
-          sexp = Ripper.sexp(code) or return false
-          sexp in [:program, [call]] or return false
-          ICON_HELPERS.include?(call_method_name(call))
+          result = Prism.parse(code)
+          return false unless result.success?
+
+          stmt = result.value.statements.body.first
+          stmt.is_a?(Prism::CallNode) &&
+            stmt.receiver.nil? &&
+            ICON_HELPERS.include?(stmt.name.to_s)
         end
 
-        def aria_label_within?(sexp)
-          return true if aria_hash_with_label?(sexp)
-          return true if aria_label_string_key?(sexp)
-          return false unless sexp.is_a?(Array)
+        def aria_label?(call)
+          keyword_hash = find_keyword_hash(call)
+          return false unless keyword_hash
 
-          sexp.any? { |child| aria_label_within?(child) }
+          keyword_hash.elements.any? { |assoc| aria_label_assoc?(assoc) }
         end
 
-        def aria_hash_with_label?(sexp)
-          return false unless sexp.is_a?(Array) && sexp[0] == :assoc_new
+        def find_keyword_hash(call)
+          return unless call.arguments
 
-          (sexp[1] in [:@label, "aria:", *]) &&
-            label_key_within?(sexp[2])
+          call.arguments.arguments.find { |a| a.is_a?(Prism::KeywordHashNode) }
         end
 
-        def label_key_within?(sexp)
-          return true if label_key?(sexp)
-          return false unless sexp.is_a?(Array)
+        def aria_label_assoc?(assoc)
+          name = key_name(assoc)
 
-          sexp.any? { |child| label_key_within?(child) }
+          if name == "aria" && assoc.value.is_a?(Prism::HashNode)
+            assoc.value.elements.any? { |inner| key_name(inner) == "label" }
+          else
+            name == "aria-label"
+          end
         end
 
-        def label_key?(sexp)
-          sexp in [:assoc_new, [:@label, "label:", *], *]
-        end
+        def key_name(assoc)
+          return unless assoc.is_a?(Prism::AssocNode)
 
-        def aria_label_string_key?(sexp)
-          return false unless sexp.is_a?(Array) && sexp[0] == :assoc_new
-
-          sexp[1] in [:string_literal,
-            [:string_content,
-              [:@tstring_content, "aria-label", *]]]
+          case assoc.key
+          when Prism::SymbolNode then assoc.key.unescaped
+          when Prism::StringNode then assoc.key.unescaped
+          end
         end
       end
     end
