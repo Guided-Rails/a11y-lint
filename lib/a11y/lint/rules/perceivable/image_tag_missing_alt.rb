@@ -16,18 +16,20 @@ module A11y
         private
 
         def an_image_tag_without_an_alt_attribute?
-          code = @node.ruby_code
-          return false unless code
-
-          call = find_image_tag_call(code)
+          call = find_image_tag_call
           call && !alt_keyword?(call)
         end
 
-        def find_image_tag_call(code)
-          result = Prism.parse(code)
-          return unless result.success?
+        def find_image_tag_call
+          if @node.respond_to?(:call_node) && @node.call_node
+            call = @node.call_node
+            call if call.name.to_s == "image_tag"
+          elsif @node.ruby_code
+            result = Prism.parse(@node.ruby_code)
+            return unless result.success?
 
-          find_call(result.value, "image_tag")
+            find_call(result.value, "image_tag")
+          end
         end
 
         def find_call(node, method_name)

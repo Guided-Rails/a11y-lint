@@ -52,7 +52,7 @@ module A11y
       def check_helper(node)
         codes, has_text = analyze_helper_block(node)
         helper = PhlexNode.build_helper(
-          node, @source,
+          node,
           block_body_codes: codes,
           block_has_text_children: has_text
         )
