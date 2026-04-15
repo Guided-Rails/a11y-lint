@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- `MissingAccessibleName`: fix false positive when block contains visible text or HTML tags (e.g. `link_to do` with a `span` or plain text inside)
+- Add `block_body_codes` and `block_has_text_children?` to all three node types (Slim, ERB, Phlex) so block content inspection works across all pipelines
+
 ## [0.8.0] - 2026-04-14
 
 ### Added
