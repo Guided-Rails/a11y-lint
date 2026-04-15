@@ -4,8 +4,7 @@ require "optparse"
 
 module A11y
   module Lint
-    # Command-line interface for running accessibility
-    # linting on Slim templates.
+    # Command-line interface for running accessibility linting.
     class CLI
       def initialize(argv, stdout: $stdout, stderr: $stderr)
         @argv = argv

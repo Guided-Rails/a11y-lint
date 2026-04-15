@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-a11y-lint is a Ruby gem (v0.1.0) for accessibility linting. It uses the `A11y::Lint` module namespace. Requires Ruby >= 3.1.0.
+a11y-lint is a Ruby gem (v0.1.0) for accessibility linting. It uses the `A11y::Lint` module namespace. Requires Ruby >= 3.3.0.
 
 ## Commands
 
@@ -34,5 +34,5 @@ a11y-lint is a Ruby gem (v0.1.0) for accessibility linting. It uses the `A11y::L
 ## Code Style
 
 RuboCop is configured in `.rubocop.yml`:
-- Target Ruby version: 3.1
+- Target Ruby version: 3.3
 - Enforces double quotes for strings

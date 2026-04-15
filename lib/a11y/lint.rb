@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require "slim"
 require "nokogiri"
-require "prism"
 require_relative "lint/version"
 require_relative "lint/offense"
 require_relative "lint/slim_node"

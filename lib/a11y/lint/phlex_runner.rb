@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
-require "prism"
-
 module A11y
   module Lint
     # Parses Phlex view classes and checks them
     # against accessibility rules.
     class PhlexRunner
+      def self.require_prism
+        require "prism"
+      end
       PHLEX_PATTERN = /\bdef\s+view_template\b/
 
       def initialize(rules)
@@ -16,6 +17,7 @@ module A11y
       def run(source, filename:)
         return [] unless source.match?(PHLEX_PATTERN)
 
+        self.class.require_prism
         @source = source
         @filename = filename
         @offenses = []

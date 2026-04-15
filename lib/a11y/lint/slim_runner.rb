@@ -4,11 +4,20 @@ module A11y
   module Lint
     # Parses Slim templates and checks them against accessibility rules.
     class SlimRunner
+      def self.require_slim
+        require "slim"
+      rescue LoadError
+        raise LoadError,
+              "a11y-lint needs the `slim` gem to lint .slim files. " \
+              "Add `gem \"slim\"` to your Gemfile."
+      end
+
       def initialize(rules)
         @rules = rules
       end
 
       def run(source, filename:)
+        self.class.require_slim
         sexp = Slim::Parser.new.call(source)
         @line = 1
         @filename = filename
