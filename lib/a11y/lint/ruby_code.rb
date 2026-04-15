@@ -28,7 +28,8 @@ module A11y
         return if code.nil? || code.empty?
         return unless prism_parse_result.success?
 
-        find_receiverless_call(prism_parse_result.value)
+        prism_node = find_receiverless_call(prism_parse_result.value)
+        prism_node ? CallNode.new(prism_node) : nil
       end
 
       # Walks the Prism AST to find the first method call without a
