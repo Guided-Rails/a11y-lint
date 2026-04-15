@@ -5,10 +5,6 @@ module A11y
     # Wraps a Phlex HTML tag call or helper method call
     # as a queryable node for lint rules.
     class PhlexNode
-      attr_reader :line, :children, :tag_name,
-                  :attributes, :call_node,
-                  :block_body_codes
-
       # Phlex method names that map to a different HTML tag.
       TAG_ALIASES = {
         "ruby_element" => "ruby",
@@ -33,6 +29,15 @@ module A11y
           var video wbr
         ]
       ).freeze
+
+      attr_reader(
+        :attributes,
+        :block_body_codes,
+        :call_node,
+        :children,
+        :line,
+        :tag_name
+      )
 
       # rubocop:disable Metrics/ParameterLists
       def initialize(
