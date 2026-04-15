@@ -4,8 +4,6 @@ module A11y
   module Lint
     # Wraps a Slim AST s-expression as a queryable node for lint rules.
     class SlimNode
-      include RubyCodeParser
-
       attr_reader :line
 
       def initialize(sexp, line:)
@@ -76,7 +74,7 @@ module A11y
       end
 
       def parse_call_node
-        parse_call_node_from(@sexp[3])
+        RubyCode.new(@sexp[3]).call_node
       end
 
       def collect_output_codes(sexp)

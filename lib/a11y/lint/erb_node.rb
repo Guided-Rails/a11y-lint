@@ -5,8 +5,6 @@ module A11y
     # Wraps a Nokogiri node or extracted ERB output tag
     # as a queryable node for lint rules.
     class ErbNode
-      include RubyCodeParser
-
       attr_reader :line, :block_body_codes
 
       def initialize(
@@ -58,7 +56,7 @@ module A11y
       private
 
       def parse_call_node
-        parse_call_node_from(@ruby_code_string)
+        RubyCode.new(@ruby_code_string).call_node
       end
 
       def extract_attributes
