@@ -2,28 +2,32 @@
 
 module A11y
   module Lint
+    # Raised when slim is not installed.
+    class SlimLoadError < Error
+      def initialize
+        super(
+          "a11y-lint needs the `slim` gem to lint .slim files. " \
+          "Add `gem \"slim\"` to your Gemfile."
+        )
+      end
+    end
+
     # Parses Slim templates and checks them against accessibility rules.
     class SlimRunner
-      def self.require_slim
-        require "slim"
-      rescue LoadError
-        raise LoadError,
-              "a11y-lint needs the `slim` gem to lint .slim files. " \
-              "Add `gem \"slim\"` to your Gemfile."
-      end
-
       def initialize(rules)
         @rules = rules
       end
 
       def run(source, filename:)
-        self.class.require_slim
+        require "slim"
         sexp = Slim::Parser.new.call(source)
         @line = 1
         @filename = filename
         @offenses = []
         walk(sexp)
         @offenses
+      rescue LoadError
+        raise SlimLoadError
       end
 
       private
