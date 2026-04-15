@@ -6,14 +6,14 @@ module A11y
       # Checks that image_tag calls include an alt option (WCAG 1.1.1).
       class ImageTagMissingAlt < Rule
         def check
-          return if no_image_tag_offense?
+          return if no_offense?
 
           "image_tag is missing an alt option (WCAG 1.1.1)"
         end
 
         private
 
-        def no_image_tag_offense?
+        def no_offense?
           !image_tag || image_tag.keyword?(:alt)
         end
 

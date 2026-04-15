@@ -9,14 +9,14 @@ module A11y
         METHODS = %w[link_to external_link_to button_tag].freeze
 
         def check
-          return if no_missing_accessible_name_offense?
+          return if no_offense?
 
           offense_message(helper_call.method_name)
         end
 
         private
 
-        def no_missing_accessible_name_offense?
+        def no_offense?
           !helper_call ||
             aria_label? ||
             !(helper_call.first_positional_arg_empty_string? ||
