@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-04-15
+
+### Changed
+
+- Introduce `A11y::Lint::CallNode` wrapper so rules express accessibility logic, not AST traversal
+- Expose Prism `CallNode` from `SlimNode` and `ErbNode` via the new `RubyCode` parser
+- Expose Prism `CallNode` from `PhlexNode` instead of converting to string
+- Extract Phlex HTML tag constants into `PhlexTags` module
+
 ## [0.9.0] - 2026-04-15
 
 ### Changed
