@@ -6,11 +6,19 @@ module A11y
       # Checks that image_tag calls include an alt option (WCAG 1.1.1).
       class ImageTagMissingAlt < Rule
         def check
-          call = @node.call_node&.find("image_tag")
-          return unless call
-          return if call.has_keyword?(:alt)
+          return if no_image_tag_offense?
 
           "image_tag is missing an alt option (WCAG 1.1.1)"
+        end
+
+        private
+
+        def no_image_tag_offense?
+          !image_tag || image_tag.has_keyword?(:alt)
+        end
+
+        def image_tag
+          @image_tag ||= node.call_node&.find("image_tag")
         end
       end
     end
