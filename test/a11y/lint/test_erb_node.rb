@@ -54,7 +54,7 @@ module A11y
 
         result = node.attributes
 
-        assert_equal({ "src" => true, "alt" => true }, result)
+        assert_equal({ "src" => "photo.jpg", "alt" => "A photo" }, result)
       end
 
       def test_attributes_returns_empty_hash_for_ruby_code_node
