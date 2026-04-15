@@ -12,7 +12,7 @@ module A11y
         ICON_HELPERS = %w[inline_svg icon image_tag svg_icon].freeze
 
         def check
-          return unless source_code
+          return unless @node.ruby_code
 
           call = parse_call(clean_source_code)
           return unless call
@@ -25,16 +25,12 @@ module A11y
 
         private
 
-        def source_code
-          @node.ruby_code
-        end
-
         def clean_source_code
-          source_code&.sub(/\s+do\s*\z/, "")
+          @node.ruby_code&.sub(/\s+do\s*\z/, "")
         end
 
         def block?
-          source_code != clean_source_code
+          @node.ruby_code != clean_source_code
         end
 
         def offense_message(method_name)
@@ -46,9 +42,7 @@ module A11y
 
         def parse_call(code)
           sexp = Ripper.sexp(code)
-          return unless sexp
-
-          extract_matching_call(sexp)
+          sexp && extract_matching_call(sexp)
         end
 
         def extract_matching_call(sexp)
@@ -61,7 +55,6 @@ module A11y
             result = extract_matching_call(child)
             return result if result
           end
-
           nil
         end
 
@@ -104,13 +97,9 @@ module A11y
         end
 
         def icon_helper_call?(code)
-          sexp = Ripper.sexp(code)
-          return false unless sexp
-
+          sexp = Ripper.sexp(code) or return false
           sexp in [:program, [call]] or return false
-
-          name = call_method_name(call)
-          name && ICON_HELPERS.include?(name)
+          ICON_HELPERS.include?(call_method_name(call))
         end
 
         def aria_label_within?(sexp)
@@ -124,10 +113,8 @@ module A11y
         def aria_hash_with_label?(sexp)
           return false unless sexp.is_a?(Array) && sexp[0] == :assoc_new
 
-          key = sexp[1]
-          value = sexp[2]
-
-          (key in [:@label, "aria:", *]) && label_key_within?(value)
+          (sexp[1] in [:@label, "aria:", *]) &&
+            label_key_within?(sexp[2])
         end
 
         def label_key_within?(sexp)
@@ -138,9 +125,7 @@ module A11y
         end
 
         def label_key?(sexp)
-          sexp.is_a?(Array) &&
-            sexp[0] == :assoc_new &&
-            (sexp[1] in [:@label, "label:", *])
+          sexp in [:assoc_new, [:@label, "label:", *], *]
         end
 
         def aria_label_string_key?(sexp)

@@ -280,6 +280,111 @@ module A11y
           assert_empty(offenses)
         end
 
+        # link_to("#", class: "icon") do
+        #   inline_svg("icon.svg")
+        #   span { t(".label") }
+        # end
+        def test_link_to_with_block_and_text_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                link_to("#", class: "icon") do
+                  inline_svg("icon.svg")
+                  span { t(".label") }
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        # button_tag(class: "button-icon") do
+        #   inline_svg("icon.svg")
+        #   span { t(".label") }
+        # end
+        def test_button_tag_with_block_and_text_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button_tag(class: "button-icon") do
+                  inline_svg("icon.svg")
+                  span { t(".label") }
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        # external_link_to("https://example.com", class: "icon") do
+        #   inline_svg("icon.svg")
+        #   span { t(".label") }
+        # end
+        def test_external_link_to_with_block_and_text_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                external_link_to("https://example.com", class: "icon") do
+                  inline_svg("icon.svg")
+                  span { t(".label") }
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        # link_to("#", class: "icon") do
+        #   inline_svg("icon.svg")
+        #   plain t(".label")
+        # end
+        def test_link_to_with_block_and_plain_text_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                link_to("#", class: "icon") do
+                  inline_svg("icon.svg")
+                  plain t(".label")
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        # link_to(href, class: classes, **aria_attrs) do
+        #   span { label }
+        #   yield
+        # end
+        def test_link_to_with_block_and_yield_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                link_to(href, class: classes, **aria_attrs) do
+                  span { label }
+                  yield
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
         # submit_tag("", "/path")
         def test_non_matching_method_is_ignored
           source = <<~RUBY

@@ -5,7 +5,9 @@ module A11y
     # Wraps a Phlex HTML tag call or helper method call
     # as a queryable node for lint rules.
     class PhlexNode
-      attr_reader :line, :children
+      attr_reader :line, :children, :tag_name,
+                  :attributes, :ruby_code,
+                  :block_body_codes
 
       # Phlex method names that map to a different HTML tag.
       TAG_ALIASES = {
@@ -32,31 +34,29 @@ module A11y
         ]
       ).freeze
 
+      # rubocop:disable Metrics/ParameterLists
       def initialize(
-        line:, tag_name: nil,
-        attributes: {}, ruby_code: nil, children: []
+        line:, tag_name: nil, attributes: {},
+        ruby_code: nil, children: [],
+        block_body_codes: nil,
+        block_has_text_children: false
       )
-        @tag_name_string = tag_name
-        @attributes_hash = attributes
-        @ruby_code_string = ruby_code
+        @tag_name = tag_name
+        @attributes = attributes
+        @ruby_code = ruby_code
         @line = line
         @children = children
+        @block_body_codes = block_body_codes
+        @block_has_text_children = block_has_text_children
       end
-
-      def tag_name
-        @tag_name_string
-      end
+      # rubocop:enable Metrics/ParameterLists
 
       def attribute?(name)
-        @attributes_hash.key?(name)
+        attributes.key?(name)
       end
 
-      def attributes
-        @attributes_hash
-      end
-
-      def ruby_code
-        @ruby_code_string
+      def block_has_text_children?
+        @block_has_text_children
       end
 
       def self.html_tag?(method_name)
@@ -77,10 +77,16 @@ module A11y
         )
       end
 
-      def self.build_helper(call_node, source)
+      def self.build_helper(
+        call_node, source,
+        block_body_codes: nil,
+        block_has_text_children: false
+      )
         new(
           ruby_code: ruby_code_for(call_node, source),
-          line: call_node.location.start_line
+          line: call_node.location.start_line,
+          block_body_codes: block_body_codes,
+          block_has_text_children: block_has_text_children
         )
       end
 

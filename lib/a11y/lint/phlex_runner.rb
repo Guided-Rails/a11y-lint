@@ -37,8 +37,7 @@ module A11y
       end
 
       def process_call(node)
-        name = node.name.to_s
-        if PhlexNode.html_tag?(name)
+        if PhlexNode.html_tag?(node.name.to_s)
           check_tag(node)
         else
           check_helper(node)
@@ -51,16 +50,20 @@ module A11y
       end
 
       def check_helper(node)
-        check_node(PhlexNode.build_helper(node, @source))
+        codes, has_text = analyze_helper_block(node)
+        helper = PhlexNode.build_helper(
+          node, @source,
+          block_body_codes: codes,
+          block_has_text_children: has_text
+        )
+        check_node(helper)
         walk_block(node.block)
       end
 
       def collect_block_children(block)
         return [] unless block.is_a?(Prism::BlockNode)
 
-        children = []
-        gather_children(block, children)
-        children
+        [].tap { |c| gather_children(block, c) }
       end
 
       def gather_children(parent, result)
@@ -77,10 +80,31 @@ module A11y
 
       def gather_tag_child(child, result)
         kids = collect_block_children(child.block)
-        node = PhlexNode.build_tag(child, children: kids)
-        result << node
-        check_node(node)
+        result << PhlexNode.build_tag(child, children: kids)
+        check_node(result.last)
       end
+
+      def analyze_helper_block(call_node)
+        block = call_node.block
+        return [nil, false] unless block.is_a?(Prism::BlockNode)
+
+        codes = []
+        has_text = scan_block_content(block, codes)
+        [codes.empty? ? nil : codes, has_text]
+      end
+
+      # rubocop:disable Metrics/CyclomaticComplexity
+      def scan_block_content(node, codes)
+        node.child_nodes.compact.each do |child|
+          return true if child.is_a?(Prism::YieldNode)
+          return true if tag_call?(child) && child.block
+          next if tag_call?(child)
+          next codes << child.slice if receiverless_call?(child)
+          return true if scan_block_content(child, codes)
+        end
+        false
+      end
+      # rubocop:enable Metrics/CyclomaticComplexity
 
       def walk_block(block)
         return unless block.is_a?(Prism::BlockNode)
@@ -89,8 +113,7 @@ module A11y
       end
 
       def tag_call?(node)
-        receiverless_call?(node) &&
-          PhlexNode.html_tag?(node.name.to_s)
+        receiverless_call?(node) && PhlexNode.html_tag?(node.name.to_s)
       end
 
       def receiverless_call?(node)
@@ -103,10 +126,8 @@ module A11y
           next unless message
 
           @offenses << Offense.new(
-            rule: rule_class.rule_name,
-            filename: @filename,
-            line: node.line,
-            message: message
+            rule: rule_class.rule_name, filename: @filename,
+            line: node.line, message: message
           )
         end
       end
