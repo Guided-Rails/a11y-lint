@@ -8,18 +8,20 @@ module A11y
     class TestSlimNode < Minitest::Test
       def test_line
         line = 5
-
         node = SlimNode.new([:html, :tag, "img", %i[html attrs]], line:)
 
-        assert_equal(line, node.line)
+        result = node.line
+
+        assert_equal(line, result)
       end
 
       def test_tag_name
         tag_name = "img"
-
         node = SlimNode.new([:html, :tag, tag_name, %i[html attrs]], line: 1)
 
-        assert_equal(tag_name, node.tag_name)
+        result = node.tag_name
+
+        assert_equal(tag_name, result)
       end
 
       def test_attribute_when_present
@@ -75,14 +77,18 @@ module A11y
         sexp = [:slim, :output, true, code, [:multi]]
         node = SlimNode.new(sexp, line: 1)
 
-        assert_equal(code, node.ruby_code)
+        result = node.ruby_code
+
+        assert_equal(code, result)
       end
 
       def test_ruby_code_returns_nil_for_html_tag_node
         sexp = [:html, :tag, "img", %i[html attrs]]
         node = SlimNode.new(sexp, line: 1)
 
-        assert_nil(node.ruby_code)
+        result = node.ruby_code
+
+        assert_nil(result)
       end
 
       def test_children_returns_direct_html_children
@@ -90,7 +96,9 @@ module A11y
         ul = sexp[1]
         node = SlimNode.new(ul, line: 1)
 
-        assert_equal(%w[li li], node.children.map(&:tag_name))
+        result = node.children.map(&:tag_name)
+
+        assert_equal(%w[li li], result)
       end
 
       def test_children_walks_through_slim_control_blocks
@@ -99,7 +107,9 @@ module A11y
         ul = sexp[1]
         node = SlimNode.new(ul, line: 1)
 
-        assert_equal(["li"], node.children.map(&:tag_name))
+        result = node.children.map(&:tag_name)
+
+        assert_equal(["li"], result)
       end
 
       def test_children_skips_slim_output_blocks
@@ -108,37 +118,48 @@ module A11y
         ul = sexp[1]
         node = SlimNode.new(ul, line: 1)
 
-        assert_empty(node.children)
+        result = node.children
+
+        assert_empty(result)
       end
 
       def test_children_returns_empty_for_non_html_nodes
         node = SlimNode.new([:slim, :output, true, "code", [:multi]], line: 1)
 
-        assert_empty(node.children)
+        result = node.children
+
+        assert_empty(result)
       end
 
       def test_call_node_for_slim_output_node
         sexp = [:slim, :output, true, 'image_tag("photo.jpg")', [:multi]]
         node = SlimNode.new(sexp, line: 1)
 
-        assert_instance_of(Prism::CallNode, node.call_node)
-        assert_equal("image_tag", node.call_node.name.to_s)
+        result = node.call_node
+
+        assert_instance_of(Prism::CallNode, result)
+        assert_equal("image_tag", result.name.to_s)
       end
 
       def test_call_node_returns_nil_for_html_tag_node
         sexp = [:html, :tag, "img", %i[html attrs]]
         node = SlimNode.new(sexp, line: 1)
 
-        assert_nil(node.call_node)
+        result = node.call_node
+
+        assert_nil(result)
       end
 
       def test_call_node_with_block_form
         sexp = [:slim, :output, true, 'link_to("#") do', [:multi]]
         node = SlimNode.new(sexp, line: 1)
 
-        assert_instance_of(Prism::CallNode, node.call_node)
-        assert_equal("link_to", node.call_node.name.to_s)
-        refute_nil(node.call_node.block)
+        result = node.call_node
+
+        assert_instance_of(Prism::CallNode, result)
+        assert_equal("link_to", result.name.to_s)
+
+        refute_nil(result.block)
       end
 
       def test_call_node_with_multiline_code
@@ -146,8 +167,10 @@ module A11y
         sexp = [:slim, :output, true, code, [:multi]]
         node = SlimNode.new(sexp, line: 1)
 
-        assert_instance_of(Prism::CallNode, node.call_node)
-        assert_equal("link_to", node.call_node.name.to_s)
+        result = node.call_node
+
+        assert_instance_of(Prism::CallNode, result)
+        assert_equal("link_to", result.name.to_s)
       end
     end
   end
