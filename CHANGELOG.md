@@ -7,14 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-04-15
+
+### Changed
+
+- **Breaking:** Require Ruby >= 3.3.0 (was 3.1.0). Prism ships with Ruby 3.3+ as a bundled gem
+- **Breaking:** `slim` is now an optional dependency. Add `gem "slim"` to your Gemfile if you lint `.slim` files. A `SlimLoadError` is raised with a helpful message if the gem is missing
+- `prism` is no longer a declared dependency (bundled with Ruby 3.3+)
+- Replace Ripper with Prism for Ruby code parsing in `ImageTagMissingAlt` and `MissingAccessibleName` rules
+- Custom error classes are now defined in `lib/a11y/lint/errors.rb`
+
 ### Fixed
 
 - `MissingAccessibleName`: fix false positive when block contains visible text or HTML tags (e.g. `link_to do` with a `span` or plain text inside)
 - Add `block_body_codes` and `block_has_text_children?` to all three node types (Slim, ERB, Phlex) so block content inspection works across all pipelines
-
-### Changed
-
-- Replace Ripper with Prism for Ruby code parsing in `ImageTagMissingAlt` and `MissingAccessibleName` rules
 
 ## [0.8.0] - 2026-04-14
 
