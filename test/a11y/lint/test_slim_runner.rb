@@ -128,6 +128,20 @@ module A11y
         assert_equal(5, offenses[0].line)
       end
 
+      def test_raises_slim_load_error_when_slim_is_not_installed
+        runner = SlimRunner.new([Rules::ImgMissingAlt])
+
+        fake_require = lambda { |name|
+          raise LoadError if name == "slim"
+        }
+
+        runner.stub(:require, fake_require) do
+          assert_raises(SlimLoadError) do
+            runner.run('img src="photo.jpg"', filename: "test.slim")
+          end
+        end
+      end
+
       def test_line_number_after_multiple_multiline_expressions
         source = <<~SLIM.chomp
           = form_for(\\

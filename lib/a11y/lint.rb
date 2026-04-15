@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-require "slim"
 require "nokogiri"
-require "prism"
+require_relative "lint/errors"
 require_relative "lint/version"
 require_relative "lint/offense"
 require_relative "lint/slim_node"
@@ -17,9 +16,3 @@ require_relative "lint/rules/robust/missing_accessible_name"
 require_relative "lint/slim_runner"
 require_relative "lint/erb_runner"
 require_relative "lint/phlex_runner"
-
-module A11y
-  module Lint
-    class Error < StandardError; end
-  end
-end

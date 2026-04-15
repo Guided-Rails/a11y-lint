@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = "A linter for checking accessibility issues in your code"
   spec.homepage = "https://github.com/Guided-Rails/a11y-lint"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.1.0"
+  spec.required_ruby_version = ">= 3.3.0"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
@@ -34,8 +34,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "nokogiri", ">= 1.13"
-  spec.add_dependency "prism"
-  spec.add_dependency "slim", ">= 4.0"
+
+  spec.add_development_dependency "slim", ">= 4.0"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

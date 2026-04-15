@@ -9,12 +9,15 @@ module A11y
       end
 
       def run(source, filename:)
+        require "slim"
         sexp = Slim::Parser.new.call(source)
         @line = 1
         @filename = filename
         @offenses = []
         walk(sexp)
         @offenses
+      rescue LoadError
+        raise SlimLoadError
       end
 
       private

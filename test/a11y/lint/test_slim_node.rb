@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "slim"
 
 module A11y
   module Lint
