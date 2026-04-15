@@ -158,7 +158,6 @@ module A11y
 
         assert_instance_of(CallNode, result)
         assert_equal("link_to", result.method_name)
-
         assert(result.block?)
       end
 
