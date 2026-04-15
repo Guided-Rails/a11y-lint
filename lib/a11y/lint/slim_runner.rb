@@ -2,16 +2,6 @@
 
 module A11y
   module Lint
-    # Raised when slim is not installed.
-    class SlimLoadError < Error
-      def initialize
-        super(
-          "a11y-lint needs the `slim` gem to lint .slim files. " \
-          "Add `gem \"slim\"` to your Gemfile."
-        )
-      end
-    end
-
     # Parses Slim templates and checks them against accessibility rules.
     class SlimRunner
       def initialize(rules)
