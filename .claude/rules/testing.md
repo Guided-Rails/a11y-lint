@@ -49,4 +49,4 @@ globs: test/**/*.rb
 
   Each style must be tested for both the offense case and the "passes with fix" case.
 
-- Every rule must be tested against both the Slim and ERB pipelines.
+- Every rule must be tested against the Slim, ERB, and Phlex pipelines.
