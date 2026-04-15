@@ -5,11 +5,16 @@ module A11y
     # Wraps a Nokogiri node or extracted ERB output tag
     # as a queryable node for lint rules.
     class ErbNode
-      attr_reader :line
+      attr_reader :line, :block_body_codes
 
-      def initialize(line:, nokogiri_node: nil, ruby_code: nil)
+      def initialize(
+        line:, nokogiri_node: nil, ruby_code: nil,
+        block_body_codes: nil, block_has_text_children: false
+      )
         @nokogiri_node = nokogiri_node
         @ruby_code_string = ruby_code
+        @block_body_codes = block_body_codes
+        @block_has_text_children = block_has_text_children
         @line = line
       end
 
@@ -27,6 +32,10 @@ module A11y
 
       def ruby_code
         @ruby_code_string
+      end
+
+      def block_has_text_children?
+        @block_has_text_children
       end
 
       # Returns direct element children wrapped as ErbNode objects.

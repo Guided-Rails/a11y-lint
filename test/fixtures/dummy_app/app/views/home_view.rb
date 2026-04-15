@@ -28,6 +28,17 @@ class HomeView < Phlex::HTML
     # Bad: button_tag with empty string (MissingAccessibleName)
     button_tag("", class: "close-btn")
 
+    # Good: button_tag block with icon + text (has accessible name)
+    button_tag(class: "button-icon") do
+      inline_svg("icon.svg")
+      span { t(".suggest") }
+    end
+
+    # Bad: button_tag block with icon only (MissingAccessibleName)
+    button_tag(class: "button-icon") do
+      span(class: "icon-menu")
+    end
+
     # Good: ul with only li children
     ul do
       li { "First" }

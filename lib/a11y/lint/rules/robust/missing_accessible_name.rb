@@ -9,21 +9,29 @@ module A11y
       # empty text or block content include an aria-label (WCAG 4.1.2).
       class MissingAccessibleName < Rule
         METHODS = %w[link_to external_link_to button_tag].freeze
+        ICON_HELPERS = %w[inline_svg icon image_tag svg_icon].freeze
 
         def check
-          return unless (code = @node.ruby_code)
+          return unless @node.ruby_code
 
-          clean_code = code.sub(/\s+do\s*\z/, "")
-          is_block = clean_code != code
-          call = parse_call(clean_code)
+          call = parse_call(clean_source_code)
           return unless call
           return if aria_label_within?(call)
-          return unless first_arg_empty_string?(call) || is_block
+          return unless first_arg_empty_string?(call) ||
+                        (block? && icon_only_block?)
 
-          offense_message(extract_method_name(call))
+          offense_message(call_method_name(call))
         end
 
         private
+
+        def clean_source_code
+          @node.ruby_code&.sub(/\s+do\s*\z/, "")
+        end
+
+        def block?
+          @node.ruby_code != clean_source_code
+        end
 
         def offense_message(method_name)
           <<~MSG.strip
@@ -34,26 +42,20 @@ module A11y
 
         def parse_call(code)
           sexp = Ripper.sexp(code)
-          return unless sexp
-
-          extract_matching_call(sexp)
+          sexp && extract_matching_call(sexp)
         end
 
         def extract_matching_call(sexp)
           return unless sexp.is_a?(Array)
-          return sexp if matching_call?(sexp)
+
+          name = call_method_name(sexp)
+          return sexp if name && METHODS.include?(name)
 
           sexp.each do |child|
             result = extract_matching_call(child)
             return result if result
           end
-
           nil
-        end
-
-        def matching_call?(sexp)
-          name = call_method_name(sexp)
-          name ? METHODS.include?(name) : false
         end
 
         def call_method_name(sexp)
@@ -65,10 +67,6 @@ module A11y
             name
           else nil
           end
-        end
-
-        def extract_method_name(call)
-          call_method_name(call)
         end
 
         def first_arg_empty_string?(call)
@@ -89,6 +87,21 @@ module A11y
           end
         end
 
+        def icon_only_block?
+          return false if @node.block_has_text_children?
+
+          codes = @node.block_body_codes
+          return true unless codes&.any?
+
+          codes.all? { |c| icon_helper_call?(c) }
+        end
+
+        def icon_helper_call?(code)
+          sexp = Ripper.sexp(code) or return false
+          sexp in [:program, [call]] or return false
+          ICON_HELPERS.include?(call_method_name(call))
+        end
+
         def aria_label_within?(sexp)
           return true if aria_hash_with_label?(sexp)
           return true if aria_label_string_key?(sexp)
@@ -100,10 +113,8 @@ module A11y
         def aria_hash_with_label?(sexp)
           return false unless sexp.is_a?(Array) && sexp[0] == :assoc_new
 
-          key = sexp[1]
-          value = sexp[2]
-
-          (key in [:@label, "aria:", *]) && label_key_within?(value)
+          (sexp[1] in [:@label, "aria:", *]) &&
+            label_key_within?(sexp[2])
         end
 
         def label_key_within?(sexp)
@@ -114,9 +125,7 @@ module A11y
         end
 
         def label_key?(sexp)
-          sexp.is_a?(Array) &&
-            sexp[0] == :assoc_new &&
-            (sexp[1] in [:@label, "label:", *])
+          sexp in [:assoc_new, [:@label, "label:", *], *]
         end
 
         def aria_label_string_key?(sexp)

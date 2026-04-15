@@ -12,6 +12,10 @@ Layout/LineLength:
   Exclude:
     - "a11y-lint.gemspec"
 
+Metrics/AbcSize:
+  Exclude:
+    - "test/**/*"
+
 Metrics/ClassLength:
   Exclude:
     - "test/**/*"
