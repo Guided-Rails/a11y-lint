@@ -14,6 +14,7 @@ module A11y
         %w[
           a
           abbr
+          area
           address
           article
           aside

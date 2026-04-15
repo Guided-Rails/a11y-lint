@@ -16,6 +16,12 @@ class HomeView < Phlex::HTML
     # Bad: image_tag missing alt (ImageTagMissingAlt)
     image_tag("icon.png")
 
+    # Good: area with alt
+    area(shape: "rect", href: "/sun", alt: "Sun")
+
+    # Bad: area missing alt (AreaMissingAlt)
+    area(shape: "rect", href: "/sun")
+
     # Good: link_to with text
     link_to("Home", root_path)
 

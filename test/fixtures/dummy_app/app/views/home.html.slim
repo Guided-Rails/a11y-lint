@@ -12,6 +12,12 @@ img src="logo.png"
 / Bad: image_tag missing alt (ImageTagMissingAlt)
 = image_tag("icon.png")
 
+/ Good: area with alt
+area shape="rect" coords="0,0,82,126" href="/sun" alt="Sun"
+
+/ Bad: area missing alt (AreaMissingAlt)
+area shape="rect" coords="0,0,82,126" href="/sun"
+
 / Good: link_to with text
 = link_to "Home", root_path
 
