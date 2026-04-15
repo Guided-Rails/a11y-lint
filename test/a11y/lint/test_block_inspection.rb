@@ -8,61 +8,81 @@ module A11y
       def test_false_when_block_has_text_children
         node = build_node(block_has_text_children: true, codes: ['icon("x")'])
 
-        refute(node.block_has_only_icon_helpers?)
+        result = node.block_has_only_icon_helpers?
+
+        refute(result)
       end
 
       def test_true_when_no_block_body_codes
         node = build_node(block_has_text_children: false, codes: nil)
 
-        assert(node.block_has_only_icon_helpers?)
+        result = node.block_has_only_icon_helpers?
+
+        assert(result)
       end
 
       def test_true_when_block_body_codes_empty
         node = build_node(block_has_text_children: false, codes: [])
 
-        assert(node.block_has_only_icon_helpers?)
+        result = node.block_has_only_icon_helpers?
+
+        assert(result)
       end
 
       def test_true_for_inline_svg
         node = build_node(codes: ['inline_svg("logo.svg")'])
 
-        assert(node.block_has_only_icon_helpers?)
+        result = node.block_has_only_icon_helpers?
+
+        assert(result)
       end
 
       def test_true_for_icon
         node = build_node(codes: ['icon("arrow")'])
 
-        assert(node.block_has_only_icon_helpers?)
+        result = node.block_has_only_icon_helpers?
+
+        assert(result)
       end
 
       def test_true_for_image_tag
         node = build_node(codes: ['image_tag("photo.jpg")'])
 
-        assert(node.block_has_only_icon_helpers?)
+        result = node.block_has_only_icon_helpers?
+
+        assert(result)
       end
 
       def test_true_for_svg_icon
         node = build_node(codes: ['svg_icon("check")'])
 
-        assert(node.block_has_only_icon_helpers?)
+        result = node.block_has_only_icon_helpers?
+
+        assert(result)
       end
 
       def test_true_for_multiple_icon_helpers
         node = build_node(codes: ['icon("arrow")', 'inline_svg("logo.svg")'])
 
-        assert(node.block_has_only_icon_helpers?)
+        result = node.block_has_only_icon_helpers?
+
+        assert(result)
       end
 
       def test_false_when_code_is_not_icon_helper
         node = build_node(codes: ['render("partial")'])
 
-        refute(node.block_has_only_icon_helpers?)
+        result = node.block_has_only_icon_helpers?
+
+        refute(result)
       end
 
       def test_false_when_mixed_icon_and_non_icon
         node = build_node(codes: ['icon("arrow")', 'render("partial")'])
 
-        refute(node.block_has_only_icon_helpers?)
+        result = node.block_has_only_icon_helpers?
+
+        refute(result)
       end
 
       private
