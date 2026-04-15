@@ -5,6 +5,8 @@ module A11y
     # Wraps a Nokogiri node or extracted ERB output tag
     # as a queryable node for lint rules.
     class ErbNode
+      include BlockInspection
+
       attr_reader(:block_body_codes, :line, :ruby_code)
 
       def initialize(

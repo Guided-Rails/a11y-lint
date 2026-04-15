@@ -7,23 +7,32 @@ module A11y
       # empty text or block content include an aria-label (WCAG 4.1.2).
       class MissingAccessibleName < Rule
         METHODS = %w[link_to external_link_to button_tag].freeze
-        ICON_HELPERS = %w[inline_svg icon image_tag svg_icon].freeze
 
         def check
-          call = @node.call_node
-          return unless call && METHODS.include?(call.method_name)
-          return if aria_label?(call)
-          return unless call.first_positional_arg_empty_string? ||
-                        (call.block? && icon_only_block?)
+          return if no_missing_accessible_name_offense?
 
-          offense_message(call.method_name)
+          offense_message(helper_call.method_name)
         end
 
         private
 
-        def aria_label?(call)
-          call.keyword?(:aria, :label) ||
-            call.keyword?(:"aria-label")
+        def no_missing_accessible_name_offense?
+          !helper_call ||
+            aria_label? ||
+            !(helper_call.first_positional_arg_empty_string? ||
+              (helper_call.block? && node.block_has_only_icon_helpers?))
+        end
+
+        def aria_label?
+          helper_call.keyword?(:aria, :label) ||
+            helper_call.keyword?(:"aria-label")
+        end
+
+        def helper_call
+          @helper_call ||= begin
+            call = node.call_node
+            call if call && METHODS.include?(call.method_name)
+          end
         end
 
         def offense_message(method_name)
@@ -31,20 +40,6 @@ module A11y
             #{method_name} missing an accessible name \
             requires an aria-label (WCAG 4.1.2)
           MSG
-        end
-
-        def icon_only_block?
-          return false if @node.block_has_text_children?
-
-          codes = @node.block_body_codes
-          return true unless codes&.any?
-
-          codes.all? { |code| icon_helper_call?(code) }
-        end
-
-        def icon_helper_call?(code)
-          call = RubyCode.new(code).call_node
-          call && ICON_HELPERS.include?(call.method_name)
         end
       end
     end
