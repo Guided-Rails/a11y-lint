@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `InputImageMissingAlt` rule: detects `<input type="image">` tags without `alt` attributes (WCAG 1.1.1)
 - `ImageSubmitTagMissingAlt` rule: detects `image_submit_tag` calls without an `alt` option (WCAG 1.1.1)
 - `InputMissingAutocomplete` rule: detects `<input>` elements without an `autocomplete` attribute (WCAG 1.3.5)
+- `AnchorMissingAccessibleName` rule: detects `<a>` elements without text content, `aria-label`, or a child image with `alt` (WCAG 4.1.2)
+- `ButtonMissingAccessibleName` rule: detects `<button>` elements without text content, `aria-label`, or a child image with `alt` (WCAG 4.1.2)
 
 ### Changed
 
