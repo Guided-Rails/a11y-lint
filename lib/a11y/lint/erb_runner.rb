@@ -39,10 +39,16 @@ module A11y
           next unless nokogiri_node.element?
           next unless source_confirmed_element?(html, nokogiri_node.name)
 
-          check_node(
-            ErbNode.new(nokogiri_node: nokogiri_node, line: nokogiri_node.line)
-          )
+          node = build_erb_element_node(nokogiri_node)
+          check_node(node)
         end
+      end
+
+      def build_erb_element_node(nokogiri_node)
+        ErbElementNode.new(
+          nokogiri_node: nokogiri_node,
+          line: nokogiri_node.line
+        )
       end
 
       def source_confirmed_element?(html, tag_name)
@@ -64,7 +70,7 @@ module A11y
         block_body_codes, block_has_text =
           extract_block_info(source, code, match_end)
 
-        ErbNode.new(
+        ErbOutputNode.new(
           ruby_code: code, line: line,
           block_body_codes: block_body_codes,
           block_has_text_children: block_has_text
