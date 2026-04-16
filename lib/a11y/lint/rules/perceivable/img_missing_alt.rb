@@ -4,7 +4,7 @@ module A11y
   module Lint
     module Rules
       # Checks that img tags include an alt attribute (WCAG 1.1.1).
-      class ImgMissingAlt < Rule
+      class ImgMissingAlt < NodeRule
         def check
           return unless an_image_without_an_alt_attribute?
 

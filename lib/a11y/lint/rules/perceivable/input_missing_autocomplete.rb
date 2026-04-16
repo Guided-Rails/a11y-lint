@@ -6,7 +6,7 @@ module A11y
       # Checks that <input> elements include an autocomplete
       # attribute (WCAG 1.3.5).
       # https://www.w3.org/WAI/WCAG21/Understanding/identify-input-purpose.html
-      class InputMissingAutocomplete < Rule
+      class InputMissingAutocomplete < NodeRule
         EXCLUDED_TYPES = %w[
           button
           checkbox

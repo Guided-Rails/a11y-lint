@@ -5,7 +5,7 @@ module A11y
     module Rules
       # Checks that <a> elements with no text content or meaningful
       # child elements include an aria-label (WCAG 4.1.2).
-      class AnchorMissingAccessibleName < Rule
+      class AnchorMissingAccessibleName < NodeRule
         def check
           return if no_offense?
 

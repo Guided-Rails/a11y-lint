@@ -2,8 +2,8 @@
 
 module A11y
   module Lint
-    # Base class for accessibility lint rules.
-    class Rule
+    # Base class for per-node accessibility lint rules.
+    class NodeRule
       def self.check(node)
         new(node).check
       end

@@ -5,7 +5,7 @@ module A11y
     module Rules
       # Checks that <button> elements with no text content or meaningful
       # child elements include an aria-label (WCAG 4.1.2).
-      class ButtonMissingAccessibleName < Rule
+      class ButtonMissingAccessibleName < NodeRule
         def check
           return if no_offense?
 

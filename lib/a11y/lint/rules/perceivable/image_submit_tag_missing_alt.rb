@@ -5,7 +5,7 @@ module A11y
     module Rules
       # Checks that image_submit_tag calls include an alt option (WCAG 1.1.1).
       # https://www.w3.org/WAI/WCAG21/Techniques/html/H36
-      class ImageSubmitTagMissingAlt < Rule
+      class ImageSubmitTagMissingAlt < NodeRule
         def check
           return if no_offense?
 

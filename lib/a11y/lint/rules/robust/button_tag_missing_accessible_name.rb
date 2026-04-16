@@ -5,7 +5,7 @@ module A11y
     module Rules
       # Checks that button_tag calls with empty text or block content
       # include an aria-label (WCAG 4.1.2).
-      class ButtonTagMissingAccessibleName < Rule
+      class ButtonTagMissingAccessibleName < NodeRule
         def check
           return if no_offense?
 

@@ -188,7 +188,7 @@ module A11y
 
       def collect_nodes(source)
         nodes = []
-        spy = Class.new(Rule) do
+        spy = Class.new(NodeRule) do
           define_method(:check) do
             nodes << @node
             nil
