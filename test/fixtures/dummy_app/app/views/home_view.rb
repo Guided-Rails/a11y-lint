@@ -63,6 +63,36 @@ class HomeView < Phlex::HTML
     # Bad: input missing autocomplete (InputMissingAutocomplete)
     input(type: "text", name: "username")
 
+    # Good: anchor with text
+    a(href: "/home") { plain "Home" }
+
+    # Bad: empty anchor (AnchorMissingAccessibleName)
+    a(href: "/profile", class: "icon")
+
+    # Good: anchor with aria-label
+    a(href: "/settings", aria_label: "Settings")
+
+    # Good: anchor with img with alt
+    a(href: "/home") { img(src: "home.svg", alt: "Home") }
+
+    # Bad: anchor with img without alt (AnchorMissingAccessibleName)
+    a(href: "/home") { img(src: "home.svg") }
+
+    # Good: button with text
+    button(type: "submit") { plain "Submit" }
+
+    # Bad: empty button (ButtonMissingAccessibleName)
+    button(type: "button", class: "close")
+
+    # Good: button with aria-label
+    button(type: "button", aria_label: "Close")
+
+    # Good: button with img with alt
+    button(type: "button") { img(src: "close.svg", alt: "Close") }
+
+    # Bad: button with img without alt (ButtonMissingAccessibleName)
+    button(type: "button") { img(src: "close.svg") }
+
     # Good: ul with only li children
     ul do
       li { "First" }
