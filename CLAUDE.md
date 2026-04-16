@@ -32,6 +32,16 @@ a11y-lint is a Ruby gem (v0.1.0) for accessibility linting. It uses the `A11y::L
 - **Tests:** `test/` directory using Minitest; test helper at `test/test_helper.rb`
 - **Dummy app:** `test/fixtures/dummy_app/` — a fixture app with Slim/ERB/Phlex templates for end-to-end smoke testing before releases (`bundle exec a11y-lint test/fixtures/dummy_app`)
 
+## Rule Scoping Convention
+
+Each rule targets **one element or helper**, unless multiple elements share identical check logic (e.g., `<ul>` and `<ol>` in `ListInvalidChildren`).
+
+- **HTML element rules** are named after the element: `ImgMissingAlt`, `AreaMissingAlt`, `AnchorMissingAccessibleName`
+- **Rails helper rules** are named after the helper: `ImageTagMissingAlt`, `LinkToMissingAccessibleName`
+- HTML/helper pairs mirror each other (e.g., `ImgMissingAlt` / `ImageTagMissingAlt`)
+
+Do not bundle unrelated elements or helpers into a single rule just because they share a WCAG criterion.
+
 ## Code Style
 
 RuboCop is configured in `.rubocop.yml`:

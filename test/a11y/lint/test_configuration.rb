@@ -11,7 +11,8 @@ module A11y
 
         assert(config.enabled?("ImgMissingAlt"))
         assert(config.enabled?("ImageTagMissingAlt"))
-        assert(config.enabled?("MissingAccessibleName"))
+        assert(config.enabled?("LinkToMissingAccessibleName"))
+        assert(config.enabled?("ButtonTagMissingAccessibleName"))
       end
 
       def test_disable_a_rule

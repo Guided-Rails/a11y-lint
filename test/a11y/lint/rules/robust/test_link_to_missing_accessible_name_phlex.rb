@@ -5,8 +5,7 @@ require "test_helper"
 module A11y
   module Lint
     module Rules
-      class TestMissingAccessibleNamePhlex < Minitest::Test
-        # link_to("", "/path", class: "icon")
+      class TestLinkToMissingAccessibleNamePhlex < Minitest::Test
         def test_link_to_with_empty_text_reports_offense
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -21,10 +20,9 @@ module A11y
           assert_equal(1, offenses.length)
           assert_equal(offense_message("link_to"), offenses[0].message)
           assert_equal(3, offenses[0].line)
-          assert_equal("MissingAccessibleName", offenses[0].rule)
+          assert_equal("LinkToMissingAccessibleName", offenses[0].rule)
         end
 
-        # external_link_to("", "https://example.com", class: "icon")
         def test_external_link_to_with_empty_text_reports_offense
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -37,10 +35,12 @@ module A11y
           offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          assert_equal(offense_message("external_link_to"), offenses[0].message)
+          assert_equal(
+            offense_message("external_link_to"),
+            offenses[0].message
+          )
         end
 
-        # link_to("Click here", "/path")
         def test_link_to_with_text_passes
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -55,7 +55,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # link_to("", "/path", aria: { label: "Facebook" })
         def test_link_to_with_aria_hash_label_passes
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -70,7 +69,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # link_to("", "/path", "aria-label" => "Facebook")
         def test_link_to_with_string_aria_label_passes
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -85,7 +83,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # link_to("", "/path", aria: { describedby: "desc" })
         def test_link_to_with_aria_hash_without_label_reports_offense
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -100,9 +97,6 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
-        # link_to("#", class: "icon") do
-        #   span(class: "icon-home")
-        # end
         def test_link_to_with_block_reports_offense
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -121,9 +115,6 @@ module A11y
           assert_equal(3, offenses[0].line)
         end
 
-        # link_to("#", class: "icon", aria: { label: "Icon" }) do
-        #   span(class: "icon-home")
-        # end
         def test_link_to_with_block_and_aria_label_passes
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -140,9 +131,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # link_to("#", class: "icon") {
-        #   span(class: "icon-home")
-        # }
         def test_link_to_with_brace_block_reports_offense
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -160,9 +148,6 @@ module A11y
           assert_equal(offense_message("link_to"), offenses[0].message)
         end
 
-        # external_link_to("https://example.com", class: "icon") do
-        #   span(class: "icon-external")
-        # end
         def test_external_link_to_with_block_reports_offense
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -179,111 +164,6 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
-        # button_tag("", class: "icon")
-        def test_button_tag_with_empty_text_reports_offense
-          source = <<~RUBY
-            class TestView < Phlex::HTML
-              def view_template
-                button_tag("", class: "icon")
-              end
-            end
-          RUBY
-
-          offenses = run_linter(source)
-
-          assert_equal(1, offenses.length)
-          assert_equal(offense_message("button_tag"), offenses[0].message)
-          assert_equal("MissingAccessibleName", offenses[0].rule)
-        end
-
-        # button_tag("Submit")
-        def test_button_tag_with_text_passes
-          source = <<~RUBY
-            class TestView < Phlex::HTML
-              def view_template
-                button_tag("Submit")
-              end
-            end
-          RUBY
-
-          offenses = run_linter(source)
-
-          assert_empty(offenses)
-        end
-
-        # button_tag("", class: "icon", aria: { label: "Submit" })
-        def test_button_tag_with_aria_hash_label_passes
-          source = <<~RUBY
-            class TestView < Phlex::HTML
-              def view_template
-                button_tag("", class: "icon", aria: { label: "Submit" })
-              end
-            end
-          RUBY
-
-          offenses = run_linter(source)
-
-          assert_empty(offenses)
-        end
-
-        # button_tag("", class: "icon", "aria-label" => "Submit")
-        def test_button_tag_with_string_aria_label_passes
-          source = <<~RUBY
-            class TestView < Phlex::HTML
-              def view_template
-                button_tag("", class: "icon", "aria-label" => "Submit")
-              end
-            end
-          RUBY
-
-          offenses = run_linter(source)
-
-          assert_empty(offenses)
-        end
-
-        # button_tag(class: "button-icon") do
-        #   span(class: "icon-menu")
-        # end
-        def test_button_tag_with_block_reports_offense
-          source = <<~RUBY
-            class TestView < Phlex::HTML
-              def view_template
-                button_tag(class: "button-icon") do
-                  span(class: "icon-menu")
-                end
-              end
-            end
-          RUBY
-
-          offenses = run_linter(source)
-
-          assert_equal(1, offenses.length)
-          assert_equal(offense_message("button_tag"), offenses[0].message)
-        end
-
-        # button_tag(class: "button-icon", aria: { label: "Menu" }) do
-        #   span(class: "icon-menu")
-        # end
-        def test_button_tag_with_block_and_aria_label_passes
-          source = <<~RUBY
-            class TestView < Phlex::HTML
-              def view_template
-                button_tag(class: "button-icon", aria: { label: "Menu" }) do
-                  span(class: "icon-menu")
-                end
-              end
-            end
-          RUBY
-
-          offenses = run_linter(source)
-
-          assert_empty(offenses)
-        end
-
-        # link_to("#", class: "icon") do
-        #   inline_svg("icon.svg")
-        #   span { t(".label") }
-        # end
         def test_link_to_with_block_and_text_passes
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -301,31 +181,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # button_tag(class: "button-icon") do
-        #   inline_svg("icon.svg")
-        #   span { t(".label") }
-        # end
-        def test_button_tag_with_block_and_text_passes
-          source = <<~RUBY
-            class TestView < Phlex::HTML
-              def view_template
-                button_tag(class: "button-icon") do
-                  inline_svg("icon.svg")
-                  span { t(".label") }
-                end
-              end
-            end
-          RUBY
-
-          offenses = run_linter(source)
-
-          assert_empty(offenses)
-        end
-
-        # external_link_to("https://example.com", class: "icon") do
-        #   inline_svg("icon.svg")
-        #   span { t(".label") }
-        # end
         def test_external_link_to_with_block_and_text_passes
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -343,10 +198,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # link_to("#", class: "icon") do
-        #   inline_svg("icon.svg")
-        #   plain t(".label")
-        # end
         def test_link_to_with_block_and_plain_text_passes
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -364,10 +215,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # link_to(href, class: classes, **aria_attrs) do
-        #   span { label }
-        #   yield
-        # end
         def test_link_to_with_block_and_yield_passes
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -385,7 +232,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # submit_tag("", "/path")
         def test_non_matching_method_is_ignored
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -422,7 +268,7 @@ module A11y
         end
 
         def run_linter(source, filename: "test_view.rb")
-          PhlexRunner.new([MissingAccessibleName]).run(source, filename:)
+          PhlexRunner.new([LinkToMissingAccessibleName]).run(source, filename:)
         end
       end
     end

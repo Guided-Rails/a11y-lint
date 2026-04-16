@@ -25,13 +25,13 @@ class HomeView < Phlex::HTML
     # Good: link_to with text
     link_to("Home", root_path)
 
-    # Bad: link_to with empty string, no aria-label (MissingAccessibleName)
+    # Bad: link_to with empty string (LinkToMissingAccessibleName)
     link_to("", "/profile", class: "icon")
 
     # Good: link_to with aria-label
     link_to("", "/settings", aria: { label: "Settings" })
 
-    # Bad: button_tag with empty string (MissingAccessibleName)
+    # Bad: button_tag with empty string (ButtonTagMissingAccessibleName)
     button_tag("", class: "close-btn")
 
     # Good: button_tag block with icon + text (has accessible name)
@@ -40,7 +40,7 @@ class HomeView < Phlex::HTML
       span { t(".suggest") }
     end
 
-    # Bad: button_tag block with icon only (MissingAccessibleName)
+    # Bad: button_tag block with icon only (ButtonTagMissingAccessibleName)
     button_tag(class: "button-icon") do
       span(class: "icon-menu")
     end
