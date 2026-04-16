@@ -61,9 +61,7 @@ module A11y
 
         nokogiri_node
           .attributes
-          .each_with_object({}) do |(name, _attr), result|
-            result[name] = true
-        end
+          .transform_values(&:value)
       end
     end
   end

@@ -74,7 +74,7 @@ module A11y
 
         kwarg_nodes(call_node).each_with_object({}) do |elem, h|
           key = kwarg_key(elem.key)
-          h[key] = true if key
+          h[key] = kwarg_value(elem.value) if key
         end
       end
 
@@ -91,7 +91,15 @@ module A11y
         end
       end
 
-      private_class_method :kwarg_key, :kwarg_nodes,
+      def self.kwarg_value(value_node)
+        case value_node
+        when Prism::StringNode then value_node.unescaped
+        when Prism::SymbolNode then value_node.value
+        else true
+        end
+      end
+
+      private_class_method :kwarg_key, :kwarg_nodes, :kwarg_value,
                            :extract_attributes
     end
   end

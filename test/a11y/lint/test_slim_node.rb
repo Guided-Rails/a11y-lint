@@ -171,6 +171,49 @@ module A11y
         assert_instance_of(CallNode, result)
         assert_equal("link_to", result.method_name)
       end
+
+      def test_attributes_extracts_static_string_values
+        sexp = [
+          :html, :tag, "img",
+          [:html, :attrs,
+           [
+             :html,
+             :attr,
+             "src",
+             [:escape, true, [:slim, :interpolate, "photo.jpg"]]
+           ],
+           [
+             :html,
+             :attr,
+             "alt",
+             [:escape, true, [:slim, :interpolate, "A photo"]]
+           ]]
+        ]
+        node = SlimNode.new(sexp, line: 1)
+
+        result = node.attributes
+
+        assert_equal({ "src" => "photo.jpg", "alt" => "A photo" }, result)
+      end
+
+      def test_attributes_falls_back_to_true_for_dynamic_values
+        sexp = [
+          :html, :tag, "img",
+          [:html, :attrs,
+           [:html, :attr, "src", [:slim, :attrvalue, true, "some_path"]],
+           [
+             :html,
+             :attr,
+             "alt",
+             [:escape, true, [:slim, :interpolate, "A photo"]]
+           ]]
+        ]
+        node = SlimNode.new(sexp, line: 1)
+
+        result = node.attributes
+
+        assert_equal({ "src" => true, "alt" => "A photo" }, result)
+      end
     end
   end
 end

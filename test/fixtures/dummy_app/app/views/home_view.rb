@@ -45,6 +45,18 @@ class HomeView < Phlex::HTML
       span(class: "icon-menu")
     end
 
+    # Good: input type="image" with alt
+    input(type: "image", src: "submit.png", alt: "Submit")
+
+    # Bad: input type="image" missing alt (InputImageMissingAlt)
+    input(type: "image", src: "submit.png")
+
+    # Good: image_submit_tag with alt
+    image_submit_tag("submit.png", alt: "Submit")
+
+    # Bad: image_submit_tag missing alt (ImageSubmitTagMissingAlt)
+    image_submit_tag("submit.png")
+
     # Good: ul with only li children
     ul do
       li { "First" }

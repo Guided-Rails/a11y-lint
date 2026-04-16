@@ -122,7 +122,19 @@ module A11y
         return {} unless html_attributes?
 
         sexp_attributes[2..].each_with_object({}) do |attr_sexp, result|
-          result[attr_sexp[2]] = true if html_attribute?(attr_sexp)
+          next unless html_attribute?(attr_sexp)
+
+          result[attr_sexp[2]] = static_value(attr_sexp[3])
+        end
+      end
+
+      def static_value(value_sexp)
+        if value_sexp.is_a?(Array) && value_sexp[0] == :escape &&
+           value_sexp[2].is_a?(Array) &&
+           value_sexp[2][0] == :slim && value_sexp[2][1] == :interpolate
+          value_sexp[2][2]
+        else
+          true
         end
       end
 
