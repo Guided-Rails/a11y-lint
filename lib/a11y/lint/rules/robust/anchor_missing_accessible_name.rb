@@ -7,7 +7,7 @@ module A11y
       # child elements include an aria-label (WCAG 4.1.2).
       class AnchorMissingAccessibleName < Rule
         def check
-          return unless anchor_missing_accessible_name?
+          return if no_offense?
 
           "a tag is missing an accessible name " \
             "requires an aria-label (WCAG 4.1.2)"
@@ -15,11 +15,11 @@ module A11y
 
         private
 
-        def anchor_missing_accessible_name?
-          node.tag_name == "a" &&
-            !aria_label? &&
-            !node.text_content? &&
-            !child_image_has_alt?
+        def no_offense?
+          node.tag_name != "a" ||
+            aria_label? ||
+            node.text_content? ||
+            child_image_has_alt?
         end
 
         def aria_label?

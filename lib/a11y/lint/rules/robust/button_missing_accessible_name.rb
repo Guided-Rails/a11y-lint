@@ -7,7 +7,7 @@ module A11y
       # child elements include an aria-label (WCAG 4.1.2).
       class ButtonMissingAccessibleName < Rule
         def check
-          return unless button_missing_accessible_name?
+          return if no_offense?
 
           "button tag is missing an accessible name " \
             "requires an aria-label (WCAG 4.1.2)"
@@ -15,11 +15,11 @@ module A11y
 
         private
 
-        def button_missing_accessible_name?
-          node.tag_name == "button" &&
-            !aria_label? &&
-            !node.text_content? &&
-            !child_image_has_alt?
+        def no_offense?
+          node.tag_name != "button" ||
+            aria_label? ||
+            node.text_content? ||
+            child_image_has_alt?
         end
 
         def aria_label?
