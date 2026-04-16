@@ -8,13 +8,14 @@ module A11y
       class TestButtonTagMissingAccessibleNameErb < Minitest::Test
         # <%= button_tag("", class: "icon") %>
         def test_button_tag_with_empty_text_reports_offense
-          offenses = run_fixture("button_tag_empty_text")
+          source = <<~ERB
+            <%= button_tag("", class: "icon") %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          assert_equal(
-            offense_message,
-            offenses[0].message
-          )
+          assert_equal(offense_message, offenses[0].message)
           assert_equal(
             "ButtonTagMissingAccessibleName",
             offenses[0].rule
@@ -23,21 +24,33 @@ module A11y
 
         # <%= button_tag("Submit") %>
         def test_button_tag_with_text_passes
-          offenses = run_fixture("button_tag_with_text")
+          source = <<~ERB
+            <%= button_tag("Submit") %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
 
         # <%= button_tag("", class: "icon", aria: { label: "Submit" }) %>
         def test_button_tag_with_aria_hash_label_passes
-          offenses = run_fixture("button_tag_aria_hash_label")
+          source = <<~ERB
+            <%= button_tag("", class: "icon", aria: { label: "Submit" }) %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
 
         # <%= button_tag("", class: "icon", "aria-label" => "Submit") %>
         def test_button_tag_with_string_aria_label_passes
-          offenses = run_fixture("button_tag_string_aria_label")
+          source = <<~ERB
+            <%= button_tag("", class: "icon", "aria-label" => "Submit") %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -46,20 +59,29 @@ module A11y
         #   <%= inline_svg("icon.svg") %>
         # <% end %>
         def test_button_tag_with_block_reports_offense
-          offenses = run_fixture("button_tag_block")
+          source = <<~ERB
+            <%= button_tag(class: "button-icon") do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
-          assert_equal(
-            offense_message,
-            offenses[0].message
-          )
+          assert_equal(offense_message, offenses[0].message)
         end
 
         # <%= button_tag(class: "button-icon", aria: { label: "Menu" }) do %>
         #   <%= inline_svg("icon.svg") %>
         # <% end %>
         def test_button_tag_with_block_and_aria_label_passes
-          offenses = run_fixture("button_tag_block_aria_label")
+          source = <<~ERB
+            <%= button_tag(class: "button-icon", aria: { label: "Menu" }) do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -68,7 +90,13 @@ module A11y
         #   <%= inline_svg("icon.svg") %>
         # <% end %>
         def test_button_tag_with_block_without_parens_reports_offense
-          offenses = run_fixture("button_tag_block_no_parens")
+          source = <<~ERB
+            <%= button_tag class: "button-icon" do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
         end
@@ -77,7 +105,13 @@ module A11y
         #   <%= inline_svg("icon.svg") %>
         # <% end %>
         def test_button_tag_with_block_without_parens_and_aria_label_passes
-          offenses = run_fixture("button_tag_block_no_parens_aria_label")
+          source = <<~ERB
+            <%= button_tag class: "button-icon", aria: { label: "Menu" } do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -87,7 +121,14 @@ module A11y
         #   <%= inline_svg("icon.svg") %>
         # <% end %>
         def test_multiline_button_tag_with_block_reports_offense
-          offenses = run_fixture("button_tag_multiline_block")
+          source = <<~ERB
+            <%= button_tag(class: "button-icon",
+                           type: "button") do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
         end
@@ -97,7 +138,14 @@ module A11y
         #   <%= inline_svg("icon.svg") %>
         # <% end %>
         def test_multiline_button_tag_with_block_and_aria_label_passes
-          offenses = run_fixture("button_tag_multiline_block_aria_label")
+          source = <<~ERB
+            <%= button_tag(class: "button-icon",
+                           aria: { label: "Menu" }) do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -114,7 +162,7 @@ module A11y
             <% end %>
           ERB
 
-          offenses = run_source(source)
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -131,7 +179,7 @@ module A11y
             <% end %>
           ERB
 
-          offenses = run_source(source)
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -150,7 +198,7 @@ module A11y
             <% end %>
           ERB
 
-          offenses = run_source(source)
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -162,15 +210,10 @@ module A11y
             "requires an aria-label (WCAG 4.1.2)"
         end
 
-        def run_fixture(name, filename: "test.html.erb")
-          source = file_fixture(
-            "button_tag_missing_accessible_name/erb/#{name}.html.erb"
-          )
-          ErbRunner.new([ButtonTagMissingAccessibleName]).run(source, filename:)
-        end
-
-        def run_source(source, filename: "test.html.erb")
-          ErbRunner.new([ButtonTagMissingAccessibleName]).run(source, filename:)
+        def run_linter(source, filename: "test.html.erb")
+          ErbRunner
+            .new([ButtonTagMissingAccessibleName])
+            .run(source, filename:)
         end
       end
     end

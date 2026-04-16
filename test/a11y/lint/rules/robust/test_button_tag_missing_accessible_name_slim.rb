@@ -8,16 +8,27 @@ module A11y
       class TestButtonTagMissingAccessibleNameSlim < Minitest::Test
         # = button_tag("", class: "icon")
         def test_button_tag_with_empty_text_reports_offense
-          offenses = run_fixture("button_tag_empty_text")
+          source = <<~SLIM.chomp
+            = button_tag("", class: "icon")
+          SLIM
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
           assert_equal(offense_message, offenses[0].message)
-          assert_equal("ButtonTagMissingAccessibleName", offenses[0].rule)
+          assert_equal(
+            "ButtonTagMissingAccessibleName",
+            offenses[0].rule
+          )
         end
 
         # = button_tag "", class: "icon"
         def test_button_tag_with_empty_text_without_parens_reports_offense
-          offenses = run_fixture("button_tag_empty_text_no_parens")
+          source = <<~SLIM.chomp
+            = button_tag "", class: "icon"
+          SLIM
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
         end
@@ -27,28 +38,47 @@ module A11y
         #     class: "icon",
         #   )
         def test_multiline_button_tag_with_trailing_comma_reports_offense
-          offenses = run_fixture("button_tag_multiline")
+          source = <<~SLIM.chomp
+            = button_tag(\\
+                "",
+                class: "icon",
+              )
+          SLIM
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
         end
 
         # = button_tag("Submit")
         def test_button_tag_with_text_passes
-          offenses = run_fixture("button_tag_with_text")
+          source = <<~SLIM.chomp
+            = button_tag("Submit")
+          SLIM
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
 
         # = button_tag("", class: "icon", aria: { label: "Submit" })
         def test_button_tag_with_aria_hash_label_passes
-          offenses = run_fixture("button_tag_aria_hash_label")
+          source = <<~SLIM.chomp
+            = button_tag("", class: "icon", aria: { label: "Submit" })
+          SLIM
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
 
         # = button_tag "", class: "icon", aria: { label: "Submit" }
         def test_button_tag_without_parens_and_aria_label_passes
-          offenses = run_fixture("button_tag_no_parens_aria_label")
+          source = <<~SLIM.chomp
+            = button_tag "", class: "icon", aria: { label: "Submit" }
+          SLIM
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -59,14 +89,26 @@ module A11y
         #     aria: { label: "Submit" },
         #   )
         def test_multiline_button_tag_with_trailing_comma_and_aria_label_passes
-          offenses = run_fixture("button_tag_multiline_aria_label")
+          source = <<~SLIM.chomp
+            = button_tag(\\
+                "",
+                class: "icon",
+                aria: { label: "Submit" },
+              )
+          SLIM
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
 
         # = button_tag("", class: "icon", "aria-label" => "Submit")
         def test_button_tag_with_string_aria_label_passes
-          offenses = run_fixture("button_tag_string_aria_label")
+          source = <<~SLIM.chomp
+            = button_tag("", class: "icon", "aria-label" => "Submit")
+          SLIM
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -74,17 +116,30 @@ module A11y
         # = button_tag(class: "button-icon") do
         #   = inline_svg("icon.svg")
         def test_button_tag_with_block_reports_offense
-          offenses = run_fixture("button_tag_block")
+          source = <<~SLIM.chomp
+            = button_tag(class: "button-icon") do
+              = inline_svg("icon.svg")
+          SLIM
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
           assert_equal(offense_message, offenses[0].message)
-          assert_equal("ButtonTagMissingAccessibleName", offenses[0].rule)
+          assert_equal(
+            "ButtonTagMissingAccessibleName",
+            offenses[0].rule
+          )
         end
 
         # = button_tag(class: "button-icon", aria: { label: "Menu" }) do
         #   = inline_svg("icon.svg")
         def test_button_tag_with_block_and_aria_label_passes
-          offenses = run_fixture("button_tag_block_aria_label")
+          source = <<~SLIM.chomp
+            = button_tag(class: "button-icon", aria: { label: "Menu" }) do
+              = inline_svg("icon.svg")
+          SLIM
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -92,7 +147,12 @@ module A11y
         # = button_tag class: "button-icon" do
         #   = inline_svg("icon.svg")
         def test_button_tag_with_block_without_parens_reports_offense
-          offenses = run_fixture("button_tag_block_no_parens")
+          source = <<~SLIM.chomp
+            = button_tag class: "button-icon" do
+              = inline_svg("icon.svg")
+          SLIM
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
         end
@@ -100,7 +160,12 @@ module A11y
         # = button_tag class: "button-icon", aria: { label: "Menu" } do
         #   = inline_svg("icon.svg")
         def test_button_tag_with_block_without_parens_and_aria_label_passes
-          offenses = run_fixture("button_tag_block_no_parens_aria_label")
+          source = <<~SLIM.chomp
+            = button_tag class: "button-icon", aria: { label: "Menu" } do
+              = inline_svg("icon.svg")
+          SLIM
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -110,7 +175,14 @@ module A11y
         #   ) do
         #   = inline_svg("icon.svg")
         def test_multiline_button_tag_with_block_reports_offense
-          offenses = run_fixture("button_tag_multiline_block")
+          source = <<~SLIM.chomp
+            = button_tag(\\
+                class: "button-icon",
+              ) do
+              = inline_svg("icon.svg")
+          SLIM
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
         end
@@ -121,7 +193,15 @@ module A11y
         #   ) do
         #   = inline_svg("icon.svg")
         def test_multiline_button_tag_with_block_and_aria_label_passes
-          offenses = run_fixture("button_tag_multiline_block_aria_label")
+          source = <<~SLIM.chomp
+            = button_tag(\\
+                class: "button-icon",
+                aria: { label: "Menu" },
+              ) do
+              = inline_svg("icon.svg")
+          SLIM
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -136,7 +216,7 @@ module A11y
               = t(".label")
           SLIM
 
-          offenses = run_source(source)
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -151,7 +231,7 @@ module A11y
               = t(".label")
           SLIM
 
-          offenses = run_source(source)
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -163,14 +243,14 @@ module A11y
         #   = t(".label")
         def test_multiline_button_tag_with_block_and_text_passes
           source = <<~SLIM.chomp
-            = button_tag(\
+            = button_tag(\\
                 class: "button-icon",
               ) do
               = inline_svg("icon.svg")
               = t(".label")
           SLIM
 
-          offenses = run_source(source)
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -182,16 +262,7 @@ module A11y
             "requires an aria-label (WCAG 4.1.2)"
         end
 
-        def run_fixture(name, filename: "test.slim")
-          source = file_fixture(
-            "button_tag_missing_accessible_name/slim/#{name}.slim"
-          )
-          SlimRunner
-            .new([ButtonTagMissingAccessibleName])
-            .run(source, filename:)
-        end
-
-        def run_source(source, filename: "test.slim")
+        def run_linter(source, filename: "test.slim")
           SlimRunner
             .new([ButtonTagMissingAccessibleName])
             .run(source, filename:)

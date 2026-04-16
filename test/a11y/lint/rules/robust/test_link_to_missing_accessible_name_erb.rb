@@ -8,7 +8,11 @@ module A11y
       class TestLinkToMissingAccessibleNameErb < Minitest::Test
         # <%= link_to("", "/path", class: "icon") %>
         def test_link_to_with_empty_text_reports_offense
-          offenses = run_fixture("link_to_empty_text")
+          source = <<~ERB
+            <%= link_to("", "/path", class: "icon") %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
           assert_equal(
@@ -24,35 +28,55 @@ module A11y
 
         # <%= external_link_to("", "https://example.com", class: "icon") %>
         def test_external_link_to_with_empty_text_reports_offense
-          offenses = run_fixture("external_link_to_empty_text")
+          source = <<~ERB
+            <%= external_link_to("", "https://example.com", class: "icon") %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
         end
 
         # <%= link_to("Click here", "/path") %>
         def test_link_to_with_text_passes
-          offenses = run_fixture("link_to_with_text")
+          source = <<~ERB
+            <%= link_to("Click here", "/path") %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
 
         # <%= link_to("", "/path", aria: { label: "Facebook" }) %>
         def test_link_to_with_aria_hash_label_passes
-          offenses = run_fixture("link_to_aria_hash_label")
+          source = <<~ERB
+            <%= link_to("", "/path", aria: { label: "Facebook" }) %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
 
         # <%= link_to("", "/path", "aria-label" => "Facebook") %>
         def test_link_to_with_string_aria_label_passes
-          offenses = run_fixture("link_to_string_aria_label")
+          source = <<~ERB
+            <%= link_to("", "/path", "aria-label" => "Facebook") %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
 
         # <%= link_to("", "/path", aria: { describedby: "desc" }) %>
         def test_link_to_with_aria_hash_without_label_reports_offense
-          offenses = run_fixture("link_to_aria_hash_without_label")
+          source = <<~ERB
+            <%= link_to("", "/path", aria: { describedby: "desc" }) %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
         end
@@ -61,7 +85,13 @@ module A11y
         #   <%= link_to("", "/path") %>
         # </div>
         def test_line_number_for_erb_output_tag
-          offenses = run_fixture("link_to_nested")
+          source = <<~ERB
+            <div>
+              <%= link_to("", "/path") %>
+            </div>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
           assert_equal(2, offenses[0].line)
@@ -73,7 +103,15 @@ module A11y
         #             class: "icon") %>
         # </div>
         def test_multiline_erb_link_to
-          offenses = run_fixture("link_to_multiline")
+          source = <<~ERB
+            <div>
+            <%= link_to("",
+                        "/path",
+                        class: "icon") %>
+            </div>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
           assert_equal(2, offenses[0].line)
@@ -81,14 +119,22 @@ module A11y
 
         # <%= link_to("", "/path") -%>
         def test_trim_mode_erb_tag
-          offenses = run_fixture("link_to_trim_mode")
+          source = <<~ERB
+            <%= link_to("", "/path") -%>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
         end
 
         # <% link_to("", "/path") %>
         def test_non_output_erb_tags_ignored
-          offenses = run_fixture("link_to_non_output")
+          source = <<~ERB
+            <% link_to("", "/path") %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -97,7 +143,13 @@ module A11y
         #   <%= inline_svg("icon.svg") %>
         # <% end %>
         def test_link_to_with_block_reports_offense
-          offenses = run_fixture("link_to_block")
+          source = <<~ERB
+            <%= link_to("#", class: "icon") do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
           assert_equal(
@@ -110,7 +162,13 @@ module A11y
         #   <%= inline_svg("icon.svg") %>
         # <% end %>
         def test_link_to_with_block_and_aria_label_passes
-          offenses = run_fixture("link_to_block_aria_label")
+          source = <<~ERB
+            <%= link_to("#", class: "icon", aria: { label: "Icon" }) do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -119,7 +177,13 @@ module A11y
         #   <%= inline_svg("icon.svg") %>
         # <% end %>
         def test_link_to_with_block_without_parens_reports_offense
-          offenses = run_fixture("link_to_block_no_parens")
+          source = <<~ERB
+            <%= link_to "#", class: "icon" do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
         end
@@ -128,7 +192,13 @@ module A11y
         #   <%= inline_svg("icon.svg") %>
         # <% end %>
         def test_link_to_with_block_without_parens_and_aria_label_passes
-          offenses = run_fixture("link_to_block_no_parens_aria_label")
+          source = <<~ERB
+            <%= link_to "#", class: "icon", aria: { label: "Icon" } do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -138,7 +208,14 @@ module A11y
         #   <%= inline_svg("icon.svg") %>
         # <% end %>
         def test_multiline_link_to_with_block_reports_offense
-          offenses = run_fixture("link_to_multiline_block")
+          source = <<~ERB
+            <%= link_to("#",
+                        class: "icon") do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
         end
@@ -149,7 +226,15 @@ module A11y
         #   <%= inline_svg("icon.svg") %>
         # <% end %>
         def test_multiline_link_to_with_block_and_aria_label_passes
-          offenses = run_fixture("link_to_multiline_block_aria_label")
+          source = <<~ERB
+            <%= link_to("#",
+                        class: "icon",
+                        aria: { label: "Icon" }) do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -158,15 +243,25 @@ module A11y
         #   <%= inline_svg("icon.svg") %>
         # <% end %>
         def test_external_link_to_with_block_reports_offense
-          offenses = run_fixture("external_link_to_block")
+          source = <<~ERB
+            <%= external_link_to("https://example.com", class: "icon") do %>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
 
           assert_equal(1, offenses.length)
         end
 
         # <%= link_to("", "/path") %>
         def test_sets_filename_on_offense
-          offenses = run_fixture(
-            "link_to_sets_filename",
+          source = <<~ERB
+            <%= link_to("", "/path") %>
+          ERB
+
+          offenses = run_linter(
+            source,
             filename: "app/views/index.html.erb"
           )
 
@@ -188,7 +283,7 @@ module A11y
             <% end %>
           ERB
 
-          offenses = run_source(source)
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -205,7 +300,7 @@ module A11y
             <% end %>
           ERB
 
-          offenses = run_source(source)
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -224,7 +319,7 @@ module A11y
             <% end %>
           ERB
 
-          offenses = run_source(source)
+          offenses = run_linter(source)
 
           assert_empty(offenses)
         end
@@ -236,15 +331,10 @@ module A11y
             "requires an aria-label (WCAG 4.1.2)"
         end
 
-        def run_fixture(name, filename: "test.html.erb")
-          source = file_fixture(
-            "link_to_missing_accessible_name/erb/#{name}.html.erb"
-          )
-          ErbRunner.new([LinkToMissingAccessibleName]).run(source, filename:)
-        end
-
-        def run_source(source, filename: "test.html.erb")
-          ErbRunner.new([LinkToMissingAccessibleName]).run(source, filename:)
+        def run_linter(source, filename: "test.html.erb")
+          ErbRunner
+            .new([LinkToMissingAccessibleName])
+            .run(source, filename:)
         end
       end
     end
