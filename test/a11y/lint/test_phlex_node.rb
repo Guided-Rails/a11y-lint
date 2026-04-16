@@ -100,8 +100,10 @@ module A11y
         call_node = parse_call('img(src: "photo.jpg", alt: "A photo")')
         node = PhlexNode.build_tag(call_node)
 
-        assert_equal({ "src" => "photo.jpg", "alt" => "A photo" },
-                     node.attributes)
+        assert_equal(
+          { "src" => "photo.jpg", "alt" => "A photo" },
+          node.attributes
+        )
       end
 
       def test_build_tag_extracts_symbol_attribute_values
