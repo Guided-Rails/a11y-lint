@@ -57,6 +57,12 @@ class HomeView < Phlex::HTML
     # Bad: image_submit_tag missing alt (ImageSubmitTagMissingAlt)
     image_submit_tag("submit.png")
 
+    # Good: input with autocomplete
+    input(type: "email", name: "email", autocomplete: "email")
+
+    # Bad: input missing autocomplete (InputMissingAutocomplete)
+    input(type: "text", name: "username")
+
     # Good: ul with only li children
     ul do
       li { "First" }
