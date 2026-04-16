@@ -3,15 +3,13 @@
 module A11y
   module Lint
     module Rules
-      # Checks that link_to, external_link_to, and button_tag calls with
-      # empty text or block content include an aria-label (WCAG 4.1.2).
-      class MissingAccessibleName < Rule
-        METHODS = %w[link_to external_link_to button_tag].freeze
-
+      # Checks that button_tag calls with empty text or block content
+      # include an aria-label (WCAG 4.1.2).
+      class ButtonTagMissingAccessibleName < Rule
         def check
           return if no_offense?
 
-          offense_message(helper_call.method_name)
+          offense_message
         end
 
         private
@@ -31,13 +29,13 @@ module A11y
         def helper_call
           @helper_call ||= begin
             call = node.call_node
-            call if call && METHODS.include?(call.method_name)
+            call if call && call.method_name == "button_tag"
           end
         end
 
-        def offense_message(method_name)
+        def offense_message
           <<~MSG.strip
-            #{method_name} missing an accessible name \
+            button_tag missing an accessible name \
             requires an aria-label (WCAG 4.1.2)
           MSG
         end

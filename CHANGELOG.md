@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Breaking:** Split `MissingAccessibleName` into `LinkToMissingAccessibleName` (for `link_to`/`external_link_to`) and `ButtonTagMissingAccessibleName` (for `button_tag`) to follow one-rule-per-helper convention
+- Auto-require all rule files instead of listing them individually
 - Node attribute storage now preserves string values, enabling rules to check attribute values (not just existence)
 
 ## [0.10.0] - 2026-04-15
