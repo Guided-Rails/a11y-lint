@@ -6,7 +6,6 @@ module A11y
   module Lint
     module Rules
       class TestButtonTagMissingAccessibleNamePhlex < Minitest::Test
-        # button_tag("", class: "icon")
         def test_button_tag_with_empty_text_reports_offense
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -23,7 +22,6 @@ module A11y
           assert_equal("ButtonTagMissingAccessibleName", offenses[0].rule)
         end
 
-        # button_tag("Submit")
         def test_button_tag_with_text_passes
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -38,7 +36,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # button_tag("", class: "icon", aria: { label: "Submit" })
         def test_button_tag_with_aria_hash_label_passes
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -53,7 +50,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # button_tag("", class: "icon", "aria-label" => "Submit")
         def test_button_tag_with_string_aria_label_passes
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -68,9 +64,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # button_tag(class: "button-icon") do
-        #   span(class: "icon-menu")
-        # end
         def test_button_tag_with_block_reports_offense
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -88,9 +81,6 @@ module A11y
           assert_equal(offense_message, offenses[0].message)
         end
 
-        # button_tag(class: "button-icon", aria: { label: "Menu" }) do
-        #   span(class: "icon-menu")
-        # end
         def test_button_tag_with_block_and_aria_label_passes
           source = <<~RUBY
             class TestView < Phlex::HTML
@@ -107,10 +97,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # button_tag(class: "button-icon") do
-        #   inline_svg("icon.svg")
-        #   span { t(".label") }
-        # end
         def test_button_tag_with_block_and_text_passes
           source = <<~RUBY
             class TestView < Phlex::HTML

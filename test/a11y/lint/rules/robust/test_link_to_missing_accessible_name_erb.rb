@@ -6,7 +6,6 @@ module A11y
   module Lint
     module Rules
       class TestLinkToMissingAccessibleNameErb < Minitest::Test
-        # <%= link_to("", "/path", class: "icon") %>
         def test_link_to_with_empty_text_reports_offense
           source = <<~ERB
             <%= link_to("", "/path", class: "icon") %>
@@ -26,7 +25,6 @@ module A11y
           )
         end
 
-        # <%= external_link_to("", "https://example.com", class: "icon") %>
         def test_external_link_to_with_empty_text_reports_offense
           source = <<~ERB
             <%= external_link_to("", "https://example.com", class: "icon") %>
@@ -37,7 +35,6 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
-        # <%= link_to("Click here", "/path") %>
         def test_link_to_with_text_passes
           source = <<~ERB
             <%= link_to("Click here", "/path") %>
@@ -48,7 +45,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # <%= link_to("", "/path", aria: { label: "Facebook" }) %>
         def test_link_to_with_aria_hash_label_passes
           source = <<~ERB
             <%= link_to("", "/path", aria: { label: "Facebook" }) %>
@@ -59,7 +55,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # <%= link_to("", "/path", "aria-label" => "Facebook") %>
         def test_link_to_with_string_aria_label_passes
           source = <<~ERB
             <%= link_to("", "/path", "aria-label" => "Facebook") %>
@@ -70,7 +65,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # <%= link_to("", "/path", aria: { describedby: "desc" }) %>
         def test_link_to_with_aria_hash_without_label_reports_offense
           source = <<~ERB
             <%= link_to("", "/path", aria: { describedby: "desc" }) %>
@@ -81,9 +75,6 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
-        # <div>
-        #   <%= link_to("", "/path") %>
-        # </div>
         def test_line_number_for_erb_output_tag
           source = <<~ERB
             <div>
@@ -97,11 +88,6 @@ module A11y
           assert_equal(2, offenses[0].line)
         end
 
-        # <div>
-        # <%= link_to("",
-        #             "/path",
-        #             class: "icon") %>
-        # </div>
         def test_multiline_erb_link_to
           source = <<~ERB
             <div>
@@ -117,7 +103,6 @@ module A11y
           assert_equal(2, offenses[0].line)
         end
 
-        # <%= link_to("", "/path") -%>
         def test_trim_mode_erb_tag
           source = <<~ERB
             <%= link_to("", "/path") -%>
@@ -128,7 +113,6 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
-        # <% link_to("", "/path") %>
         def test_non_output_erb_tags_ignored
           source = <<~ERB
             <% link_to("", "/path") %>
@@ -139,9 +123,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # <%= link_to("#", class: "icon") do %>
-        #   <%= inline_svg("icon.svg") %>
-        # <% end %>
         def test_link_to_with_block_reports_offense
           source = <<~ERB
             <%= link_to("#", class: "icon") do %>
@@ -158,9 +139,6 @@ module A11y
           )
         end
 
-        # <%= link_to("#", class: "icon", aria: { label: "Icon" }) do %>
-        #   <%= inline_svg("icon.svg") %>
-        # <% end %>
         def test_link_to_with_block_and_aria_label_passes
           source = <<~ERB
             <%= link_to("#", class: "icon", aria: { label: "Icon" }) do %>
@@ -173,9 +151,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # <%= link_to "#", class: "icon" do %>
-        #   <%= inline_svg("icon.svg") %>
-        # <% end %>
         def test_link_to_with_block_without_parens_reports_offense
           source = <<~ERB
             <%= link_to "#", class: "icon" do %>
@@ -188,9 +163,6 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
-        # <%= link_to "#", class: "icon", aria: { label: "Icon" } do %>
-        #   <%= inline_svg("icon.svg") %>
-        # <% end %>
         def test_link_to_with_block_without_parens_and_aria_label_passes
           source = <<~ERB
             <%= link_to "#", class: "icon", aria: { label: "Icon" } do %>
@@ -203,10 +175,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # <%= link_to("#",
-        #             class: "icon") do %>
-        #   <%= inline_svg("icon.svg") %>
-        # <% end %>
         def test_multiline_link_to_with_block_reports_offense
           source = <<~ERB
             <%= link_to("#",
@@ -220,11 +188,6 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
-        # <%= link_to("#",
-        #             class: "icon",
-        #             aria: { label: "Icon" }) do %>
-        #   <%= inline_svg("icon.svg") %>
-        # <% end %>
         def test_multiline_link_to_with_block_and_aria_label_passes
           source = <<~ERB
             <%= link_to("#",
@@ -239,9 +202,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # <%= external_link_to("https://example.com", class: "icon") do %>
-        #   <%= inline_svg("icon.svg") %>
-        # <% end %>
         def test_external_link_to_with_block_reports_offense
           source = <<~ERB
             <%= external_link_to("https://example.com", class: "icon") do %>
@@ -254,7 +214,6 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
-        # <%= link_to("", "/path") %>
         def test_sets_filename_on_offense
           source = <<~ERB
             <%= link_to("", "/path") %>
@@ -271,10 +230,6 @@ module A11y
           )
         end
 
-        # <%= link_to("#", class: "icon") do %>
-        #   <%= inline_svg("icon.svg") %>
-        #   <%= t(".label") %>
-        # <% end %>
         def test_link_to_with_block_and_text_passes
           source = <<~ERB
             <%= link_to("#", class: "icon") do %>
@@ -288,10 +243,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # <%= link_to "#", class: "icon" do %>
-        #   <%= inline_svg("icon.svg") %>
-        #   <%= t(".label") %>
-        # <% end %>
         def test_link_to_with_block_without_parens_and_text_passes
           source = <<~ERB
             <%= link_to "#", class: "icon" do %>
@@ -305,11 +256,6 @@ module A11y
           assert_empty(offenses)
         end
 
-        # <%= link_to("#",
-        #             class: "icon") do %>
-        #   <%= inline_svg("icon.svg") %>
-        #   <%= t(".label") %>
-        # <% end %>
         def test_multiline_link_to_with_block_and_text_passes
           source = <<~ERB
             <%= link_to("#",
