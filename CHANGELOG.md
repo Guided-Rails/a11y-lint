@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `AreaMissingAlt` rule: detects `<area>` tags without `alt` attributes (WCAG 1.1.1)
 - `InputImageMissingAlt` rule: detects `<input type="image">` tags without `alt` attributes (WCAG 1.1.1)
 - `ImageSubmitTagMissingAlt` rule: detects `image_submit_tag` calls without an `alt` option (WCAG 1.1.1)
+- `InputMissingAutocomplete` rule: detects `<input>` elements without an `autocomplete` attribute (WCAG 1.3.5)
 
 ### Changed
 
