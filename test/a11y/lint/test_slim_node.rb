@@ -196,6 +196,61 @@ module A11y
         assert_equal({ "src" => "photo.jpg", "alt" => "A photo" }, result)
       end
 
+      def test_text_content_with_inline_text
+        source = "a href=\"/\" Click me\n"
+        sexp = Slim::Parser.new.call(source)
+        node = SlimNode.new(sexp[1], line: 1)
+
+        assert(node.text_content?)
+      end
+
+      def test_text_content_with_block_text
+        source = "a href=\"/\"\n  | Click me\n"
+        sexp = Slim::Parser.new.call(source)
+        node = SlimNode.new(sexp[1], line: 1)
+
+        assert(node.text_content?)
+      end
+
+      def test_text_content_with_nested_text
+        source = "a href=\"/\"\n  span Click me\n"
+        sexp = Slim::Parser.new.call(source)
+        node = SlimNode.new(sexp[1], line: 1)
+
+        assert(node.text_content?)
+      end
+
+      def test_text_content_with_dynamic_output
+        source = "a href=\"/\"\n  = t(\"click\")\n"
+        sexp = Slim::Parser.new.call(source)
+        node = SlimNode.new(sexp[1], line: 1)
+
+        assert(node.text_content?)
+      end
+
+      def test_text_content_false_for_empty_tag
+        source = "a href=\"/\"\n"
+        sexp = Slim::Parser.new.call(source)
+        node = SlimNode.new(sexp[1], line: 1)
+
+        refute(node.text_content?)
+      end
+
+      def test_text_content_false_for_element_only_children
+        source = "a href=\"/\"\n  img src=\"icon.svg\"\n"
+        sexp = Slim::Parser.new.call(source)
+        node = SlimNode.new(sexp[1], line: 1)
+
+        refute(node.text_content?)
+      end
+
+      def test_text_content_false_for_slim_output_node
+        sexp = [:slim, :output, true, 'link_to("/")', [:multi]]
+        node = SlimNode.new(sexp, line: 1)
+
+        refute(node.text_content?)
+      end
+
       def test_attributes_falls_back_to_true_for_dynamic_values
         sexp = [
           :html, :tag, "img",

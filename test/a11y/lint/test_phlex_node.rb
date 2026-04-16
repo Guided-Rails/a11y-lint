@@ -127,6 +127,20 @@ module A11y
         assert_equal({}, node.attributes)
       end
 
+      def test_text_content_false_by_default
+        call_node = parse_call("a(href: \"/\")")
+        node = PhlexNode.build_tag(call_node)
+
+        refute(node.text_content?)
+      end
+
+      def test_text_content_when_set
+        call_node = parse_call("a(href: \"/\")")
+        node = PhlexNode.build_tag(call_node, text_content: true)
+
+        assert(node.text_content?)
+      end
+
       private
 
       def parse_call(code)

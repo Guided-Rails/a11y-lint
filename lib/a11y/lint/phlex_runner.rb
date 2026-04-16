@@ -46,7 +46,10 @@ module A11y
 
       def check_tag(node)
         children = collect_block_children(node.block)
-        check_node(PhlexNode.build_tag(node, children:))
+        has_text = tag_block_has_text?(node.block, children)
+        check_node(
+          PhlexNode.build_tag(node, children:, text_content: has_text)
+        )
       end
 
       def check_helper(node)
@@ -80,8 +83,25 @@ module A11y
 
       def gather_tag_child(child, result)
         kids = collect_block_children(child.block)
-        result << PhlexNode.build_tag(child, children: kids)
-        check_node(result.last)
+        has_text = tag_block_has_text?(child.block, kids)
+        tag = PhlexNode.build_tag(
+          child, children: kids, text_content: has_text
+        )
+        result << tag
+        check_node(tag)
+      end
+
+      def tag_block_has_text?(block, children)
+        return false unless block.is_a?(Prism::BlockNode)
+
+        scan_for_text(block) || children.any?(&:text_content?)
+      end
+
+      def scan_for_text(node)
+        node.child_nodes.compact.any? do |child|
+          text_call?(child) || child.is_a?(Prism::YieldNode) ||
+            (!receiverless_call?(child) && scan_for_text(child))
+        end
       end
 
       def analyze_helper_block(call_node)
@@ -114,6 +134,10 @@ module A11y
 
       def tag_call?(node)
         receiverless_call?(node) && PhlexNode.html_tag?(node.name.to_s)
+      end
+
+      def text_call?(node)
+        receiverless_call?(node) && node.name.to_s == "plain"
       end
 
       def receiverless_call?(node)

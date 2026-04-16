@@ -136,6 +136,31 @@ module A11y
         assert_instance_of(ErbElementNode, nodes[0])
       end
 
+      def test_text_content_for_element_with_static_text
+        nodes = collect_nodes('<a href="/">Click me</a>')
+
+        assert(nodes[0].text_content?)
+      end
+
+      def test_text_content_for_empty_element
+        nodes = collect_nodes('<a href="/"></a>')
+
+        refute(nodes[0].text_content?)
+      end
+
+      def test_text_content_for_element_with_erb_output
+        nodes = collect_nodes('<a href="/"><%= t("click") %></a>')
+
+        assert(nodes[0].text_content?)
+      end
+
+      def test_text_content_for_element_with_only_img_child
+        nodes = collect_nodes('<a href="/"><img src="icon.svg"></a>')
+        a_node = nodes.find { |n| n.tag_name == "a" }
+
+        refute(a_node.text_content?)
+      end
+
       def test_erb_output_tags_produce_erb_output_nodes
         nodes = collect_nodes('<%= image_tag "photo.jpg" %>')
 
