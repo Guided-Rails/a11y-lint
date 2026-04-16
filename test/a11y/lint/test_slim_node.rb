@@ -176,8 +176,18 @@ module A11y
         sexp = [
           :html, :tag, "img",
           [:html, :attrs,
-            [:html, :attr, "src", [:escape, true, [:slim, :interpolate, "photo.jpg"]]],
-            [:html, :attr, "alt", [:escape, true, [:slim, :interpolate, "A photo"]]]]
+           [
+             :html,
+             :attr,
+             "src",
+             [:escape, true, [:slim, :interpolate, "photo.jpg"]]
+           ],
+           [
+             :html,
+             :attr,
+             "alt",
+             [:escape, true, [:slim, :interpolate, "A photo"]]
+           ]]
         ]
         node = SlimNode.new(sexp, line: 1)
 
@@ -190,8 +200,13 @@ module A11y
         sexp = [
           :html, :tag, "img",
           [:html, :attrs,
-            [:html, :attr, "src", [:slim, :attrvalue, true, "some_path"]],
-            [:html, :attr, "alt", [:escape, true, [:slim, :interpolate, "A photo"]]]]
+           [:html, :attr, "src", [:slim, :attrvalue, true, "some_path"]],
+           [
+             :html,
+             :attr,
+             "alt",
+             [:escape, true, [:slim, :interpolate, "A photo"]]
+           ]]
         ]
         node = SlimNode.new(sexp, line: 1)
 

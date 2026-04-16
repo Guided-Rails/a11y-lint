@@ -100,18 +100,19 @@ module A11y
         call_node = parse_call('img(src: "photo.jpg", alt: "A photo")')
         node = PhlexNode.build_tag(call_node)
 
-        assert_equal({ "src" => "photo.jpg", "alt" => "A photo" }, node.attributes)
+        assert_equal({ "src" => "photo.jpg", "alt" => "A photo" },
+                     node.attributes)
       end
 
       def test_build_tag_extracts_symbol_attribute_values
-        call_node = parse_call('input(type: :submit)')
+        call_node = parse_call("input(type: :submit)")
         node = PhlexNode.build_tag(call_node)
 
         assert_equal({ "type" => "submit" }, node.attributes)
       end
 
       def test_build_tag_falls_back_to_true_for_non_literal_values
-        call_node = parse_call('img(src: src_path, alt: alt_text)')
+        call_node = parse_call("img(src: src_path, alt: alt_text)")
         node = PhlexNode.build_tag(call_node)
 
         assert_equal({ "src" => true, "alt" => true }, node.attributes)
