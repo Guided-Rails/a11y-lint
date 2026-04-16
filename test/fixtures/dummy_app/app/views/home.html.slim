@@ -57,6 +57,41 @@ input type="email" name="email" autocomplete="email"
 / Bad: input missing autocomplete (InputMissingAutocomplete)
 input type="text" name="username"
 
+/ Good: anchor with text
+a href="/home" Home
+
+/ Bad: empty anchor (AnchorMissingAccessibleName)
+a.icon href="/profile"
+
+/ Good: anchor with aria-label
+a href="/settings" aria-label="Settings"
+
+/ Good: anchor with img with alt
+a href="/home"
+  img src="home.svg" alt="Home"
+
+/ Bad: anchor with img without alt (AnchorMissingAccessibleName)
+a href="/home"
+  img src="home.svg"
+
+/ Good: button with text
+button type="submit"
+  | Submit
+
+/ Bad: empty button (ButtonMissingAccessibleName)
+button.close type="button"
+
+/ Good: button with aria-label
+button type="button" aria-label="Close"
+
+/ Good: button with img with alt
+button type="button"
+  img src="close.svg" alt="Close"
+
+/ Bad: button with img without alt (ButtonMissingAccessibleName)
+button type="button"
+  img src="close.svg"
+
 / Good: ul with only li children
 ul
   li First
