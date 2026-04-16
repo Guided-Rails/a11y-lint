@@ -129,6 +129,20 @@ module A11y
         assert_equal(1, offenses.length)
       end
 
+      def test_html_elements_produce_erb_element_nodes
+        nodes = collect_nodes('<img src="photo.jpg">')
+
+        assert_equal(1, nodes.length)
+        assert_instance_of(ErbElementNode, nodes[0])
+      end
+
+      def test_erb_output_tags_produce_erb_output_nodes
+        nodes = collect_nodes('<%= image_tag "photo.jpg" %>')
+
+        assert_equal(1, nodes.length)
+        assert_instance_of(ErbOutputNode, nodes[0])
+      end
+
       private
 
       def multiline_source
@@ -145,6 +159,18 @@ module A11y
       def run_linter(source, filename: "test.html.erb")
         rules = [Rules::ImgMissingAlt, Rules::ImageTagMissingAlt]
         ErbRunner.new(rules).run(source, filename: filename)
+      end
+
+      def collect_nodes(source)
+        nodes = []
+        spy = Class.new(Rule) do
+          define_method(:check) do
+            nodes << @node
+            nil
+          end
+        end
+        ErbRunner.new([spy]).run(source, filename: "test.html.erb")
+        nodes
       end
     end
   end
