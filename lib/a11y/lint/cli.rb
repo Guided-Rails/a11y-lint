@@ -99,7 +99,7 @@ module A11y
 
         Rules.constants.filter_map do |name|
           klass = Rules.const_get(name)
-          next unless klass.is_a?(Class) && klass < Rule
+          next unless klass.is_a?(Class) && klass < NodeRule
 
           klass if configuration.enabled?(klass.rule_name)
         end

@@ -4,7 +4,7 @@ module A11y
   module Lint
     module Rules
       # Checks that image_tag calls include an alt option (WCAG 1.1.1).
-      class ImageTagMissingAlt < Rule
+      class ImageTagMissingAlt < NodeRule
         def check
           return if no_offense?
 

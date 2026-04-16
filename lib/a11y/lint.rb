@@ -13,7 +13,7 @@ require_relative "lint/erb_output_node"
 require_relative "lint/phlex_tags"
 require_relative "lint/phlex_node"
 require_relative "lint/configuration"
-require_relative "lint/rule"
+require_relative "lint/node_rule"
 Dir[File.join(__dir__, "lint", "rules", "**", "*.rb")].each { |f| require f }
 require_relative "lint/slim_runner"
 require_relative "lint/erb_runner"
