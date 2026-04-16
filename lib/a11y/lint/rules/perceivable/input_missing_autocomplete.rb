@@ -8,7 +8,14 @@ module A11y
       # https://www.w3.org/WAI/WCAG21/Understanding/identify-input-purpose.html
       class InputMissingAutocomplete < Rule
         EXCLUDED_TYPES = %w[
-          hidden submit button reset image checkbox radio file
+          button
+          checkbox
+          file
+          hidden
+          image
+          radio
+          reset
+          submit
         ].freeze
 
         def check
