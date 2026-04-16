@@ -8,6 +8,7 @@ module A11y
     class ErbRunner
       ERB_TAG = /<%.*?%>/m
       ERB_OUTPUT_TAG = /<%=\s*(.*?)\s*-?%>/m
+      ERB_OUTPUT_MARKER = "A11Y_LINT_ERB_OUTPUT"
       VOID_ELEMENTS = %w[
         area base br col embed hr img input
         link meta param source track wbr
@@ -32,7 +33,8 @@ module A11y
       attr_reader :rules
 
       def check_html_nodes(source)
-        html = source.gsub(ERB_TAG, "")
+        html = source.gsub(ERB_OUTPUT_TAG, ERB_OUTPUT_MARKER)
+        html = html.gsub(ERB_TAG, "")
         doc = Nokogiri::HTML4::DocumentFragment.parse(html)
 
         doc.traverse do |nokogiri_node|
@@ -47,7 +49,8 @@ module A11y
       def build_erb_element_node(nokogiri_node)
         ErbElementNode.new(
           nokogiri_node: nokogiri_node,
-          line: nokogiri_node.line
+          line: nokogiri_node.line,
+          has_erb_output: nokogiri_node.text.include?(ERB_OUTPUT_MARKER)
         )
       end
 

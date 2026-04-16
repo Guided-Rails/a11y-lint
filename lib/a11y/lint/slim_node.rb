@@ -62,7 +62,16 @@ module A11y
       def block_has_text_children?
         return false unless slim_output?
 
-        text_content?(@sexp[4])
+        block_text_content?(@sexp[4])
+      end
+
+      # Returns true when the HTML element body contains visible text
+      # or dynamic output (i.e. content that could provide an accessible
+      # name). Only meaningful for HTML tag nodes.
+      def text_content?
+        return false unless html_tag?
+
+        text_or_output?(@sexp[4])
       end
 
       private
@@ -90,11 +99,18 @@ module A11y
         sexp.is_a?(Array) && sexp[0] == :slim && sexp[1] == :output
       end
 
-      def text_content?(sexp)
+      def block_text_content?(sexp)
         return false unless sexp.is_a?(Array)
         return true if slim_text_sexp?(sexp) || html_tag_sexp?(sexp)
 
-        sexp.any? { |child| text_content?(child) }
+        sexp.any? { |child| block_text_content?(child) }
+      end
+
+      def text_or_output?(sexp)
+        return false unless sexp.is_a?(Array)
+        return true if slim_text_sexp?(sexp) || slim_output_sexp?(sexp)
+
+        sexp.any? { |child| text_or_output?(child) }
       end
 
       def slim_text_sexp?(sexp)

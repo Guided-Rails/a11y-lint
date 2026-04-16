@@ -22,7 +22,8 @@ module A11y
         line:, tag_name: nil, attributes: {},
         call_node: nil, children: [],
         block_body_codes: nil,
-        block_has_text_children: false
+        block_has_text_children: false,
+        text_content: false
       )
         @tag_name = tag_name
         @attributes = attributes
@@ -31,6 +32,7 @@ module A11y
         @children = children
         @block_body_codes = block_body_codes
         @block_has_text_children = block_has_text_children
+        @text_content = text_content
       end
       # rubocop:enable Metrics/ParameterLists
 
@@ -46,13 +48,18 @@ module A11y
         @block_has_text_children
       end
 
-      def self.build_tag(call_node, children: [])
+      def text_content?
+        @text_content
+      end
+
+      def self.build_tag(call_node, children: [], text_content: false)
         name = call_node.name.to_s
         new(
           tag_name: html_tag_name(name),
           attributes: extract_attributes(call_node),
           line: call_node.location.start_line,
-          children: children
+          children: children,
+          text_content: text_content
         )
       end
 
