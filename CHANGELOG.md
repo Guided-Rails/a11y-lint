@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-04-21
+
 ### Added
 
 - `AreaMissingAlt` rule: detects `<area>` tags without `alt` attributes (WCAG 1.1.1)
@@ -19,8 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Breaking:** Split `MissingAccessibleName` into `LinkToMissingAccessibleName` (for `link_to`/`external_link_to`) and `ButtonTagMissingAccessibleName` (for `button_tag`) to follow one-rule-per-helper convention
+- **Breaking:** Rename `A11y::Lint::Rule` to `A11y::Lint::NodeRule`. Custom rules that subclass the base class must update the parent class name
 - Auto-require all rule files instead of listing them individually
 - Node attribute storage now preserves string values, enabling rules to check attribute values (not just existence)
+
+### Fixed
+
+- `LinkToMissingAccessibleName` / `ButtonTagMissingAccessibleName`: no longer flag `link_to`/`button_tag` blocks containing an `image_tag` with a non-empty `alt` option
 
 ## [0.10.0] - 2026-04-15
 
