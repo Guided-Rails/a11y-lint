@@ -14,8 +14,9 @@ module A11y
         link meta param source track wbr
       ].freeze
 
-      def initialize(rules)
+      def initialize(rules, configuration: Configuration.new)
         @rules = rules
+        @configuration = configuration
       end
 
       def run(source, filename:)
@@ -30,7 +31,7 @@ module A11y
 
       private
 
-      attr_reader :rules
+      attr_reader :rules, :configuration
 
       def check_html_nodes(source)
         html = source.gsub(ERB_OUTPUT_TAG, ERB_OUTPUT_MARKER)
@@ -50,7 +51,7 @@ module A11y
         ErbElementNode.new(
           nokogiri_node: nokogiri_node,
           line: nokogiri_node.line,
-          has_erb_output: nokogiri_node.text.include?(ERB_OUTPUT_MARKER)
+          configuration: configuration
         )
       end
 
@@ -88,10 +89,53 @@ module A11y
         return [nil, false] unless end_match
 
         block_content = rest[0...end_match.begin(0)]
-        codes = block_content.scan(ERB_OUTPUT_TAG).map { |m| m[0].strip }
-        text_only = block_content.gsub(ERB_TAG, "").strip
+        visible_codes_and_text(block_content)
+      end
 
-        [codes, !text_only.empty?]
+      # Returns [visible_codes, visible_non_output_text?] where "visible"
+      # means not inside a hidden-wrapper element (per configuration).
+      def visible_codes_and_text(block_content)
+        indexed_codes = []
+        html = indexed_marker_html(block_content, indexed_codes)
+        fragment = Nokogiri::HTML4::DocumentFragment.parse(html)
+        strip_hidden_wrappers!(fragment)
+
+        remaining = fragment.to_html
+        visible_codes = indexed_codes.each_with_index.filter_map do |code, i|
+          code if remaining.include?("#{ERB_OUTPUT_MARKER}#{i}_")
+        end
+        [visible_codes, non_marker_text?(remaining)]
+      end
+
+      def indexed_marker_html(block_content, codes)
+        block_content.gsub(ERB_OUTPUT_TAG) do
+          codes << Regexp.last_match(1).strip
+          "#{ERB_OUTPUT_MARKER}#{codes.length - 1}_"
+        end.gsub(ERB_TAG, "")
+      end
+
+      def non_marker_text?(html)
+        !html.gsub(/#{ERB_OUTPUT_MARKER}\d+_/, "").strip.empty?
+      end
+
+      def strip_hidden_wrappers!(node)
+        return if configuration.hidden_wrapper_classes.empty?
+
+        node.element_children.each do |child|
+          if hidden_wrapper_element?(child)
+            child.remove
+          else
+            strip_hidden_wrappers!(child)
+          end
+        end
+      end
+
+      def hidden_wrapper_element?(node)
+        value = node.attributes["class"]&.value
+        return false unless value.is_a?(String)
+
+        classes = configuration.hidden_wrapper_classes
+        value.split.any? { |klass| classes.include?(klass) }
       end
 
       def check_node(node)

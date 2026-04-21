@@ -47,6 +47,13 @@ area shape="rect" coords="0,0,82,126" href="/sun"
 = button_tag(class: "button-icon") do
   = image_tag("home.svg", alt: "Home")
 
+/ Bad: button_tag block whose only text is inside a hidden wrapper
+/ (ButtonTagMissingAccessibleName, requires hidden_wrapper_classes: [popover])
+= button_tag(class: "button-icon") do
+  .popover
+    = t(".move")
+  = inline_svg("thumbs-up.svg")
+
 / Good: input type="image" with alt
 input type="image" src="submit.png" alt="Submit"
 

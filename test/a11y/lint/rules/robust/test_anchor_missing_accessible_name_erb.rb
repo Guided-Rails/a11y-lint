@@ -126,11 +126,46 @@ module A11y
           )
         end
 
+        def test_anchor_with_hidden_wrapper_text_passes_by_default
+          source = <<~ERB
+            <a href="/path">
+              <span class="popover">Move</span>
+              <img src="icon.svg">
+            </a>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_hidden_wrapper_text_reports_when_configured
+          source = <<~ERB
+            <a href="/path">
+              <span class="popover">Move</span>
+              <img src="icon.svg">
+            </a>
+          ERB
+
+          offenses = run_linter(
+            source,
+            configuration: Configuration.new(
+              "hidden_wrapper_classes" => ["popover"]
+            )
+          )
+
+          assert_equal(1, offenses.length)
+          assert_equal("AnchorMissingAccessibleName", offenses[0].rule)
+        end
+
         private
 
-        def run_linter(source, filename: "test.html.erb")
+        def run_linter(
+          source, filename: "test.html.erb",
+          configuration: Configuration.new
+        )
           ErbRunner
-            .new([AnchorMissingAccessibleName])
+            .new([AnchorMissingAccessibleName], configuration:)
             .run(source, filename:)
         end
       end

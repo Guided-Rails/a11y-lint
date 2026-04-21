@@ -359,6 +359,46 @@ module A11y
           assert_equal("app/views/index_view.rb", offenses[0].filename)
         end
 
+        def test_hidden_wrapper_with_icon_passes_by_default
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                link_to("/path", class: "icon") do
+                  span(class: "popover") { plain "Label" }
+                  inline_svg("icon.svg")
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_hidden_wrapper_with_icon_reports_when_configured
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                link_to("/path", class: "icon") do
+                  span(class: "popover") { plain "Label" }
+                  inline_svg("icon.svg")
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(
+            source,
+            configuration: Configuration.new(
+              "hidden_wrapper_classes" => ["popover"]
+            )
+          )
+
+          assert_equal(1, offenses.length)
+          assert_equal("LinkToMissingAccessibleName", offenses[0].rule)
+        end
+
         private
 
         def offense_message(method_name)
@@ -366,8 +406,13 @@ module A11y
             "requires an aria-label (WCAG 4.1.2)"
         end
 
-        def run_linter(source, filename: "test_view.rb")
-          PhlexRunner.new([LinkToMissingAccessibleName]).run(source, filename:)
+        def run_linter(
+          source, filename: "test_view.rb",
+          configuration: Configuration.new
+        )
+          PhlexRunner
+            .new([LinkToMissingAccessibleName], configuration:)
+            .run(source, filename:)
         end
       end
     end

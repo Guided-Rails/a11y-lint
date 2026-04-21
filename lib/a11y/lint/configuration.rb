@@ -41,6 +41,11 @@ module A11y
 
         @config.dig(rule_name, "Enabled") != false
       end
+
+      def hidden_wrapper_classes
+        @hidden_wrapper_classes ||=
+          Array(@config["hidden_wrapper_classes"]).map(&:to_s).freeze
+      end
     end
   end
 end

@@ -128,11 +128,46 @@ module A11y
           )
         end
 
+        def test_button_with_hidden_wrapper_text_passes_by_default
+          source = <<~ERB
+            <button type="button">
+              <span class="popover">Move</span>
+              <img src="thumbs-up.svg">
+            </button>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_hidden_wrapper_text_reports_when_configured
+          source = <<~ERB
+            <button type="button">
+              <span class="popover">Move</span>
+              <img src="thumbs-up.svg">
+            </button>
+          ERB
+
+          offenses = run_linter(
+            source,
+            configuration: Configuration.new(
+              "hidden_wrapper_classes" => ["popover"]
+            )
+          )
+
+          assert_equal(1, offenses.length)
+          assert_equal("ButtonMissingAccessibleName", offenses[0].rule)
+        end
+
         private
 
-        def run_linter(source, filename: "test.html.erb")
+        def run_linter(
+          source, filename: "test.html.erb",
+          configuration: Configuration.new
+        )
           ErbRunner
-            .new([ButtonMissingAccessibleName])
+            .new([ButtonMissingAccessibleName], configuration:)
             .run(source, filename:)
         end
       end

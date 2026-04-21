@@ -71,10 +71,11 @@ module A11y
       end
 
       def lint_files(files)
-        rules = all_rules
-        slim_runner = SlimRunner.new(rules)
-        erb_runner = ErbRunner.new(rules)
-        phlex_runner = PhlexRunner.new(rules)
+        configuration = load_configuration
+        rules = rules_for(configuration)
+        slim_runner = SlimRunner.new(rules, configuration: configuration)
+        erb_runner = ErbRunner.new(rules, configuration: configuration)
+        phlex_runner = PhlexRunner.new(rules, configuration: configuration)
 
         files.flat_map do |file|
           source = File.read(file)
@@ -91,12 +92,11 @@ module A11y
         end
       end
 
-      def all_rules
-        configuration = Configuration.load(
-          @config_path,
-          search_path: @argv.first || "."
-        )
+      def load_configuration
+        Configuration.load(@config_path, search_path: @argv.first || ".")
+      end
 
+      def rules_for(configuration)
         Rules.constants.filter_map do |name|
           klass = Rules.const_get(name)
           next unless klass.is_a?(Class) && klass < NodeRule

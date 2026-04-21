@@ -55,6 +55,14 @@ class HomeView < Phlex::HTML
       image_tag("home.svg", alt: "Home")
     end
 
+    # Bad: button_tag block whose only text is inside a hidden wrapper
+    # Needs hidden_wrapper_classes: [popover] config
+    # (ButtonTagMissingAccessibleName)
+    button_tag(class: "button-icon") do
+      span(class: "popover") { plain "Move" }
+      inline_svg("thumbs-up.svg")
+    end
+
     # Good: input type="image" with alt
     input(type: "image", src: "submit.png", alt: "Submit")
 

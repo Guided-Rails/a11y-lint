@@ -6,11 +6,12 @@ module A11y
     class SlimNode
       include BlockInspection
 
-      attr_reader :line
+      attr_reader :line, :configuration
 
-      def initialize(sexp, line:)
+      def initialize(sexp, line:, configuration: Configuration.new)
         @sexp = sexp
         @line = line
+        @configuration = configuration
       end
 
       def tag_name
@@ -90,6 +91,7 @@ module A11y
 
       def collect_output_codes(sexp)
         return [] unless sexp.is_a?(Array)
+        return [] if hidden_wrapper_sexp?(sexp)
         return [sexp[3]] if slim_output_sexp?(sexp)
 
         sexp.flat_map { |child| collect_output_codes(child) }
@@ -101,6 +103,7 @@ module A11y
 
       def block_text_content?(sexp)
         return false unless sexp.is_a?(Array)
+        return false if hidden_wrapper_sexp?(sexp)
         return true if slim_text_sexp?(sexp) || html_tag_sexp?(sexp)
 
         sexp.any? { |child| block_text_content?(child) }
@@ -108,9 +111,56 @@ module A11y
 
       def text_or_output?(sexp)
         return false unless sexp.is_a?(Array)
+        return false if hidden_wrapper_sexp?(sexp)
         return true if slim_text_sexp?(sexp) || slim_output_sexp?(sexp)
 
         sexp.any? { |child| text_or_output?(child) }
+      end
+
+      def hidden_wrapper_sexp?(sexp)
+        return false unless html_tag_sexp?(sexp)
+        return false if configuration.hidden_wrapper_classes.empty?
+
+        class_values(sexp[3]).any? do |klass|
+          configuration.hidden_wrapper_classes.include?(klass)
+        end
+      end
+
+      def class_values(attrs_sexp)
+        return [] unless attrs_sexp.is_a?(Array) &&
+                         attrs_sexp[0] == :html && attrs_sexp[1] == :attrs
+
+        attrs_sexp[2..].flat_map { |attr| class_values_for_attr(attr) }
+      end
+
+      def class_values_for_attr(attr)
+        return [] unless attr.is_a?(Array) &&
+                         attr[0] == :html && attr[1] == :attr &&
+                         attr[2] == "class"
+
+        value = static_class_string(attr[3])
+        value ? value.split : []
+      end
+
+      # Extracts a static class string from the two forms Slim emits:
+      # `[:static, "name"]` for class shortcuts (`.popover`) and
+      # `[:escape, true, [:slim, :interpolate, "name"]]` for `class="..."`.
+      def static_class_string(value_sexp)
+        return unless value_sexp.is_a?(Array)
+        return static_sexp_value(value_sexp) if value_sexp[0] == :static
+
+        interpolate_sexp_value(value_sexp)
+      end
+
+      def static_sexp_value(sexp)
+        sexp[1] if sexp[1].is_a?(String)
+      end
+
+      def interpolate_sexp_value(sexp)
+        return unless sexp[0] == :escape && sexp[2].is_a?(Array)
+        return unless sexp[2][0] == :slim && sexp[2][1] == :interpolate
+
+        sexp[2][2] if sexp[2][2].is_a?(String)
       end
 
       def slim_text_sexp?(sexp)
@@ -119,7 +169,11 @@ module A11y
 
       def collect_children(sexp)
         return [] unless sexp.is_a?(Array)
-        return [SlimNode.new(sexp, line: @line)] if html_tag_sexp?(sexp)
+
+        if html_tag_sexp?(sexp)
+          return [SlimNode.new(sexp, line: @line, configuration: configuration)]
+        end
+
         return collect_children(sexp[3]) if slim_control_sexp?(sexp)
         return [] unless sexp[0] == :multi
 

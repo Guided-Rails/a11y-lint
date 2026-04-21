@@ -138,11 +138,43 @@ module A11y
           )
         end
 
+        def test_button_with_hidden_wrapper_text_passes_by_default
+          source = <<~SLIM.chomp
+            button type="button"
+              span.popover Move
+              img src="thumbs-up.svg"
+          SLIM
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_hidden_wrapper_text_reports_when_configured
+          source = <<~SLIM.chomp
+            button type="button"
+              span.popover Move
+              img src="thumbs-up.svg"
+          SLIM
+
+          offenses = run_linter(
+            source,
+            configuration: Configuration.new(
+              "hidden_wrapper_classes" => ["popover"]
+            )
+          )
+
+          assert_equal(1, offenses.length)
+          assert_equal("ButtonMissingAccessibleName", offenses[0].rule)
+        end
+
         private
 
-        def run_linter(source, filename: "test.slim")
+        def run_linter(
+          source, filename: "test.slim", configuration: Configuration.new
+        )
           SlimRunner
-            .new([ButtonMissingAccessibleName])
+            .new([ButtonMissingAccessibleName], configuration:)
             .run(source, filename:)
         end
       end

@@ -12,3 +12,9 @@
 #
 # ButtonTagMissingAccessibleName:
 #   Enabled: false
+
+# Class names that wrap content hidden from assistive technology
+# (e.g. via CSS `visibility: hidden`). Content inside these wrappers
+# does not count toward an element's accessible name.
+hidden_wrapper_classes:
+  - popover
