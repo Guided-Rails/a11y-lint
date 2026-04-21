@@ -14,21 +14,27 @@ module A11y
         codes = block_body_codes
         return true unless codes&.any?
 
-        codes.all? { |code| icon_helper_call?(code) }
+        codes.all? do |code|
+          icon_helper?(code) || decorative_image_tag?(code)
+        end
       end
 
       private
 
-      # image_tag is a conditional icon: it only counts as decorative
-      # when it lacks a non-empty alt. A non-empty alt provides the
-      # accessible name, matching how <a><img alt="Home"></a> is treated
-      # by AnchorMissingAccessibleName#child_image_has_alt?.
-      def icon_helper_call?(code)
+      def icon_helper?(code)
         call = RubyCode.new(code).call_node
-        return false unless call
-        return true if ICON_HELPERS.include?(call.method_name)
+        call && ICON_HELPERS.include?(call.method_name)
+      end
 
-        call.method_name == "image_tag" && !call.keyword_non_empty?(:alt)
+      # image_tag counts as decorative only when it lacks a non-empty
+      # alt. A non-empty alt provides the accessible name, matching how
+      # <a><img alt="Home"></a> is treated by
+      # AnchorMissingAccessibleName#child_image_has_alt?.
+      def decorative_image_tag?(code)
+        call = RubyCode.new(code).call_node
+        call &&
+          call.method_name == "image_tag" &&
+          !call.keyword_non_empty?(:alt)
       end
     end
   end
