@@ -69,6 +69,62 @@ module A11y
         assert(result)
       end
 
+      def test_keyword_non_empty_with_non_empty_string_literal
+        call = parse('image_tag("photo.jpg", alt: "A photo")')
+
+        result = call.keyword_non_empty?(:alt)
+
+        assert(result)
+      end
+
+      def test_keyword_non_empty_with_empty_string_literal
+        call = parse('image_tag("photo.jpg", alt: "")')
+
+        result = call.keyword_non_empty?(:alt)
+
+        refute(result)
+      end
+
+      def test_keyword_non_empty_with_missing_key
+        call = parse('image_tag("photo.jpg", class: "hero")')
+
+        result = call.keyword_non_empty?(:alt)
+
+        refute(result)
+      end
+
+      def test_keyword_non_empty_with_dynamic_value
+        call = parse('image_tag("photo.jpg", alt: @title)')
+
+        result = call.keyword_non_empty?(:alt)
+
+        assert(result)
+      end
+
+      def test_keyword_non_empty_with_method_call_value
+        call = parse('image_tag("photo.jpg", alt: photo.title)')
+
+        result = call.keyword_non_empty?(:alt)
+
+        assert(result)
+      end
+
+      def test_keyword_non_empty_with_string_hash_rocket_key
+        call = parse('image_tag("photo.jpg", "alt" => "A photo")')
+
+        result = call.keyword_non_empty?(:alt)
+
+        assert(result)
+      end
+
+      def test_keyword_non_empty_with_no_keyword_hash
+        call = parse('image_tag("photo.jpg")')
+
+        result = call.keyword_non_empty?(:alt)
+
+        refute(result)
+      end
+
       def test_positional_args
         call = parse('link_to("Click", "/path", class: "btn")')
 

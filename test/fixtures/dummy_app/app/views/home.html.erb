@@ -41,6 +41,16 @@
   <%= inline_svg("icon.svg") %>
 <% end %>
 
+<!-- Good: link_to block with image_tag having non-empty alt -->
+<%= link_to("/home") do %>
+  <%= image_tag("home.svg", alt: "Home") %>
+<% end %>
+
+<!-- Good: button_tag block with image_tag having non-empty alt -->
+<%= button_tag(class: "button-icon") do %>
+  <%= image_tag("home.svg", alt: "Home") %>
+<% end %>
+
 <!-- Good: input type="image" with alt -->
 <input type="image" src="submit.png" alt="Submit">
 

@@ -30,6 +30,23 @@ module A11y
         end
       end
 
+      # True when the keyword is present AND its value is a non-empty
+      # string literal OR any non-string expression (dynamic — can't be
+      # statically proven empty, so treat as providing content).
+      # False when the key is absent or the value is an empty string
+      # literal.
+      def keyword_non_empty?(key)
+        return false unless (kw_hash = find_keyword_hash)
+
+        assoc = kw_hash.elements.find { |a| key_name(a) == key.to_s }
+        return false unless assoc
+
+        value = assoc.value
+        return !value.unescaped.empty? if value.is_a?(Prism::StringNode)
+
+        true
+      end
+
       def positional_args
         return [] unless @prism_node.arguments
 
