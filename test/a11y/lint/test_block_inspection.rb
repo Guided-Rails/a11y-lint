@@ -45,12 +45,36 @@ module A11y
         assert(result)
       end
 
-      def test_true_for_image_tag
+      def test_true_for_image_tag_without_alt
         node = build_node(codes: ['image_tag("photo.jpg")'])
 
         result = node.block_has_only_icon_helpers?
 
         assert(result)
+      end
+
+      def test_true_for_image_tag_with_empty_alt
+        node = build_node(codes: ['image_tag("photo.jpg", alt: "")'])
+
+        result = node.block_has_only_icon_helpers?
+
+        assert(result)
+      end
+
+      def test_false_for_image_tag_with_non_empty_alt
+        node = build_node(codes: ['image_tag("photo.jpg", alt: "Home")'])
+
+        result = node.block_has_only_icon_helpers?
+
+        refute(result)
+      end
+
+      def test_false_for_image_tag_with_dynamic_alt
+        node = build_node(codes: ['image_tag("photo.jpg", alt: @title)'])
+
+        result = node.block_has_only_icon_helpers?
+
+        refute(result)
       end
 
       def test_true_for_svg_icon

@@ -126,6 +126,79 @@ module A11y
           assert_empty(offenses)
         end
 
+        def test_button_tag_with_block_image_tag_non_empty_alt_passes
+          source = <<~ERB
+            <%= button_tag(class: "button-icon") do %>
+              <%= image_tag("home.svg", alt: "Home") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_tag_with_block_image_tag_alt_no_parens_passes
+          source = <<~ERB
+            <%= button_tag class: "button-icon" do %>
+              <%= image_tag "home.svg", alt: "Home" %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_multiline_button_tag_with_block_image_tag_non_empty_alt_passes
+          source = <<~ERB
+            <%= button_tag(class: "button-icon",
+                           type: "button") do %>
+              <%= image_tag("home.svg", alt: "Home") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_tag_with_block_image_tag_dynamic_alt_passes
+          source = <<~ERB
+            <%= button_tag(class: "button-icon") do %>
+              <%= image_tag("home.svg", alt: @title) %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_tag_with_block_image_tag_empty_alt_reports_offense
+          source = <<~ERB
+            <%= button_tag(class: "button-icon") do %>
+              <%= image_tag("home.svg", alt: "") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_button_tag_with_block_image_tag_no_alt_reports_offense
+          source = <<~ERB
+            <%= button_tag(class: "button-icon") do %>
+              <%= image_tag("home.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
         def test_button_tag_with_block_and_text_passes
           source = <<~ERB
             <%= button_tag(class: "button-icon") do %>

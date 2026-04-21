@@ -246,6 +246,75 @@ module A11y
           )
         end
 
+        def test_link_to_with_block_image_tag_non_empty_alt_passes
+          source = <<~SLIM.chomp
+            = link_to("/home") do
+              = image_tag("home.svg", alt: "Home")
+          SLIM
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_link_to_with_block_image_tag_alt_no_parens_passes
+          source = <<~SLIM.chomp
+            = link_to "/home" do
+              = image_tag "home.svg", alt: "Home"
+          SLIM
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_multiline_link_to_with_block_image_tag_non_empty_alt_passes
+          source = <<~SLIM.chomp
+            = link_to(\\
+                "/home",
+                class: "icon",
+              ) do
+              = image_tag("home.svg", alt: "Home")
+          SLIM
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_link_to_with_block_image_tag_dynamic_alt_passes
+          source = <<~SLIM.chomp
+            = link_to("/home") do
+              = image_tag("home.svg", alt: @title)
+          SLIM
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_link_to_with_block_image_tag_empty_alt_reports_offense
+          source = <<~SLIM.chomp
+            = link_to("/home") do
+              = image_tag("home.svg", alt: "")
+          SLIM
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_link_to_with_block_image_tag_no_alt_reports_offense
+          source = <<~SLIM.chomp
+            = link_to("/home") do
+              = image_tag("home.svg")
+          SLIM
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
         def test_link_to_with_block_and_text_passes
           source = <<~SLIM.chomp
             = link_to("#", class: "icon") do
