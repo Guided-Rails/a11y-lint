@@ -4,8 +4,8 @@ module A11y
   module Lint
     # Parses Slim templates and checks them against accessibility rules.
     class SlimRunner
-      def initialize(rules, configuration: Configuration.new)
-        @rules = rules
+      def initialize(rules = nil, configuration: Configuration.new)
+        @rules = rules || configuration.enabled_rules
         @configuration = configuration
       end
 

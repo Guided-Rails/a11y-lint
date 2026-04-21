@@ -46,6 +46,15 @@ module A11y
         @hidden_wrapper_classes ||=
           Array(@config["hidden_wrapper_classes"]).map(&:to_s).freeze
       end
+
+      def enabled_rules
+        Rules.constants.filter_map do |name|
+          klass = Rules.const_get(name)
+          next unless klass.is_a?(Class) && klass < NodeRule
+
+          klass if enabled?(klass.rule_name)
+        end
+      end
     end
   end
 end

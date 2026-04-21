@@ -14,8 +14,8 @@ module A11y
         link meta param source track wbr
       ].freeze
 
-      def initialize(rules, configuration: Configuration.new)
-        @rules = rules
+      def initialize(rules = nil, configuration: Configuration.new)
+        @rules = rules || configuration.enabled_rules
         @configuration = configuration
       end
 

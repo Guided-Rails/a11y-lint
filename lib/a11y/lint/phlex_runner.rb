@@ -9,8 +9,8 @@ module A11y
     class PhlexRunner
       PHLEX_PATTERN = /\bdef\s+view_template\b/
 
-      def initialize(rules, configuration: Configuration.new)
-        @rules = rules
+      def initialize(rules = nil, configuration: Configuration.new)
+        @rules = rules || configuration.enabled_rules
         @configuration = configuration
       end
 
