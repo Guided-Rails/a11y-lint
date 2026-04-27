@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-04-27
+
+### Added
+
+- `.a11y-lint.yml` now supports a top-level `hidden_wrapper_classes` list; content inside elements whose class matches is treated as hidden from assistive technology when the four accessible-name rules (`AnchorMissingAccessibleName`, `ButtonMissingAccessibleName`, `LinkToMissingAccessibleName`, `ButtonTagMissingAccessibleName`) determine whether a button/link has an accessible name. Opt-in; default is no filtering
+
 ## [0.11.0] - 2026-04-21
 
 ### Added
@@ -24,7 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking:** Rename `A11y::Lint::Rule` to `A11y::Lint::NodeRule`. Custom rules that subclass the base class must update the parent class name
 - Auto-require all rule files instead of listing them individually
 - Node attribute storage now preserves string values, enabling rules to check attribute values (not just existence)
-- `.a11y-lint.yml` now supports a top-level `hidden_wrapper_classes` list; content inside elements whose class matches is treated as hidden from assistive technology when the four accessible-name rules (`AnchorMissingAccessibleName`, `ButtonMissingAccessibleName`, `LinkToMissingAccessibleName`, `ButtonTagMissingAccessibleName`) determine whether a button/link has an accessible name. Opt-in; default is no filtering
 
 ### Fixed
 
