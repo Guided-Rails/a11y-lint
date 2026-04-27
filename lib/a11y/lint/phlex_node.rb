@@ -13,6 +13,7 @@ module A11y
         :block_body_codes,
         :call_node,
         :children,
+        :configuration,
         :line,
         :tag_name
       )
@@ -23,7 +24,8 @@ module A11y
         call_node: nil, children: [],
         block_body_codes: nil,
         block_has_text_children: false,
-        text_content: false
+        text_content: false,
+        configuration: Configuration.new
       )
         @tag_name = tag_name
         @attributes = attributes
@@ -33,6 +35,7 @@ module A11y
         @block_body_codes = block_body_codes
         @block_has_text_children = block_has_text_children
         @text_content = text_content
+        @configuration = configuration
       end
       # rubocop:enable Metrics/ParameterLists
 
@@ -52,28 +55,44 @@ module A11y
         @text_content
       end
 
-      def self.build_tag(call_node, children: [], text_content: false)
+      def self.build_tag(
+        call_node, children: [], text_content: false,
+        configuration: Configuration.new
+      )
         name = call_node.name.to_s
         new(
           tag_name: html_tag_name(name),
           attributes: extract_attributes(call_node),
           line: call_node.location.start_line,
           children: children,
-          text_content: text_content
+          text_content: text_content,
+          configuration: configuration
         )
       end
 
       def self.build_helper(
         call_node,
         block_body_codes: nil,
-        block_has_text_children: false
+        block_has_text_children: false,
+        configuration: Configuration.new
       )
         new(
           call_node: CallNode.new(call_node),
           line: call_node.location.start_line,
           block_body_codes: block_body_codes,
-          block_has_text_children: block_has_text_children
+          block_has_text_children: block_has_text_children,
+          configuration: configuration
         )
+      end
+
+      def self.kwarg_class_values(call_node)
+        return [] unless call_node.arguments
+
+        value = kwarg_nodes(call_node).find do |elem|
+          kwarg_key(elem.key) == "class"
+        end&.value
+
+        value.is_a?(Prism::StringNode) ? value.unescaped.split : []
       end
 
       def self.extract_attributes(call_node)

@@ -62,6 +62,35 @@ module A11y
           assert(config.enabled?("ImgMissingAlt"))
         end
       end
+
+      def test_hidden_wrapper_classes_defaults_to_empty_array
+        assert_empty(Configuration.new.hidden_wrapper_classes)
+      end
+
+      def test_hidden_wrapper_classes_reads_top_level_key
+        config = Configuration.new(
+          "hidden_wrapper_classes" => %w[popover tooltip]
+        )
+
+        assert_equal(%w[popover tooltip], config.hidden_wrapper_classes)
+      end
+
+      def test_hidden_wrapper_classes_coerces_entries_to_strings
+        config = Configuration.new("hidden_wrapper_classes" => [:popover])
+
+        assert_equal(["popover"], config.hidden_wrapper_classes)
+      end
+
+      def test_hidden_wrapper_classes_load_from_yaml
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, ".a11y-lint.yml")
+          File.write(path, "hidden_wrapper_classes:\n  - popover\n")
+
+          config = Configuration.load(path)
+
+          assert_equal(["popover"], config.hidden_wrapper_classes)
+        end
+      end
     end
   end
 end

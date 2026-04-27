@@ -141,14 +141,12 @@ module A11y
         refute(node.text_content?)
       end
 
-      def test_text_content_with_erb_output_flag
+      def test_text_content_with_erb_output_marker
         doc = Nokogiri::HTML4::DocumentFragment.parse(
-          "<a href=\"/\"></a>"
+          "<a href=\"/\">#{ErbRunner::ERB_OUTPUT_MARKER}</a>"
         )
         a = doc.at_css("a")
-        node = ErbElementNode.new(
-          nokogiri_node: a, line: a.line, has_erb_output: true
-        )
+        node = ErbElementNode.new(nokogiri_node: a, line: a.line)
 
         assert(node.text_content?)
       end

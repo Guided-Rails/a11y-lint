@@ -9,8 +9,9 @@ module A11y
     class PhlexRunner
       PHLEX_PATTERN = /\bdef\s+view_template\b/
 
-      def initialize(rules)
-        @rules = rules
+      def initialize(rules = nil, configuration: Configuration.new)
+        @rules = rules || configuration.enabled_rules
+        @configuration = configuration
       end
 
       def run(source, filename:)
@@ -26,7 +27,7 @@ module A11y
 
       private
 
-      attr_reader :rules
+      attr_reader :rules, :configuration
 
       def walk(node)
         if receiverless_call?(node)
@@ -48,7 +49,12 @@ module A11y
         children = collect_block_children(node.block)
         has_text = tag_block_has_text?(node.block, children)
         check_node(
-          PhlexNode.build_tag(node, children:, text_content: has_text)
+          PhlexNode.build_tag(
+            node,
+            children: children,
+            text_content: has_text,
+            configuration: configuration
+          )
         )
       end
 
@@ -57,7 +63,8 @@ module A11y
         helper = PhlexNode.build_helper(
           node,
           block_body_codes: codes,
-          block_has_text_children: has_text
+          block_has_text_children: has_text,
+          configuration: configuration
         )
         check_node(helper)
         walk_block(node.block)
@@ -85,10 +92,24 @@ module A11y
         kids = collect_block_children(child.block)
         has_text = tag_block_has_text?(child.block, kids)
         tag = PhlexNode.build_tag(
-          child, children: kids, text_content: has_text
+          child, children: kids, text_content: has_text,
+                 configuration: configuration
         )
-        result << tag
         check_node(tag)
+        result << tag unless hidden_wrapper_tag?(child)
+      end
+
+      def hidden_wrapper_tag?(call_node)
+        classes = configuration.hidden_wrapper_classes
+        return false if classes.empty?
+
+        tag_class_values(call_node).any? { |klass| classes.include?(klass) }
+      end
+
+      def tag_class_values(call_node)
+        return [] unless call_node.arguments
+
+        PhlexNode.kwarg_class_values(call_node)
       end
 
       def tag_block_has_text?(block, children)
@@ -114,8 +135,10 @@ module A11y
       end
 
       # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/PerceivedComplexity
       def scan_block_content(node, codes)
         node.child_nodes.compact.each do |child|
+          next if tag_call?(child) && hidden_wrapper_tag?(child)
           return true if child.is_a?(Prism::YieldNode)
           return true if tag_call?(child) && child.block
           next if tag_call?(child)
@@ -125,6 +148,7 @@ module A11y
         false
       end
       # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/PerceivedComplexity
 
       def walk_block(block)
         return unless block.is_a?(Prism::BlockNode)

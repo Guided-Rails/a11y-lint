@@ -343,6 +343,36 @@ module A11y
           assert_empty(offenses)
         end
 
+        def test_hidden_wrapper_with_icon_passes_by_default
+          source = <<~ERB
+            <%= link_to("/path", class: "icon") do %>
+              <div class="popover"><%= t(".label") %></div>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_hidden_wrapper_with_icon_reports_when_configured
+          source = <<~ERB
+            <%= link_to("/path", class: "icon") do %>
+              <div class="popover"><%= t(".label") %></div>
+              <%= inline_svg("icon.svg") %>
+            <% end %>
+          ERB
+          configuration = Configuration.new(
+            "hidden_wrapper_classes" => ["popover"]
+          )
+
+          offenses = run_linter(source, configuration:)
+          result = offenses.map(&:rule)
+
+          assert_equal(["LinkToMissingAccessibleName"], result)
+        end
+
         private
 
         def offense_message(method_name)
@@ -350,9 +380,12 @@ module A11y
             "requires an aria-label (WCAG 4.1.2)"
         end
 
-        def run_linter(source, filename: "test.html.erb")
+        def run_linter(
+          source, filename: "test.html.erb",
+          configuration: Configuration.new
+        )
           ErbRunner
-            .new([LinkToMissingAccessibleName])
+            .new([LinkToMissingAccessibleName], configuration:)
             .run(source, filename:)
         end
       end

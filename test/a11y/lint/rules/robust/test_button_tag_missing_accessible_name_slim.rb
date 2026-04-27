@@ -266,6 +266,36 @@ module A11y
           assert_empty(offenses)
         end
 
+        def test_hidden_wrapper_with_icon_passes_by_default
+          source = <<~SLIM.chomp
+            = button_tag(class: "button-icon") do
+              .popover
+                = t(".move")
+              = inline_svg("thumbs-up.svg")
+          SLIM
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_hidden_wrapper_with_icon_reports_when_configured
+          source = <<~SLIM.chomp
+            = button_tag(class: "button-icon") do
+              .popover
+                = t(".move")
+              = inline_svg("thumbs-up.svg")
+          SLIM
+          configuration = Configuration.new(
+            "hidden_wrapper_classes" => ["popover"]
+          )
+
+          offenses = run_linter(source, configuration:)
+          result = offenses.map(&:rule)
+
+          assert_equal(["ButtonTagMissingAccessibleName"], result)
+        end
+
         def test_multiline_button_tag_with_block_and_text_passes
           source = <<~SLIM.chomp
             = button_tag(\\
@@ -287,9 +317,11 @@ module A11y
             "requires an aria-label (WCAG 4.1.2)"
         end
 
-        def run_linter(source, filename: "test.slim")
+        def run_linter(
+          source, filename: "test.slim", configuration: Configuration.new
+        )
           SlimRunner
-            .new([ButtonTagMissingAccessibleName])
+            .new([ButtonTagMissingAccessibleName], configuration:)
             .run(source, filename:)
         end
       end

@@ -196,11 +196,52 @@ module A11y
           assert_equal("app/views/index_view.rb", offenses[0].filename)
         end
 
+        def test_button_with_hidden_wrapper_text_passes_by_default
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "button") do
+                  span(class: "popover") { plain "Move" }
+                  img(src: "thumbs-up.svg")
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_hidden_wrapper_text_reports_when_configured
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "button") do
+                  span(class: "popover") { plain "Move" }
+                  img(src: "thumbs-up.svg")
+                end
+              end
+            end
+          RUBY
+          configuration = Configuration.new(
+            "hidden_wrapper_classes" => ["popover"]
+          )
+
+          offenses = run_linter(source, configuration:)
+          result = offenses.map(&:rule)
+
+          assert_equal(["ButtonMissingAccessibleName"], result)
+        end
+
         private
 
-        def run_linter(source, filename: "test_view.rb")
+        def run_linter(
+          source, filename: "test_view.rb",
+          configuration: Configuration.new
+        )
           PhlexRunner
-            .new([ButtonMissingAccessibleName])
+            .new([ButtonMissingAccessibleName], configuration:)
             .run(source, filename:)
         end
       end

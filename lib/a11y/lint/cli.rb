@@ -71,10 +71,10 @@ module A11y
       end
 
       def lint_files(files)
-        rules = all_rules
-        slim_runner = SlimRunner.new(rules)
-        erb_runner = ErbRunner.new(rules)
-        phlex_runner = PhlexRunner.new(rules)
+        configuration = load_configuration
+        slim_runner = SlimRunner.new(configuration:)
+        erb_runner = ErbRunner.new(configuration:)
+        phlex_runner = PhlexRunner.new(configuration:)
 
         files.flat_map do |file|
           source = File.read(file)
@@ -91,18 +91,8 @@ module A11y
         end
       end
 
-      def all_rules
-        configuration = Configuration.load(
-          @config_path,
-          search_path: @argv.first || "."
-        )
-
-        Rules.constants.filter_map do |name|
-          klass = Rules.const_get(name)
-          next unless klass.is_a?(Class) && klass < NodeRule
-
-          klass if configuration.enabled?(klass.rule_name)
-        end
+      def load_configuration
+        Configuration.load(@config_path, search_path: @argv.first || ".")
       end
 
       def print_results(offenses)
