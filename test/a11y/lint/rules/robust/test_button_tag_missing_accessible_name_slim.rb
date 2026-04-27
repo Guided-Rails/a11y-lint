@@ -286,19 +286,14 @@ module A11y
                 = t(".move")
               = inline_svg("thumbs-up.svg")
           SLIM
-
-          offenses = run_linter(
-            source,
-            configuration: Configuration.new(
-              "hidden_wrapper_classes" => ["popover"]
-            )
+          configuration = Configuration.new(
+            "hidden_wrapper_classes" => ["popover"]
           )
 
-          assert_equal(1, offenses.length)
-          assert_equal(
-            "ButtonTagMissingAccessibleName",
-            offenses[0].rule
-          )
+          offenses = run_linter(source, configuration:)
+          result = offenses.map(&:rule)
+
+          assert_equal(["ButtonTagMissingAccessibleName"], result)
         end
 
         def test_multiline_button_tag_with_block_and_text_passes

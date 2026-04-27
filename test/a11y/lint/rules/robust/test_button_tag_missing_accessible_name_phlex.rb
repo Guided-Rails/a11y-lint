@@ -241,16 +241,14 @@ module A11y
               end
             end
           RUBY
-
-          offenses = run_linter(
-            source,
-            configuration: Configuration.new(
-              "hidden_wrapper_classes" => ["popover"]
-            )
+          configuration = Configuration.new(
+            "hidden_wrapper_classes" => ["popover"]
           )
 
-          assert_equal(1, offenses.length)
-          assert_equal("ButtonTagMissingAccessibleName", offenses[0].rule)
+          offenses = run_linter(source, configuration:)
+          result = offenses.map(&:rule)
+
+          assert_equal(["ButtonTagMissingAccessibleName"], result)
         end
 
         private
