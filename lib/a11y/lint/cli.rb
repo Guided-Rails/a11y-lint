@@ -72,9 +72,9 @@ module A11y
 
       def lint_files(files)
         configuration = load_configuration
-        slim_runner = SlimRunner.new(configuration: configuration)
-        erb_runner = ErbRunner.new(configuration: configuration)
-        phlex_runner = PhlexRunner.new(configuration: configuration)
+        slim_runner = SlimRunner.new(configuration:)
+        erb_runner = ErbRunner.new(configuration:)
+        phlex_runner = PhlexRunner.new(configuration:)
 
         files.flat_map do |file|
           source = File.read(file)
