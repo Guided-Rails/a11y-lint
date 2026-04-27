@@ -17,6 +17,15 @@ module A11y
         @call_node ||= parse
       end
 
+      # Returns the outermost CallNode regardless of receiver
+      # (e.g. matches `form.input(...)`). Used by rules that target
+      # method calls on a builder object.
+      def top_level_call_node
+        return @top_level_call_node if defined?(@top_level_call_node)
+
+        @top_level_call_node = parse_top_level
+      end
+
       private
 
       attr_reader(:code)
@@ -30,6 +39,26 @@ module A11y
 
         prism_node = find_receiverless_call(prism_parse_result.value)
         prism_node ? CallNode.new(prism_node) : nil
+      end
+
+      def parse_top_level
+        return if code.nil? || code.empty?
+        return unless prism_parse_result.success?
+
+        prism_node = find_any_call(prism_parse_result.value)
+        prism_node ? CallNode.new(prism_node) : nil
+      end
+
+      # Walks the Prism AST to find the first method call (with or
+      # without a receiver). Used to detect calls like `form.input(...)`.
+      def find_any_call(node)
+        return node if node.is_a?(Prism::CallNode)
+
+        node.child_nodes.compact.each do |child|
+          found = find_any_call(child)
+          return found if found
+        end
+        nil
       end
 
       # Walks the Prism AST to find the first method call without a

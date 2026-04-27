@@ -106,6 +106,12 @@
 <!-- Bad: button with img without alt (ButtonMissingAccessibleName) -->
 <button type="button"><img src="close.svg"></button>
 
+<!-- Good: form.input select with aria-label in input_html -->
+<%= form.input(:sort_by, collection: opts, label: false, input_html: { aria: { label: "Sort by" } }) %>
+
+<!-- Bad: form.input select with label: false, no aria (SimpleFormSelectMissingAccessibleName) -->
+<%= form.input(:sort_by, collection: opts, label: false) %>
+
 <!-- Good: ul with only li children -->
 <ul>
   <li>First</li>
