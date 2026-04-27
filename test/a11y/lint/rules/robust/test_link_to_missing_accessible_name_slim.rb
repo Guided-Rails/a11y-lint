@@ -374,16 +374,14 @@ module A11y
                 = t(".label")
               = inline_svg("icon.svg")
           SLIM
-
-          offenses = run_linter(
-            source,
-            configuration: Configuration.new(
-              "hidden_wrapper_classes" => ["popover"]
-            )
+          configuration = Configuration.new(
+            "hidden_wrapper_classes" => ["popover"]
           )
 
-          assert_equal(1, offenses.length)
-          assert_equal("LinkToMissingAccessibleName", offenses[0].rule)
+          offenses = run_linter(source, configuration:)
+          result = offenses.map(&:rule)
+
+          assert_equal(["LinkToMissingAccessibleName"], result)
         end
 
         private
