@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `SimpleFormSelectMissingAccessibleName` rule: detects Simple Form `form.input` calls rendering a select (via `collection:` or `as: :select`) with `label: false`/`label: ""` and no `aria-label` or `aria-labelledby` in `input_html` (WCAG 4.1.2). Slim and ERB only; no-op in Phlex by design
+
 ## [0.12.0] - 2026-04-27
 
 ### Added

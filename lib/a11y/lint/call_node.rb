@@ -17,17 +17,40 @@ module A11y
       end
 
       # Checks for a keyword argument by name.
-      #   keyword?(:alt)          => alt: or "alt" =>
-      #   keyword?(:aria, :label) => aria: { label: ... }
-      #   keyword?(:"aria-label") => "aria-label" =>
+      #   keyword?(:alt)                       => alt: or "alt" =>
+      #   keyword?(:aria, :label)              => aria: { label: ... }
+      #   keyword?(:"aria-label")              => "aria-label" =>
+      #   keyword?(:input_html, :aria, :label) => 3-level nested hash
       def keyword?(*keys)
         return false unless (kw_hash = find_keyword_hash)
 
-        if keys.length == 1
-          flat_keyword?(kw_hash, keys[0])
-        else
-          nested_keyword?(kw_hash, keys[0], keys[1])
-        end
+        nested_keyword_in?(kw_hash, keys)
+      end
+
+      # True when `key:` is present and its value is the symbol literal
+      # `:expected` (e.g. `keyword_symbol?(:as, :select)` matches
+      # `as: :select`).
+      def keyword_symbol?(key, expected)
+        return false unless (kw_hash = find_keyword_hash)
+
+        assoc = kw_hash.elements.find { |a| key_name(a) == key.to_s }
+        return false unless assoc&.value.is_a?(Prism::SymbolNode)
+
+        assoc.value.unescaped == expected.to_s
+      end
+
+      # True when the `label:` keyword is present and its value is
+      # `false` or an empty string literal — i.e. the helper is being
+      # told to omit any visible label.
+      def label_hidden?
+        return false unless (kw_hash = find_keyword_hash)
+
+        assoc = kw_hash.elements.find { |a| key_name(a) == "label" }
+        return false unless assoc
+
+        value = assoc.value
+        value.is_a?(Prism::FalseNode) ||
+          (value.is_a?(Prism::StringNode) && value.unescaped.empty?)
       end
 
       # True when the keyword is present AND its value is a non-empty
@@ -73,21 +96,18 @@ module A11y
 
       private
 
-      def flat_keyword?(kw_hash, key)
-        kw_hash.elements.any? do |assoc|
-          key_name(assoc) == key.to_s
-        end
-      end
+      # Walks the (possibly nested) keyword hash following the given key
+      # path. Each step except the last requires a HashNode value.
+      def nested_keyword_in?(hash_node, keys)
+        return false if keys.empty?
 
-      def nested_keyword?(kw_hash, outer_key, inner_key)
-        assoc = kw_hash.elements.find do |a|
-          key_name(a) == outer_key.to_s
-        end
-        return false unless assoc&.value.is_a?(Prism::HashNode)
+        head, *rest = keys
+        assoc = hash_node.elements.find { |a| key_name(a) == head.to_s }
+        return false unless assoc
+        return true if rest.empty?
+        return false unless assoc.value.is_a?(Prism::HashNode)
 
-        assoc.value.elements.any? do |inner|
-          key_name(inner) == inner_key.to_s
-        end
+        nested_keyword_in?(assoc.value, rest)
       end
 
       def find_keyword_hash
