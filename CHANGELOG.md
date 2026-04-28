@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-04-28
+
 ### Changed
 
-- `SimpleFormSelectMissingAccessibleName` is now `SimpleFormInputMissingAccessibleName` and flags any Simple Form `form.input` with `label: false`/`label: ""` that has no `aria-label` or `aria-labelledby` in `input_html`, regardless of input type (WCAG 4.1.2). `as: :hidden` is skipped. Projects that pinned the rule by name in `.a11y-lint.yml` need to update the key
+- **Breaking:** `SimpleFormSelectMissingAccessibleName` is now `SimpleFormInputMissingAccessibleName` and flags any Simple Form `form.input` with `label: false`/`label: ""` that has no `aria-label` or `aria-labelledby` in `input_html`, regardless of input type (WCAG 4.1.2). `as: :hidden` is skipped. Projects that pinned the rule by name in `.a11y-lint.yml` need to update the key
 
 ## [0.13.0] - 2026-04-28
 
