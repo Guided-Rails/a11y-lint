@@ -7,15 +7,15 @@ module A11y
     module Rules
       # The PhlexRunner only walks receiverless calls, so `form.input(...)`
       # is not surfaced as a candidate node. The rule is a no-op for Phlex
-      # views by design (see issue #71 — Simple Form select detection is
+      # views by design (see issue #71 — Simple Form input detection is
       # narrowly scoped to template engines).
-      class TestSimpleFormSelectMissingAccessibleNamePhlex < Minitest::Test
+      class TestSimpleFormInputMissingAccessibleNamePhlex < Minitest::Test
         def test_form_input_with_label_false_does_not_report
           source = <<~RUBY
             class TestView < Phlex::HTML
               def view_template
                 simple_form_for(@model) do |form|
-                  form.input(:sort_by, collection: opts, label: false)
+                  form.input(:name, label: false)
                 end
               end
             end
@@ -32,7 +32,7 @@ module A11y
           source, filename: "test_view.rb", configuration: Configuration.new
         )
           PhlexRunner
-            .new([SimpleFormSelectMissingAccessibleName], configuration:)
+            .new([SimpleFormInputMissingAccessibleName], configuration:)
             .run(source, filename:)
         end
       end

@@ -29,14 +29,18 @@ In Simple Form, both go inside `input_html`:
 
 A placeholder is **not** a label. It disappears as soon as the user types, browsers don't reliably expose it as the accessible name, and it fails users who rely on the prompt staying visible while they fill the field.
 
-## SimpleFormSelectMissingAccessibleName
-{:#simple-form-select-missing-accessible-name}
+## SimpleFormInputMissingAccessibleName
+{:#simple-form-input-missing-accessible-name}
 
-Applies to: Simple Form `form.input` calls that render a `<select>` — either `collection:` is passed, or `as: :select` is set — when `label: false` or `label: ""` hides the visible label.
+Applies to: Simple Form `form.input` calls with `label: false` or `label: ""` — regardless of input type. `as: :hidden` is skipped, since hidden inputs don't render a visible control.
 
 The rule passes when `input_html` provides `aria-label` or `aria-labelledby`. Both hash and string keys are accepted (`aria: { label: "..." }` and `"aria-label" => "..."`).
 
 ### Bad
+
+```erb
+<%%= form.input :name, label: false %>
+```
 
 ```erb
 <%%= form.input :sort_by, collection: opts, label: false %>
@@ -48,17 +52,18 @@ The rule passes when `input_html` provides `aria-label` or `aria-labelledby`. Bo
 
 ### Good
 
-Render a visible label by removing `label: false`:
+Render a visible label by removing `label: false` and letting Simple Form generate one from the attribute name, or by passing an explicit string:
 
 ```erb
+<%%= form.input :name %>
 <%%= form.input :sort_by, collection: opts, label: "Sort by" %>
 ```
 
 Or, when there's no visible label, supply `aria-label`:
 
 ```erb
-<%%= form.input :sort_by, collection: opts, label: false,
-      input_html: { aria: { label: "Sort by" } } %>
+<%%= form.input :name, label: false,
+      input_html: { aria: { label: "Name" } } %>
 ```
 
 Or `aria-labelledby` pointing to existing visible text:
@@ -69,19 +74,25 @@ Or `aria-labelledby` pointing to existing visible text:
       input_html: { aria: { labelledby: "sort-label" } } %>
 ```
 
+`as: :hidden` doesn't render a visible control, so it's exempt:
+
+```erb
+<%%= form.input :secret, as: :hidden, label: false %>
+```
+
 ### Slim equivalent
 
 ```slim
-= form.input :sort_by, collection: opts, label: false, input_html: { aria: { label: "Sort by" } }
+= form.input :name, label: false, input_html: { aria: { label: "Name" } }
 ```
 
 ## What this rule doesn't catch
 
 This rule has a deliberately narrow scope. Things it doesn't flag:
 
-- **Plain `<select>` elements.** The rule targets Simple Form's `form.input` helper. A bare `<select>` with no associated `<label>` is not reported.
+- **Plain HTML form controls.** The rule targets Simple Form's `form.input` helper. A bare `<input>`, `<select>`, or `<textarea>` with no associated `<label>` is not reported.
 - **Other Simple Form helpers.** `form.select`, `form.association`, and similar helpers aren't checked — only `form.input`.
-- **Other input types.** `form.input` rendering as text, email, checkbox, radio, etc. is not checked. Selects are flagged because the `label: false` + missing aria pattern is unusually common for sort and filter dropdowns.
+- **Inputs without `label: false`.** Simple Form auto-generates a label from the attribute name, so `form.input :name` is treated as having a visible label. The rule only kicks in once the label is explicitly suppressed.
 - **Phlex views.** The rule is a no-op in Phlex by design. The Phlex pipeline only walks receiverless calls, so `form.input(...)` isn't surfaced as a candidate node. Simple Form code embedded inside a Phlex component won't be checked.
 - **Bad accessible name content.** `aria: { label: "" }` will pass the rule check above (an empty aria-label is its own problem, but not this rule's). `aria: { label: "select" }` will pass. The linter checks that an aria attribute is present, not that the value is useful.
 - **Dynamic accessible names.** `aria: { label: variable }` satisfies the rule even if `variable` is `nil` at runtime.
