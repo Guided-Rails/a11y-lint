@@ -31,6 +31,7 @@ a11y-lint is a Ruby gem (v0.1.0) for accessibility linting. It uses the `A11y::L
 - **Type signatures (RBS):** `sig/a11y/lint.rbs`
 - **Tests:** `test/` directory using Minitest; test helper at `test/test_helper.rb`
 - **Dummy app:** `test/fixtures/dummy_app/` — a fixture app with Slim/ERB/Phlex templates for end-to-end smoke testing before releases (`bundle exec a11y-lint test/fixtures/dummy_app`)
+- **Documentation site:** `docs/` — Bridgetown site deployed to https://a11y-lint.guidedrails.com via `.github/workflows/docs.yml` on push to `main`. Has its own `Gemfile`, `package.json`, and Ruby version, and is excluded from the gem's RuboCop config. Rule reference pages live in `docs/src/rules/` (one page per WCAG concept; individual rule classes are anchor sections, e.g. `/rules/images-need-alt-text/#img-missing-alt`). Run locally with `cd docs && bin/bridgetown start`.
 
 ## Rule Scoping Convention
 
