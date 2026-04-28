@@ -7,6 +7,9 @@ output
 # Dependency folders
 node_modules
 
+# Lockfile is committed for reproducible builds (overrides global gitignore)
+!package-lock.json
+
 # Caches
 .sass-cache
 .npm
