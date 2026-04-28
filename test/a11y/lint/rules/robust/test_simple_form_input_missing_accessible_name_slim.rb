@@ -5,10 +5,10 @@ require "test_helper"
 module A11y
   module Lint
     module Rules
-      class TestSimpleFormSelectMissingAccessibleNameSlim < Minitest::Test
-        def test_collection_with_label_false_reports_offense
+      class TestSimpleFormInputMissingAccessibleNameSlim < Minitest::Test
+        def test_text_input_with_label_false_reports_offense
           source = <<~SLIM.chomp
-            = form.input(:sort_by, collection: opts, label: false)
+            = form.input(:name, label: false)
           SLIM
 
           offenses = run_linter(source)
@@ -17,13 +17,13 @@ module A11y
           assert_equal(offense_message, offenses[0].message)
           assert_equal(1, offenses[0].line)
           assert_equal(
-            "SimpleFormSelectMissingAccessibleName", offenses[0].rule
+            "SimpleFormInputMissingAccessibleName", offenses[0].rule
           )
         end
 
-        def test_collection_with_label_false_without_parens_reports_offense
+        def test_text_input_with_label_false_without_parens_reports_offense
           source = <<~SLIM.chomp
-            = form.input :sort_by, collection: opts, label: false
+            = form.input :name, label: false
           SLIM
 
           offenses = run_linter(source)
@@ -31,13 +31,42 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
-        def test_multiline_collection_with_label_false_reports_offense
+        def test_multiline_text_input_with_label_false_reports_offense
           source = <<~SLIM.chomp
             = form.input(\\
-                :sort_by,
-                collection: opts,
+                :name,
                 label: false,
               )
+          SLIM
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_text_input_with_aria_label_passes
+          source = <<~SLIM.chomp
+            = form.input(:name, label: false, input_html: { aria: { label: "Name" } })
+          SLIM
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_text_input_with_string_aria_label_passes
+          source = <<~SLIM.chomp
+            = form.input(:name, label: false, input_html: { "aria-label" => "Name" })
+          SLIM
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_collection_with_label_false_reports_offense
+          source = <<~SLIM.chomp
+            = form.input(:sort_by, collection: opts, label: false)
           SLIM
 
           offenses = run_linter(source)
@@ -55,6 +84,16 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
+        def test_as_string_with_label_false_reports_offense
+          source = <<~SLIM.chomp
+            = form.input(:name, as: :string, label: false)
+          SLIM
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
         def test_label_empty_string_reports_offense
           source = <<~SLIM.chomp
             = form.input(:sort_by, collection: opts, label: "")
@@ -65,19 +104,9 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
-        def test_aria_label_in_input_html_passes
+        def test_collection_with_aria_label_in_input_html_passes
           source = <<~SLIM.chomp
             = form.input(:sort_by, collection: opts, label: false, input_html: { aria: { label: "Sort by" } })
-          SLIM
-
-          offenses = run_linter(source)
-
-          assert_empty(offenses)
-        end
-
-        def test_aria_label_in_input_html_without_parens_passes
-          source = <<~SLIM.chomp
-            = form.input :sort_by, collection: opts, label: false, input_html: { aria: { label: "Sort by" } }
           SLIM
 
           offenses = run_linter(source)
@@ -93,16 +122,6 @@ module A11y
                 label: false,
                 input_html: { aria: { label: "Sort by" } },
               )
-          SLIM
-
-          offenses = run_linter(source)
-
-          assert_empty(offenses)
-        end
-
-        def test_string_aria_label_in_input_html_passes
-          source = <<~SLIM.chomp
-            = form.input(:sort_by, collection: opts, label: false, input_html: { "aria-label" => "Sort by" })
           SLIM
 
           offenses = run_linter(source)
@@ -140,9 +159,9 @@ module A11y
           assert_empty(offenses)
         end
 
-        def test_no_collection_or_as_select_passes
+        def test_default_label_passes
           source = <<~SLIM.chomp
-            = form.input(:name, label: false)
+            = form.input(:name)
           SLIM
 
           offenses = run_linter(source)
@@ -150,9 +169,9 @@ module A11y
           assert_empty(offenses)
         end
 
-        def test_as_string_select_does_not_match
+        def test_as_hidden_with_label_false_passes
           source = <<~SLIM.chomp
-            = form.input(:sort_by, as: :string, label: false)
+            = form.input(:secret, as: :hidden, label: false)
           SLIM
 
           offenses = run_linter(source)
@@ -182,7 +201,7 @@ module A11y
 
         def test_f_builder_name_also_matches
           source = <<~SLIM.chomp
-            = f.input(:sort_by, collection: opts, label: false)
+            = f.input(:name, label: false)
           SLIM
 
           offenses = run_linter(source)
@@ -192,7 +211,7 @@ module A11y
 
         def test_sets_filename_on_offense
           source = <<~SLIM.chomp
-            = form.input(:sort_by, collection: opts, label: false)
+            = form.input(:name, label: false)
           SLIM
 
           offenses = run_linter(
@@ -207,7 +226,7 @@ module A11y
         private
 
         def offense_message
-          "form.input select missing an accessible name " \
+          "form.input missing an accessible name " \
             "requires aria-label or aria-labelledby in input_html (WCAG 4.1.2)"
         end
 
@@ -215,7 +234,7 @@ module A11y
           source, filename: "test.slim", configuration: Configuration.new
         )
           SlimRunner
-            .new([SimpleFormSelectMissingAccessibleName], configuration:)
+            .new([SimpleFormInputMissingAccessibleName], configuration:)
             .run(source, filename:)
         end
       end
