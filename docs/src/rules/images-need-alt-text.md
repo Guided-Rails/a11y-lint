@@ -67,15 +67,31 @@ Applies to: HTML `<img>` elements.
 
 ### Bad
 
-```erb
-<img src="hero.jpg">
-```
+<%= render Shared::CodeTabs.new(
+  erb: <<~ERB,
+    <img src="hero.jpg">
+  ERB
+  slim: <<~SLIM,
+    img src="hero.jpg"
+  SLIM
+  phlex: <<~PHLEX,
+    img(src: "hero.jpg")
+  PHLEX
+) %>
 
 ### Good
 
-```erb
-<img src="hero.jpg" alt="Team celebrating after a product launch">
-```
+<%= render Shared::CodeTabs.new(
+  erb: <<~ERB,
+    <img src="hero.jpg" alt="Team celebrating after a product launch">
+  ERB
+  slim: <<~SLIM,
+    img src="hero.jpg" alt="Team celebrating after a product launch"
+  SLIM
+  phlex: <<~PHLEX,
+    img(src: "hero.jpg", alt: "Team celebrating after a product launch")
+  PHLEX
+) %>
 
 For a decorative image, use an empty `alt` so assistive tech skips it:
 

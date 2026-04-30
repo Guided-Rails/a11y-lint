@@ -1,0 +1,30 @@
+<div class="code-tabs">
+  <div class="code-tabs__tablist" role="tablist" aria-label="Template language">
+    <% tabs.each_with_index do |tab, i| %>
+      <button
+        type="button"
+        role="tab"
+        id="<%= tab_id(tab[:key]) %>"
+        aria-controls="<%= panel_id(tab[:key]) %>"
+        aria-selected="<%= i.zero? %>"
+        tabindex="<%= i.zero? ? 0 : -1 %>"
+        class="code-tabs__tab"
+      >
+        <%= tab[:label] %>
+      </button>
+    <% end %>
+  </div>
+
+  <% tabs.each_with_index do |tab, i| %>
+    <div
+      role="tabpanel"
+      id="<%= panel_id(tab[:key]) %>"
+      aria-labelledby="<%= tab_id(tab[:key]) %>"
+      class="code-tabs__panel"
+      tabindex="0"
+      <%= "hidden" unless i.zero? %>
+    >
+      <%= raw highlighted(tab[:key], tab[:lexer]) %>
+    </div>
+  <% end %>
+</div>
