@@ -84,6 +84,9 @@ class HomeView < Phlex::HTML
     # Good: anchor with text
     a(href: "/home") { plain "Home" }
 
+    # Good: anchor with translated text via phlex-rails value helper
+    a(href: "/dashboard") { t(".dashboard") }
+
     # Bad: empty anchor (AnchorMissingAccessibleName)
     a(href: "/profile", class: "icon")
 
@@ -98,6 +101,9 @@ class HomeView < Phlex::HTML
 
     # Good: button with text
     button(type: "submit") { plain "Submit" }
+
+    # Good: button with translated text via phlex-rails value helper
+    button(type: "submit") { t(".submit") }
 
     # Bad: empty button (ButtonMissingAccessibleName)
     button(type: "button", class: "close")

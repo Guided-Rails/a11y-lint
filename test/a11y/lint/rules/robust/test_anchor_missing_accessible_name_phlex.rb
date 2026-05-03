@@ -69,6 +69,48 @@ module A11y
           assert_empty(offenses)
         end
 
+        def test_anchor_with_text_helper_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/path") { text "Home" }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_translation_helper_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/path") { t(".dashboard") }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_pluralize_helper_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/path") { pluralize(count, "item") }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
         def test_anchor_with_child_tag_text_passes
           source = <<~RUBY
             class TestView < Phlex::HTML

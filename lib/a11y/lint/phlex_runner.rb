@@ -9,6 +9,19 @@ module A11y
     class PhlexRunner
       PHLEX_PATTERN = /\bdef\s+view_template\b/
 
+      # Phlex auto-emits the return value of these calls into the document:
+      # `plain` / `text` are built-in; the rest are registered as value
+      # helpers by phlex-rails via `register_value_helper`.
+      TEXT_CALLS = %w[
+        plain text
+        t translate l localize
+        pluralize truncate
+        number_to_currency number_to_human number_to_human_size
+        number_to_percentage number_to_phone
+        number_with_delimiter number_with_precision
+        highlight excerpt
+      ].to_set.freeze
+
       def initialize(rules = nil, configuration: Configuration.new)
         @rules = rules || configuration.enabled_rules
         @configuration = configuration
@@ -161,7 +174,7 @@ module A11y
       end
 
       def text_call?(node)
-        receiverless_call?(node) && node.name.to_s == "plain"
+        receiverless_call?(node) && TEXT_CALLS.include?(node.name.to_s)
       end
 
       def receiverless_call?(node)
