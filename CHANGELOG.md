@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `AnchorMissingAccessibleName` and `ButtonMissingAccessibleName` no longer report Phlex `a`/`button` tags whose accessible text comes from a phlex-rails value helper (`t`, `translate`, `l`, `localize`, `pluralize`, `truncate`, the `number_to_*` / `number_with_*` helpers, `highlight`, `excerpt`) or Phlex's built-in `text`. Previously only `plain` was recognized
+
 ## [0.14.0] - 2026-04-28
 
 ### Changed

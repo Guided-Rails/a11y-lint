@@ -69,6 +69,48 @@ module A11y
           assert_empty(offenses)
         end
 
+        def test_button_with_text_helper_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "submit") { text "Submit" }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_translation_helper_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "submit") { t(".submit") }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_number_helper_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "submit") { number_to_currency(price) }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
         def test_button_with_child_tag_text_passes
           source = <<~RUBY
             class TestView < Phlex::HTML
