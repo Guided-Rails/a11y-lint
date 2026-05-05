@@ -494,6 +494,47 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
+        def test_anchor_forwarding_block_argument_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def link(&block)
+                a(href: "/x", class: "...", &block)
+              end
+
+              def view_template
+                link do
+                  span { text }
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_forwarding_block_argument_with_mixed_children_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def link(&block)
+                a(href: "/x", &block)
+              end
+
+              def view_template
+                link do
+                  span { text }
+                  XMarkSolid(class: "size-4")
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
         def test_anchor_with_hidden_wrapper_text_reports_when_configured
           source = <<~RUBY
             class TestView < Phlex::HTML

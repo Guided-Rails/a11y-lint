@@ -48,7 +48,8 @@ module A11y
 
       def check_tag(node)
         children = collect_block_children(node.block)
-        has_text = tag_block_has_text?(node.block, children)
+        has_text = forwarded_block?(node.block) ||
+                   tag_block_has_text?(node.block, children)
         check_node(
           PhlexNode.build_tag(
             node,
@@ -57,6 +58,13 @@ module A11y
             configuration: configuration
           )
         )
+      end
+
+      # Tag calls that forward a block argument (`a(&block)`) defer their
+      # content to the caller, which we can't see from this call site.
+      # Trust the wrapper rather than report a false positive.
+      def forwarded_block?(block)
+        block.is_a?(Prism::BlockArgumentNode)
       end
 
       def check_helper(node)

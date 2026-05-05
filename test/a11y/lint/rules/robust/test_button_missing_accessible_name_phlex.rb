@@ -464,6 +464,47 @@ module A11y
           assert_equal(1, offenses.length)
         end
 
+        def test_button_forwarding_block_argument_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def submit(&block)
+                button(type: "submit", class: "btn", &block)
+              end
+
+              def view_template
+                submit do
+                  span { text }
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_forwarding_block_argument_with_mixed_children_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def submit(&block)
+                button(type: "submit", &block)
+              end
+
+              def view_template
+                submit do
+                  span { text }
+                  XMarkSolid(class: "size-4")
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
         def test_button_with_hidden_wrapper_text_reports_when_configured
           source = <<~RUBY
             class TestView < Phlex::HTML

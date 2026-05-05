@@ -141,6 +141,12 @@ class HomeView < Phlex::HTML
     # Good: button whose block returns a local variable
     button(type: "submit", class: "btn") { label }
 
+    # Good: wrapper methods (defined below) forward &block to a/button.
+    # Accessible name is provided by the caller's block, which the linter
+    # can't see from the wrapper site, so the &block forward is trusted.
+    icon_link("/back") { span { "Back" } }
+    icon_button { span { "Save" } }
+
     # Bad: anchor whose only child is a capitalized Phlex component
     # (AnchorMissingAccessibleName)
     a(href: "/somewhere") { Pencil(variant: :solid, class: "size-4") }
@@ -160,5 +166,15 @@ class HomeView < Phlex::HTML
       div { "Not allowed" }
       li { "Item" }
     end
+  end
+
+  # Good: wrapper forwards &block to <a> — caller supplies the text.
+  def icon_link(href, &block)
+    a(href:, class: "icon-link", &block)
+  end
+
+  # Good: wrapper forwards &block to <button> — caller supplies the text.
+  def icon_button(&block)
+    button(type: "button", class: "icon-button", &block)
   end
 end
