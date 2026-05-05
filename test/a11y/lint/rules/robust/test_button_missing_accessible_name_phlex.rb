@@ -283,6 +283,187 @@ module A11y
           assert_empty(offenses)
         end
 
+        def test_button_with_string_literal_block_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: :submit, class: "btn") { "Filter" }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_interpolated_string_block_passes
+          source = <<~'RUBY'
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "submit") { "Save #{record.name}" }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_method_call_with_receiver_block_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "submit") { record.action_label }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_receiverless_lowercase_call_block_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "button", class: "btn btn-secondary") do
+                  add_label
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_local_variable_param_block_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def submit(label)
+                button(type: "submit") { label }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_sr_only_label_among_components_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def menu_button(label)
+                button(class: "...", data: { testid: "dropdown-trigger" }) do
+                  span(class: "absolute -inset-2.5")
+                  span(class: "sr-only") { label }
+                  EllipsisVertical(variant: :solid, aria_hidden: "true")
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_ternary_text_branch_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "submit") { saving? ? "Saving..." : "Save" }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_empty_string_literal_block_reports_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "submit") { "" }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_button_with_whitespace_string_block_reports_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "submit") { "   " }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_button_with_statement_then_nil_last_reports_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "button") do
+                  log_click
+                  nil
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_button_with_only_capitalized_component_reports_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "button") do
+                  EllipsisVertical(variant: :solid)
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_button_with_aria_hidden_component_only_reports_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "button") do
+                  EllipsisVertical(aria_hidden: "true")
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
         def test_button_with_hidden_wrapper_text_reports_when_configured
           source = <<~RUBY
             class TestView < Phlex::HTML

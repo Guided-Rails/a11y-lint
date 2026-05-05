@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class HomeView < Phlex::HTML
-  def view_template
+  def view_template(label: "Menu")
     h1 { "Welcome" }
 
     # Good: img with alt
@@ -122,6 +122,32 @@ class HomeView < Phlex::HTML
 
     # Bad: button with img without alt (ButtonMissingAccessibleName)
     button(type: "button") { img(src: "close.svg") }
+
+    # Good: anchor with bare string-literal block (Phlex auto-emits)
+    a(href: "/clear", class: "text-sm") { "Clear all" }
+
+    # Good: anchor whose block returns a method call value
+    a(href: "/profile", class: "link") { current_user_email }
+
+    # Good: anchor with sr-only label among icon component siblings
+    a(href: "/back", class: "...") do
+      span(class: "sr-only") { "Back to " }
+      span { label }
+    end
+
+    # Good: button with bare string-literal block
+    button(type: :submit, class: "btn") { "Filter" }
+
+    # Good: button whose block returns a local variable
+    button(type: "submit", class: "btn") { label }
+
+    # Bad: anchor whose only child is a capitalized Phlex component
+    # (AnchorMissingAccessibleName)
+    a(href: "/somewhere") { Pencil(variant: :solid, class: "size-4") }
+
+    # Bad: anchor with whitespace-only string literal block
+    # (AnchorMissingAccessibleName)
+    a(href: "/x") { "   " }
 
     # Good: ul with only li children
     ul do

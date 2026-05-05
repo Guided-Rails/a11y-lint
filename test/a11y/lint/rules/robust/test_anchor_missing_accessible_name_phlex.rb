@@ -283,6 +283,217 @@ module A11y
           assert_empty(offenses)
         end
 
+        def test_anchor_with_string_literal_block_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/path", class: "text-sm") { "Clear all" }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_interpolated_string_block_passes
+          source = <<~'RUBY'
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/x") { "Hello, #{name}" }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_method_call_with_receiver_block_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: admin_account_path(account), class: "link") do
+                  account.email
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_index_access_block_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: tab[:href]) { tab[:text] }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_receiverless_lowercase_call_block_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: external_url, target: "_blank") { external_url }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_local_variable_param_block_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def link_for(text)
+                a(href: "/path") { text }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_sr_only_text_among_components_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/back", class: "...") do
+                  ArrowLongLeft(variant: :solid, aria_hidden: "true")
+                  span(class: "sr-only") { "Back to " }
+                  span { text }
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_ternary_text_branch_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/x") { user ? user.email : "Guest" }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_empty_string_literal_block_reports_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/x") { "" }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_anchor_with_whitespace_string_block_reports_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/x") { "   " }
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_anchor_with_statement_then_nil_last_reports_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/x") do
+                  log_click
+                  nil
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_anchor_with_only_capitalized_component_reports_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/somewhere") do
+                  Pencil(variant: :solid, class: "size-4")
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_anchor_with_title_attribute_only_reports_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/edit", title: "Edit profile") do
+                  Pencil(variant: :solid)
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_anchor_with_aria_hidden_component_only_reports_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/edit") do
+                  Pencil(aria_hidden: "true")
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
         def test_anchor_with_hidden_wrapper_text_reports_when_configured
           source = <<~RUBY
             class TestView < Phlex::HTML

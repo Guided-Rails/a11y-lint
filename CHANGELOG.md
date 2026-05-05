@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `AnchorMissingAccessibleName` and `ButtonMissingAccessibleName` no longer report Phlex `a`/`button` tags that use the nested-hash shorthand for `aria-label` (e.g. `aria: { label: "..." }`). `PhlexNode` now flattens nested kwarg hashes the way Phlex does at render time (`aria: { label: "x" }` → `aria-label="x"`, `data: { controller: "y" }` → `data-controller="y"`), so every Phlex tag rule benefits
+- `AnchorMissingAccessibleName` and `ButtonMissingAccessibleName` no longer report Phlex `a`/`button` tags whose accessible name comes from the block's auto-emitted return value. Phlex renders the block's last expression when it's a string-like value, and `PhlexRunner` now recognizes string literals (`{ "Clear all" }`, `{ "Hi #{name}" }`), method calls with a receiver (`{ account.email }`, `{ tab[:text] }`), lowercase receiverless calls (`{ external_url }`, `{ add_label }`), method-parameter / local-variable reads, and ternary / `if` / `unless` expressions whose branches resolve to text. Capitalized component calls (`{ Pencil(...) }`) and blank string literals are still treated as having no accessible name
 
 ## [0.14.1] - 2026-05-03
 
