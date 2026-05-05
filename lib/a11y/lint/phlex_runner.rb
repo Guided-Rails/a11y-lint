@@ -49,6 +49,7 @@ module A11y
       def check_tag(node)
         children = collect_block_children(node.block)
         has_text = forwarded_block?(node.block) ||
+                   tag_arg_has_text?(node) ||
                    tag_block_has_text?(node.block, children)
         check_node(
           PhlexNode.build_tag(
@@ -99,7 +100,8 @@ module A11y
 
       def gather_tag_child(child, result)
         kids = collect_block_children(child.block)
-        has_text = tag_block_has_text?(child.block, kids)
+        has_text = tag_arg_has_text?(child) ||
+                   tag_block_has_text?(child.block, kids)
         tag = PhlexNode.build_tag(
           child, children: kids, text_content: has_text,
                  configuration: configuration
@@ -123,6 +125,24 @@ module A11y
 
       def tag_block_has_text?(block, children)
         BlockTextScanner.scan(block, children: children)
+      end
+
+      # Phlex's tag API emits the first positional argument as text content
+      # (`a("Click me", href: "/x")` is equivalent to `a(href: "/x") { ... }`).
+      def tag_arg_has_text?(call_node)
+        arg = first_positional_arg(call_node)
+        return false if arg.nil?
+
+        BlockTextScanner.text_emitting?(arg)
+      end
+
+      def first_positional_arg(call_node)
+        return nil unless call_node.arguments
+
+        call_node.arguments.arguments.find do |arg|
+          !arg.is_a?(Prism::KeywordHashNode) &&
+            !arg.is_a?(Prism::BlockArgumentNode)
+        end
       end
 
       def analyze_helper_block(call_node)

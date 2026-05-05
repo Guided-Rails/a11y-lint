@@ -129,6 +129,12 @@ class HomeView < Phlex::HTML
     # Good: anchor whose block returns a method call value
     a(href: "/profile", class: "link") { current_user_email }
 
+    # Good: anchor with positional-arg text content (Phlex auto-emits)
+    a("View profile", href: "/profile", class: "link")
+
+    # Good: anchor with translated positional arg
+    a(t(".dashboard"), href: "/dashboard")
+
     # Good: anchor with sr-only label among icon component siblings
     a(href: "/back", class: "...") do
       span(class: "sr-only") { "Back to " }
@@ -140,6 +146,12 @@ class HomeView < Phlex::HTML
 
     # Good: button whose block returns a local variable
     button(type: "submit", class: "btn") { label }
+
+    # Good: button with positional-arg text content (Phlex auto-emits)
+    button("Submit", type: :submit, class: "btn")
+
+    # Good: button with translated positional arg
+    button(t(".save"), type: :submit)
 
     # Good: wrapper methods (defined below) forward &block to a/button.
     # Accessible name is provided by the caller's block, which the linter

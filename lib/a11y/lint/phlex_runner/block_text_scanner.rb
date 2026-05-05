@@ -26,6 +26,13 @@ module A11y
           new(block, children).scan
         end
 
+        # Public recognizer for a single Prism node — used by PhlexRunner
+        # to inspect a tag's first positional argument, where Phlex emits
+        # the value as text content (`a("Click", href: "/x")`).
+        def self.text_emitting?(node)
+          new(nil, []).text_emitting?(node)
+        end
+
         def self.non_blank_string_literal?(node)
           case node
           when Prism::StringNode
@@ -52,6 +59,10 @@ module A11y
           return false unless @block.is_a?(Prism::BlockNode)
 
           scan_for_text(@block) || @children.any?(&:text_content?)
+        end
+
+        def text_emitting?(node)
+          auto_emitted_text?(node)
         end
 
         private
