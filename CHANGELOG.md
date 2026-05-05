@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.2] - 2026-05-05
+
 ### Fixed
 
 - `AnchorMissingAccessibleName` and `ButtonMissingAccessibleName` no longer report Phlex `a`/`button` tags that use the nested-hash shorthand for `aria-label` (e.g. `aria: { label: "..." }`). `PhlexNode` now flattens nested kwarg hashes the way Phlex does at render time (`aria: { label: "x" }` → `aria-label="x"`, `data: { controller: "y" }` → `data-controller="y"`), so every Phlex tag rule benefits
