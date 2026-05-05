@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "prism"
+require_relative "phlex_runner/block_text_scanner"
 
 module A11y
   module Lint
@@ -8,19 +9,6 @@ module A11y
     # against accessibility rules.
     class PhlexRunner
       PHLEX_PATTERN = /\bdef\s+view_template\b/
-
-      # Phlex auto-emits the return value of these calls into the document:
-      # `plain` / `text` are built-in; the rest are registered as value
-      # helpers by phlex-rails via `register_value_helper`.
-      TEXT_CALLS = %w[
-        plain text
-        t translate l localize
-        pluralize truncate
-        number_to_currency number_to_human number_to_human_size
-        number_to_percentage number_to_phone
-        number_with_delimiter number_with_precision
-        highlight excerpt
-      ].to_set.freeze
 
       def initialize(rules = nil, configuration: Configuration.new)
         @rules = rules || configuration.enabled_rules
@@ -126,16 +114,7 @@ module A11y
       end
 
       def tag_block_has_text?(block, children)
-        return false unless block.is_a?(Prism::BlockNode)
-
-        scan_for_text(block) || children.any?(&:text_content?)
-      end
-
-      def scan_for_text(node)
-        node.child_nodes.compact.any? do |child|
-          text_call?(child) || child.is_a?(Prism::YieldNode) ||
-            (!receiverless_call?(child) && scan_for_text(child))
-        end
+        BlockTextScanner.scan(block, children: children)
       end
 
       def analyze_helper_block(call_node)
@@ -147,21 +126,26 @@ module A11y
         [codes.empty? ? nil : codes, has_text]
       end
 
-      # rubocop:disable Metrics/CyclomaticComplexity
-      # rubocop:disable Metrics/PerceivedComplexity
       def scan_block_content(node, codes)
         node.child_nodes.compact.each do |child|
-          next if tag_call?(child) && hidden_wrapper_tag?(child)
-          return true if child.is_a?(Prism::YieldNode)
-          return true if tag_call?(child) && child.block
+          next if skip_block_child?(child)
+          return true if block_child_text?(child)
           next if tag_call?(child)
           next codes << child.slice if receiverless_call?(child)
           return true if scan_block_content(child, codes)
         end
         false
       end
-      # rubocop:enable Metrics/CyclomaticComplexity
-      # rubocop:enable Metrics/PerceivedComplexity
+
+      def skip_block_child?(child)
+        tag_call?(child) && hidden_wrapper_tag?(child)
+      end
+
+      def block_child_text?(child)
+        child.is_a?(Prism::YieldNode) ||
+          BlockTextScanner.non_blank_string_literal?(child) ||
+          (tag_call?(child) && child.block)
+      end
 
       def walk_block(block)
         return unless block.is_a?(Prism::BlockNode)
@@ -171,10 +155,6 @@ module A11y
 
       def tag_call?(node)
         receiverless_call?(node) && PhlexNode.html_tag?(node.name.to_s)
-      end
-
-      def text_call?(node)
-        receiverless_call?(node) && TEXT_CALLS.include?(node.name.to_s)
       end
 
       def receiverless_call?(node)

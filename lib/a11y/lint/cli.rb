@@ -34,7 +34,7 @@ module A11y
         option_parser.parse!(@argv)
       end
 
-      def option_parser # rubocop:disable Metrics/MethodLength
+      def option_parser
         OptionParser.new do |opts|
           opts.banner = "Usage: a11y-lint [options] [file_or_directory ...]"
 
