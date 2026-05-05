@@ -535,6 +535,148 @@ module A11y
           assert_empty(offenses)
         end
 
+        def test_anchor_with_string_positional_arg_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a("Click me", href: "/x")
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_interpolated_string_positional_arg_passes
+          source = <<~'RUBY'
+            class TestView < Phlex::HTML
+              def view_template
+                a("Hello, #{name}", href: "/x")
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_receiverless_lowercase_call_positional_arg_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(label_text, href: "/x")
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_method_call_with_receiver_positional_arg_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(user.name, href: "/x")
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_translation_helper_positional_arg_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(t(".label"), href: "/x")
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_local_variable_positional_arg_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def link_for(text)
+                a(text, href: "/x")
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_empty_string_positional_arg_reports_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a("", href: "/x")
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_anchor_with_whitespace_string_positional_arg_reports_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a("   ", href: "/x")
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_anchor_with_capitalized_component_positional_arg_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(Pencil(variant: :solid), href: "/x")
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_nested_anchor_with_string_positional_arg_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                div do
+                  a("Click me", href: "/x")
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
         def test_anchor_with_hidden_wrapper_text_reports_when_configured
           source = <<~RUBY
             class TestView < Phlex::HTML

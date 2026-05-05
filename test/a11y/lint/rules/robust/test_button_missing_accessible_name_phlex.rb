@@ -505,6 +505,148 @@ module A11y
           assert_empty(offenses)
         end
 
+        def test_button_with_string_positional_arg_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button("Submit", type: :submit)
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_interpolated_string_positional_arg_passes
+          source = <<~'RUBY'
+            class TestView < Phlex::HTML
+              def view_template
+                button("Save #{name}", type: :submit)
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_receiverless_lowercase_call_positional_arg_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(label_text, type: :submit)
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_method_call_with_receiver_positional_arg_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(form.label, type: :submit)
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_translation_helper_positional_arg_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(t(".submit"), type: :submit)
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_local_variable_positional_arg_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def submit_for(text)
+                button(text, type: :submit)
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_empty_string_positional_arg_reports_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button("", type: :submit)
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_button_with_whitespace_string_positional_arg_reports_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button("   ", type: :submit)
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_button_with_capitalized_component_positional_arg_offense
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(Pencil(variant: :solid), type: :submit)
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_equal(1, offenses.length)
+        end
+
+        def test_nested_button_with_string_positional_arg_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                div do
+                  button("Submit", type: :submit)
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
         def test_button_with_hidden_wrapper_text_reports_when_configured
           source = <<~RUBY
             class TestView < Phlex::HTML
