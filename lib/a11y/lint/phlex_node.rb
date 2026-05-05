@@ -100,7 +100,31 @@ module A11y
 
         kwarg_nodes(call_node).each_with_object({}) do |elem, h|
           key = kwarg_key(elem.key)
-          h[key] = kwarg_value(elem.value) if key
+          next unless key
+
+          if elem.value.is_a?(Prism::HashNode)
+            flatten_nested_hash(key, elem.value, h)
+          else
+            h[key] = kwarg_value(elem.value)
+          end
+        end
+      end
+
+      # Mirrors Phlex's render-time flattening of nested kwarg hashes
+      # (e.g. `aria: { label: "x" }` -> `aria-label="x"`). Inner key
+      # underscores become dashes the same way Phlex/Rails do.
+      def self.flatten_nested_hash(prefix, hash_node, attrs)
+        hash_node.elements.each do |inner|
+          next unless inner.is_a?(Prism::AssocNode)
+          next unless (inner_key = kwarg_key(inner.key))
+
+          full_key = "#{prefix}-#{inner_key.tr("_", "-")}"
+
+          if inner.value.is_a?(Prism::HashNode)
+            flatten_nested_hash(full_key, inner.value, attrs)
+          else
+            attrs[full_key] = kwarg_value(inner.value)
+          end
         end
       end
 
@@ -126,7 +150,7 @@ module A11y
       end
 
       private_class_method :kwarg_key, :kwarg_nodes, :kwarg_value,
-                           :extract_attributes
+                           :extract_attributes, :flatten_nested_hash
     end
   end
 end

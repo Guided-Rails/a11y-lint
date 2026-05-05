@@ -155,6 +155,34 @@ module A11y
           assert_empty(offenses)
         end
 
+        def test_button_with_nested_aria_label_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "button", aria: { label: "Close" })
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
+        def test_button_with_nested_aria_label_dynamic_value_passes
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                button(type: "button", aria: { label: t(".close") })
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+
+          assert_empty(offenses)
+        end
+
         def test_button_with_img_with_alt_passes
           source = <<~RUBY
             class TestView < Phlex::HTML
