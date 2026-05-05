@@ -149,8 +149,13 @@ module A11y
         end
       end
 
-      private_class_method :kwarg_key, :kwarg_nodes, :kwarg_value,
-                           :extract_attributes, :flatten_nested_hash
+      private_class_method(
+        :extract_attributes,
+        :flatten_nested_hash,
+        :kwarg_key,
+        :kwarg_nodes,
+        :kwarg_value
+      )
     end
   end
 end
