@@ -22,6 +22,7 @@ Plan and implement GitHub issue **#$ARGUMENTS** in this repo, end-to-end, on a f
 4. **Implement the plan.**
    - Follow `CLAUDE.md` (rule scoping, node interface, configuration loading) and `.claude/rules/testing.md` (no `setup`, all three calling styles for `ruby_code` rules, Slim/ERB/Phlex parity, inline HEREDOC fixtures).
    - For new rules: register the rule, add good/bad examples to dummy app fixtures, and add a docs page under `docs/src/rules/` if the issue is adding a user-visible rule.
+   - Add an entry under `[Unreleased]` in `CHANGELOG.md` for any user-visible change (bug fixes, new rules, behavior changes). Skip for internal refactors and test-only changes.
 
 5. **Run the suite until green.** `bundle exec rake` runs tests + RuboCop. Iterate on failures. If a fix is non-obvious, surface it before grinding.
 

@@ -127,6 +127,73 @@ module A11y
         assert_equal({}, node.attributes)
       end
 
+      def test_build_tag_flattens_nested_aria_hash
+        call_node = parse_call('a(href: "/", aria: { label: "Home" })')
+        node = PhlexNode.build_tag(call_node)
+
+        assert_equal(
+          { "href" => "/", "aria-label" => "Home" },
+          node.attributes
+        )
+        assert(node.attribute?("aria-label"))
+      end
+
+      def test_build_tag_flattens_nested_data_hash
+        call_node = parse_call(
+          'div(data: { controller: "modal" })'
+        )
+        node = PhlexNode.build_tag(call_node)
+
+        assert_equal({ "data-controller" => "modal" }, node.attributes)
+      end
+
+      def test_build_tag_flattens_nested_hash_with_dynamic_value
+        call_node = parse_call(
+          'a(href: "/", aria: { label: t(".close") })'
+        )
+        node = PhlexNode.build_tag(call_node)
+
+        assert_equal({ "href" => "/", "aria-label" => true }, node.attributes)
+        assert(node.attribute?("aria-label"))
+      end
+
+      def test_build_tag_flattens_nested_string_keys
+        call_node = parse_call(
+          'a(href: "/", "aria" => { "label" => "Home" })'
+        )
+        node = PhlexNode.build_tag(call_node)
+
+        assert(node.attribute?("aria-label"))
+      end
+
+      def test_build_tag_converts_inner_underscores_to_dashes
+        call_node = parse_call(
+          'div(data: { auto_save: "true" })'
+        )
+        node = PhlexNode.build_tag(call_node)
+
+        assert(node.attribute?("data-auto-save"))
+      end
+
+      def test_build_tag_flattens_deeply_nested_hash
+        call_node = parse_call(
+          'div(aria: { described: { by: "id" } })'
+        )
+        node = PhlexNode.build_tag(call_node)
+
+        assert(node.attribute?("aria-described-by"))
+      end
+
+      def test_build_tag_handles_multiple_nested_entries
+        call_node = parse_call(
+          'a(aria: { label: "Home", labelledby: "id" })'
+        )
+        node = PhlexNode.build_tag(call_node)
+
+        assert(node.attribute?("aria-label"))
+        assert(node.attribute?("aria-labelledby"))
+      end
+
       def test_text_content_false_by_default
         call_node = parse_call("a(href: \"/\")")
         node = PhlexNode.build_tag(call_node)

@@ -93,6 +93,9 @@ class HomeView < Phlex::HTML
     # Good: anchor with aria-label
     a(href: "/settings", aria_label: "Settings")
 
+    # Good: anchor with nested aria: { label: ... } shorthand
+    a(href: "/notifications", aria: { label: t(".notifications") })
+
     # Good: anchor with img with alt
     a(href: "/home") { img(src: "home.svg", alt: "Home") }
 
@@ -110,6 +113,9 @@ class HomeView < Phlex::HTML
 
     # Good: button with aria-label
     button(type: "button", aria_label: "Close")
+
+    # Good: button with nested aria: { label: ... } shorthand
+    button(type: "button", aria: { label: t(".close") })
 
     # Good: button with img with alt
     button(type: "button") { img(src: "close.svg", alt: "Close") }
