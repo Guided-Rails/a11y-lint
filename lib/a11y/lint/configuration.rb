@@ -42,14 +42,14 @@ module A11y
         @config.dig(rule_name, "Enabled") != false
       end
 
-      def hidden_wrapper_classes
-        @hidden_wrapper_classes ||=
-          Array(@config["hidden_wrapper_classes"]).map(&:to_s).freeze
+      def inaccessible_wrapper_classes
+        @inaccessible_wrapper_classes ||=
+          Array(@config["inaccessible_wrapper_classes"]).map(&:to_s).freeze
       end
 
-      def accessible_name_wrapper_classes
-        @accessible_name_wrapper_classes ||=
-          Array(@config["accessible_name_wrapper_classes"]).map(&:to_s).freeze
+      def accessible_wrapper_classes
+        @accessible_wrapper_classes ||=
+          Array(@config["accessible_wrapper_classes"]).map(&:to_s).freeze
       end
 
       def enabled_rules

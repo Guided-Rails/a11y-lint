@@ -90,7 +90,7 @@ module A11y
       # Misses array form (`class: ["sr-only", other]`), interpolation
       # (`class: "sr-only #{foo}"`), helper-wrapped (`class: cn("sr-only")`),
       # and computed values (`class: some_method`). Wrapper-class config
-      # (`hidden_wrapper_classes`, `accessible_name_wrapper_classes`)
+      # (`inaccessible_wrapper_classes`, `accessible_wrapper_classes`)
       # therefore only matches authors who write a single static literal.
       def self.kwarg_class_values(call_node)
         return [] unless call_node.arguments

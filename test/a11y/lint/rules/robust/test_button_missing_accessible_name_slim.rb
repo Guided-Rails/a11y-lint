@@ -138,7 +138,7 @@ module A11y
           )
         end
 
-        def test_button_with_hidden_wrapper_text_passes_by_default
+        def test_button_with_inaccessible_wrapper_text_passes_by_default
           source = <<~SLIM.chomp
             button type="button"
               span.popover Move
@@ -150,14 +150,14 @@ module A11y
           assert_empty(offenses)
         end
 
-        def test_button_with_hidden_wrapper_text_reports_when_configured
+        def test_button_with_inaccessible_wrapper_text_reports_when_configured
           source = <<~SLIM.chomp
             button type="button"
               span.popover Move
               img src="thumbs-up.svg"
           SLIM
           configuration = Configuration.new(
-            "hidden_wrapper_classes" => ["popover"]
+            "inaccessible_wrapper_classes" => ["popover"]
           )
 
           offenses = run_linter(source, configuration:)

@@ -266,7 +266,7 @@ module A11y
           assert_equal("app/views/index_view.rb", offenses[0].filename)
         end
 
-        def test_button_with_hidden_wrapper_text_passes_by_default
+        def test_button_with_inaccessible_wrapper_text_passes_by_default
           source = <<~RUBY
             class TestView < Phlex::HTML
               def view_template
@@ -647,7 +647,7 @@ module A11y
           assert_empty(offenses)
         end
 
-        def test_button_with_hidden_wrapper_text_reports_when_configured
+        def test_button_with_inaccessible_wrapper_text_reports_when_configured
           source = <<~RUBY
             class TestView < Phlex::HTML
               def view_template
@@ -659,7 +659,7 @@ module A11y
             end
           RUBY
           configuration = Configuration.new(
-            "hidden_wrapper_classes" => ["popover"]
+            "inaccessible_wrapper_classes" => ["popover"]
           )
 
           offenses = run_linter(source, configuration:)
@@ -700,7 +700,7 @@ module A11y
             end
           RUBY
           configuration = Configuration.new(
-            "accessible_name_wrapper_classes" => ["sr-only"]
+            "accessible_wrapper_classes" => ["sr-only"]
           )
 
           offenses = run_linter(source, configuration:)
@@ -719,7 +719,7 @@ module A11y
             end
           RUBY
           configuration = Configuration.new(
-            "accessible_name_wrapper_classes" => ["sr-only"]
+            "accessible_wrapper_classes" => ["sr-only"]
           )
 
           offenses = run_linter(source, configuration:)
@@ -727,7 +727,7 @@ module A11y
           assert_empty(offenses)
         end
 
-        def test_button_with_sr_only_in_hidden_wrapper_classes_still_reports
+        def test_sr_only_in_inaccessible_wrapper_classes_still_reports
           source = <<~RUBY
             class TestView < Phlex::HTML
               def view_template
@@ -739,7 +739,7 @@ module A11y
             end
           RUBY
           configuration = Configuration.new(
-            "hidden_wrapper_classes" => ["sr-only"]
+            "inaccessible_wrapper_classes" => ["sr-only"]
           )
 
           offenses = run_linter(source, configuration:)

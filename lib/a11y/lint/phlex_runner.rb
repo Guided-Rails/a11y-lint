@@ -94,23 +94,23 @@ module A11y
         has_text = call.arg_has_text? ||
                    call.block_has_text?(
                      kids,
-                     accessible_name_wrapper: accessible_name_wrapper_tag?(call)
+                     accessible_wrapper: accessible_wrapper_tag?(call)
                    )
         tag = PhlexNode.build_tag(
           call.call_node, children: kids, text_content: has_text,
                           configuration: configuration
         )
         check_node(tag)
-        result << tag unless hidden_wrapper_tag?(call)
+        result << tag unless inaccessible_wrapper_tag?(call)
       end
 
-      def hidden_wrapper_tag?(call)
-        wrapper_class_match?(call, configuration.hidden_wrapper_classes)
+      def inaccessible_wrapper_tag?(call)
+        wrapper_class_match?(call, configuration.inaccessible_wrapper_classes)
       end
 
-      def accessible_name_wrapper_tag?(call)
+      def accessible_wrapper_tag?(call)
         wrapper_class_match?(
-          call, configuration.accessible_name_wrapper_classes
+          call, configuration.accessible_wrapper_classes
         )
       end
 
@@ -144,7 +144,7 @@ module A11y
       end
 
       def handle_call_block_child(child_call, codes)
-        return false if child_call.tag? && hidden_wrapper_tag?(child_call)
+        return false if child_call.tag? && inaccessible_wrapper_tag?(child_call)
         return true if tag_call_has_text_block?(child_call)
         return false if child_call.tag?
 

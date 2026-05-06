@@ -354,7 +354,7 @@ module A11y
           assert_empty(offenses)
         end
 
-        def test_hidden_wrapper_with_icon_passes_by_default
+        def test_inaccessible_wrapper_with_icon_passes_by_default
           source = <<~SLIM.chomp
             = link_to("/path", class: "icon") do
               .popover
@@ -367,7 +367,7 @@ module A11y
           assert_empty(offenses)
         end
 
-        def test_hidden_wrapper_with_icon_reports_when_configured
+        def test_inaccessible_wrapper_with_icon_reports_when_configured
           source = <<~SLIM.chomp
             = link_to("/path", class: "icon") do
               .popover
@@ -375,7 +375,7 @@ module A11y
               = inline_svg("icon.svg")
           SLIM
           configuration = Configuration.new(
-            "hidden_wrapper_classes" => ["popover"]
+            "inaccessible_wrapper_classes" => ["popover"]
           )
 
           offenses = run_linter(source, configuration:)

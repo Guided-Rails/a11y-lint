@@ -22,8 +22,8 @@ module A11y
           highlight excerpt
         ].to_set.freeze
 
-        def self.scan(block, children:, accessible_name_wrapper: false)
-          new(block, children:, accessible_name_wrapper:).scan
+        def self.scan(block, children:, accessible_wrapper: false)
+          new(block, children:, accessible_wrapper:).scan
         end
 
         # Public recognizer for a single Prism node — used by PhlexRunner
@@ -50,10 +50,10 @@ module A11y
           end
         end
 
-        def initialize(block, children:, accessible_name_wrapper: false)
+        def initialize(block, children:, accessible_wrapper: false)
           @block = block
           @children = children
-          @accessible_name_wrapper = accessible_name_wrapper
+          @accessible_wrapper = accessible_wrapper
         end
 
         def scan
@@ -121,7 +121,7 @@ module A11y
 
           name = call.name.to_s
           if PhlexNode.html_tag?(name)
-            return accessible_name_wrapper? && bare_call?(call)
+            return accessible_wrapper? && bare_call?(call)
           end
           return true if TEXT_CALLS.include?(name)
 
@@ -135,8 +135,8 @@ module A11y
           call.arguments.nil? && call.block.nil?
         end
 
-        def accessible_name_wrapper?
-          @accessible_name_wrapper
+        def accessible_wrapper?
+          @accessible_wrapper
         end
 
         def conditional_container?(node)
