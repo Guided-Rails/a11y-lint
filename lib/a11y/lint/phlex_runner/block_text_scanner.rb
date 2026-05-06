@@ -23,14 +23,14 @@ module A11y
         ].to_set.freeze
 
         def self.scan(block, children:, wrapper: false)
-          new(block, children, wrapper: wrapper).scan
+          new(block, children:, wrapper:).scan
         end
 
         # Public recognizer for a single Prism node — used by PhlexRunner
         # to inspect a tag's first positional argument, where Phlex emits
         # the value as text content (`a("Click", href: "/x")`).
         def self.text_emitting?(node)
-          new(nil, []).text_emitting?(node)
+          new(nil, children: []).text_emitting?(node)
         end
 
         def self.non_blank_string_literal?(node)
@@ -50,7 +50,7 @@ module A11y
           end
         end
 
-        def initialize(block, children, wrapper: false)
+        def initialize(block, children:, wrapper: false)
           @block = block
           @children = children
           @wrapper = wrapper
