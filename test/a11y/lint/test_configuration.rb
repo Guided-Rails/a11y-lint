@@ -63,32 +63,67 @@ module A11y
         end
       end
 
-      def test_hidden_wrapper_classes_defaults_to_empty_array
-        assert_empty(Configuration.new.hidden_wrapper_classes)
+      def test_inaccessible_wrapper_classes_defaults_to_empty_array
+        assert_empty(Configuration.new.inaccessible_wrapper_classes)
       end
 
-      def test_hidden_wrapper_classes_reads_top_level_key
+      def test_inaccessible_wrapper_classes_reads_top_level_key
         config = Configuration.new(
-          "hidden_wrapper_classes" => %w[popover tooltip]
+          "inaccessible_wrapper_classes" => %w[popover tooltip]
         )
 
-        assert_equal(%w[popover tooltip], config.hidden_wrapper_classes)
+        assert_equal(%w[popover tooltip], config.inaccessible_wrapper_classes)
       end
 
-      def test_hidden_wrapper_classes_coerces_entries_to_strings
-        config = Configuration.new("hidden_wrapper_classes" => [:popover])
+      def test_inaccessible_wrapper_classes_coerces_entries_to_strings
+        config = Configuration.new("inaccessible_wrapper_classes" => [:popover])
 
-        assert_equal(["popover"], config.hidden_wrapper_classes)
+        assert_equal(["popover"], config.inaccessible_wrapper_classes)
       end
 
-      def test_hidden_wrapper_classes_load_from_yaml
+      def test_inaccessible_wrapper_classes_load_from_yaml
         Dir.mktmpdir do |dir|
           path = File.join(dir, ".a11y-lint.yml")
-          File.write(path, "hidden_wrapper_classes:\n  - popover\n")
+          File.write(path, "inaccessible_wrapper_classes:\n  - popover\n")
 
           config = Configuration.load(path)
 
-          assert_equal(["popover"], config.hidden_wrapper_classes)
+          assert_equal(["popover"], config.inaccessible_wrapper_classes)
+        end
+      end
+
+      def test_accessible_wrapper_classes_defaults_to_empty_array
+        assert_empty(Configuration.new.accessible_wrapper_classes)
+      end
+
+      def test_accessible_wrapper_classes_reads_top_level_key
+        config = Configuration.new(
+          "accessible_wrapper_classes" => %w[sr-only visually-hidden]
+        )
+
+        assert_equal(
+          %w[sr-only visually-hidden], config.accessible_wrapper_classes
+        )
+      end
+
+      def test_accessible_wrapper_classes_coerces_entries_to_strings
+        config = Configuration.new(
+          "accessible_wrapper_classes" => [:"sr-only"]
+        )
+
+        assert_equal(["sr-only"], config.accessible_wrapper_classes)
+      end
+
+      def test_accessible_wrapper_classes_load_from_yaml
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, ".a11y-lint.yml")
+          File.write(
+            path, "accessible_wrapper_classes:\n  - sr-only\n"
+          )
+
+          config = Configuration.load(path)
+
+          assert_equal(["sr-only"], config.accessible_wrapper_classes)
         end
       end
     end

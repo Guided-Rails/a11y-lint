@@ -52,7 +52,7 @@
 <% end %>
 
 <!-- Bad: button_tag block whose only text is inside a hidden wrapper -->
-<!-- (ButtonTagMissingAccessibleName, requires hidden_wrapper_classes: [popover]) -->
+<!-- (ButtonTagMissingAccessibleName, requires inaccessible_wrapper_classes: [popover]) -->
 <%= button_tag(class: "button-icon") do %>
   <div class="popover"><%= t(".move") %></div>
   <%= inline_svg("thumbs-up.svg") %>

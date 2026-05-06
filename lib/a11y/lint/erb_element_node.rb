@@ -47,7 +47,7 @@ module A11y
       end
 
       def text_content?
-        return false if hidden_wrapper?(@nokogiri_node)
+        return false if inaccessible_wrapper?(@nokogiri_node)
 
         visible_text_or_output?(@nokogiri_node)
       end
@@ -58,7 +58,7 @@ module A11y
       # to the accessible name.
       def children
         @nokogiri_node.element_children.filter_map do |child|
-          next if hidden_wrapper?(child)
+          next if inaccessible_wrapper?(child)
 
           ErbElementNode.new(
             nokogiri_node: child, line: child.line,
@@ -70,7 +70,7 @@ module A11y
       private
 
       def visible_text_or_output?(node)
-        return false if hidden_wrapper?(node)
+        return false if inaccessible_wrapper?(node)
         return true if own_text_or_marker?(node)
 
         node.element_children.any? { |c| visible_text_or_output?(c) }
@@ -86,8 +86,8 @@ module A11y
         end
       end
 
-      def hidden_wrapper?(node)
-        classes = configuration.hidden_wrapper_classes
+      def inaccessible_wrapper?(node)
+        classes = configuration.inaccessible_wrapper_classes
         return false if classes.empty?
 
         node_classes(node).any? { |klass| classes.include?(klass) }

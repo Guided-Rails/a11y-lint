@@ -56,7 +56,7 @@ class HomeView < Phlex::HTML
     end
 
     # Bad: button_tag block whose only text is inside a hidden wrapper
-    # Needs hidden_wrapper_classes: [popover] config
+    # Needs inaccessible_wrapper_classes: [popover] config
     # (ButtonTagMissingAccessibleName)
     button_tag(class: "button-icon") do
       span(class: "popover") { plain "Move" }
@@ -139,6 +139,25 @@ class HomeView < Phlex::HTML
     a(href: "/back", class: "...") do
       span(class: "sr-only") { "Back to " }
       span { label }
+    end
+
+    # Good: anchor whose accessible name lives in an sr-only span
+    # whose body is an ambiguous bare call (`label` is an instance
+    # method, not the `<label>` HTML tag).
+    # Needs accessible_wrapper_classes: [sr-only] config.
+    a(href: "/back", class: "icon") do
+      span(class: "absolute -inset-2.5")
+      span(class: "sr-only") { label }
+      ChevronLeft(variant: :solid, class: "size-5")
+    end
+
+    # Good: button whose accessible name lives in an sr-only span
+    # with the same bare-call shape.
+    # Needs accessible_wrapper_classes: [sr-only] config.
+    button(class: "icon") do
+      span(class: "absolute -inset-2.5")
+      span(class: "sr-only") { label }
+      EllipsisVertical(variant: :solid, class: "size-5")
     end
 
     # Good: button with bare string-literal block

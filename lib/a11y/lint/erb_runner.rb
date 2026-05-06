@@ -98,7 +98,7 @@ module A11y
         indexed_codes = []
         html = indexed_marker_html(block_content, indexed_codes)
         fragment = Nokogiri::HTML4::DocumentFragment.parse(html)
-        strip_hidden_wrappers!(fragment)
+        strip_inaccessible_wrappers!(fragment)
 
         remaining = fragment.to_html
         visible_codes = indexed_codes.each_with_index.filter_map do |code, i|
@@ -118,23 +118,23 @@ module A11y
         !html.gsub(/#{ERB_OUTPUT_MARKER}\d+_/, "").strip.empty?
       end
 
-      def strip_hidden_wrappers!(node)
-        return if configuration.hidden_wrapper_classes.empty?
+      def strip_inaccessible_wrappers!(node)
+        return if configuration.inaccessible_wrapper_classes.empty?
 
         node.element_children.each do |child|
-          if hidden_wrapper_element?(child)
+          if inaccessible_wrapper_element?(child)
             child.remove
           else
-            strip_hidden_wrappers!(child)
+            strip_inaccessible_wrappers!(child)
           end
         end
       end
 
-      def hidden_wrapper_element?(node)
+      def inaccessible_wrapper_element?(node)
         value = node.attributes["class"]&.value
         return false unless value.is_a?(String)
 
-        classes = configuration.hidden_wrapper_classes
+        classes = configuration.inaccessible_wrapper_classes
         value.split.any? { |klass| classes.include?(klass) }
       end
 

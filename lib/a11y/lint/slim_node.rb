@@ -91,7 +91,7 @@ module A11y
 
       def collect_output_codes(sexp)
         return [] unless sexp.is_a?(Array)
-        return [] if hidden_wrapper_sexp?(sexp)
+        return [] if inaccessible_wrapper_sexp?(sexp)
         return [sexp[3]] if slim_output_sexp?(sexp)
 
         sexp.flat_map { |child| collect_output_codes(child) }
@@ -103,7 +103,7 @@ module A11y
 
       def block_text_content?(sexp)
         return false unless sexp.is_a?(Array)
-        return false if hidden_wrapper_sexp?(sexp)
+        return false if inaccessible_wrapper_sexp?(sexp)
         return true if slim_text_sexp?(sexp) || html_tag_sexp?(sexp)
 
         sexp.any? { |child| block_text_content?(child) }
@@ -111,18 +111,18 @@ module A11y
 
       def text_or_output?(sexp)
         return false unless sexp.is_a?(Array)
-        return false if hidden_wrapper_sexp?(sexp)
+        return false if inaccessible_wrapper_sexp?(sexp)
         return true if slim_text_sexp?(sexp) || slim_output_sexp?(sexp)
 
         sexp.any? { |child| text_or_output?(child) }
       end
 
-      def hidden_wrapper_sexp?(sexp)
+      def inaccessible_wrapper_sexp?(sexp)
         return false unless html_tag_sexp?(sexp)
-        return false if configuration.hidden_wrapper_classes.empty?
+        return false if configuration.inaccessible_wrapper_classes.empty?
 
         class_values(sexp[3]).any? do |klass|
-          configuration.hidden_wrapper_classes.include?(klass)
+          configuration.inaccessible_wrapper_classes.include?(klass)
         end
       end
 

@@ -85,6 +85,13 @@ module A11y
         )
       end
 
+      # Resolves a Phlex tag call's `class:` kwarg to a list of class names.
+      # Intentionally narrow: only matches a literal `Prism::StringNode`.
+      # Misses array form (`class: ["sr-only", other]`), interpolation
+      # (`class: "sr-only #{foo}"`), helper-wrapped (`class: cn("sr-only")`),
+      # and computed values (`class: some_method`). Wrapper-class config
+      # (`inaccessible_wrapper_classes`, `accessible_wrapper_classes`)
+      # therefore only matches authors who write a single static literal.
       def self.kwarg_class_values(call_node)
         return [] unless call_node.arguments
 

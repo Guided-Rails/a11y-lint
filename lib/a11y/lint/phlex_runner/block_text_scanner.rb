@@ -22,15 +22,15 @@ module A11y
           highlight excerpt
         ].to_set.freeze
 
-        def self.scan(block, children:)
-          new(block, children).scan
+        def self.scan(block, children:, accessible_wrapper: false)
+          new(block, children:, accessible_wrapper:).scan
         end
 
         # Public recognizer for a single Prism node — used by PhlexRunner
         # to inspect a tag's first positional argument, where Phlex emits
         # the value as text content (`a("Click", href: "/x")`).
         def self.text_emitting?(node)
-          new(nil, []).text_emitting?(node)
+          new(nil, children: []).text_emitting?(node)
         end
 
         def self.non_blank_string_literal?(node)
@@ -50,9 +50,10 @@ module A11y
           end
         end
 
-        def initialize(block, children)
+        def initialize(block, children:, accessible_wrapper: false)
           @block = block
           @children = children
+          @accessible_wrapper = accessible_wrapper
         end
 
         def scan
@@ -119,13 +120,23 @@ module A11y
           return true if call.receiver
 
           name = call.name.to_s
-          return false if PhlexNode.html_tag?(name)
+          if PhlexNode.html_tag?(name)
+            return accessible_wrapper? && bare_call?(call)
+          end
           return true if TEXT_CALLS.include?(name)
 
           # Lowercase receiverless calls (locals, helper methods) auto-emit
           # their return value. Capitalized names are Phlex components,
           # which emit their own HTML, not text.
           lowercase_name?(name)
+        end
+
+        def bare_call?(call)
+          call.arguments.nil? && call.block.nil?
+        end
+
+        def accessible_wrapper?
+          @accessible_wrapper
         end
 
         def conditional_container?(node)

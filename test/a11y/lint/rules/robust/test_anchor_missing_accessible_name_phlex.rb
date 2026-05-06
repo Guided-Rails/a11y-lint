@@ -266,7 +266,7 @@ module A11y
           assert_equal("app/views/index_view.rb", offenses[0].filename)
         end
 
-        def test_anchor_with_hidden_wrapper_text_passes_by_default
+        def test_anchor_with_inaccessible_wrapper_text_passes_by_default
           source = <<~RUBY
             class TestView < Phlex::HTML
               def view_template
@@ -677,7 +677,7 @@ module A11y
           assert_empty(offenses)
         end
 
-        def test_anchor_with_hidden_wrapper_text_reports_when_configured
+        def test_anchor_with_inaccessible_wrapper_text_reports_when_configured
           source = <<~RUBY
             class TestView < Phlex::HTML
               def view_template
@@ -689,7 +689,87 @@ module A11y
             end
           RUBY
           configuration = Configuration.new(
-            "hidden_wrapper_classes" => ["popover"]
+            "inaccessible_wrapper_classes" => ["popover"]
+          )
+
+          offenses = run_linter(source, configuration:)
+          result = offenses.map(&:rule)
+
+          assert_equal(["AnchorMissingAccessibleName"], result)
+        end
+
+        def test_anchor_with_sr_only_bare_html_tag_call_reports_by_default
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/back", class: "icon") do
+                  span(class: "absolute -inset-2.5")
+                  span(class: "sr-only") { label }
+                  ChevronLeft(variant: :solid)
+                end
+              end
+            end
+          RUBY
+
+          offenses = run_linter(source)
+          result = offenses.map(&:rule)
+
+          assert_equal(["AnchorMissingAccessibleName"], result)
+        end
+
+        def test_anchor_with_sr_only_bare_html_tag_call_passes_when_configured
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/back", class: "icon") do
+                  span(class: "absolute -inset-2.5")
+                  span(class: "sr-only") { label }
+                  ChevronLeft(variant: :solid)
+                end
+              end
+            end
+          RUBY
+          configuration = Configuration.new(
+            "accessible_wrapper_classes" => ["sr-only"]
+          )
+
+          offenses = run_linter(source, configuration:)
+
+          assert_empty(offenses)
+        end
+
+        def test_anchor_with_sr_only_string_block_passes_when_configured
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/back", class: "icon") do
+                  span(class: "sr-only") { "Back" }
+                end
+              end
+            end
+          RUBY
+          configuration = Configuration.new(
+            "accessible_wrapper_classes" => ["sr-only"]
+          )
+
+          offenses = run_linter(source, configuration:)
+
+          assert_empty(offenses)
+        end
+
+        def test_sr_only_in_inaccessible_wrapper_classes_still_reports
+          source = <<~RUBY
+            class TestView < Phlex::HTML
+              def view_template
+                a(href: "/back", class: "icon") do
+                  span(class: "sr-only") { label }
+                  ChevronLeft(variant: :solid)
+                end
+              end
+            end
+          RUBY
+          configuration = Configuration.new(
+            "inaccessible_wrapper_classes" => ["sr-only"]
           )
 
           offenses = run_linter(source, configuration:)

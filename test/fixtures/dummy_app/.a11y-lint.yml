@@ -1,20 +1,48 @@
 # All rules enabled by default.
 # Uncomment to disable a rule:
 #
-# ImgMissingAlt:
+# AnchorMissingAccessibleName:
+#   Enabled: false
+#
+# AreaMissingAlt:
+#   Enabled: false
+#
+# ButtonMissingAccessibleName:
+#   Enabled: false
+#
+# ButtonTagMissingAccessibleName:
+#   Enabled: false
+#
+# ImageSubmitTagMissingAlt:
 #   Enabled: false
 #
 # ImageTagMissingAlt:
 #   Enabled: false
 #
+# ImgMissingAlt:
+#   Enabled: false
+#
+# InputImageMissingAlt:
+#   Enabled: false
+#
+# InputMissingAutocomplete:
+#   Enabled: false
+#
 # LinkToMissingAccessibleName:
 #   Enabled: false
 #
-# ButtonTagMissingAccessibleName:
+# ListInvalidChildren:
+#   Enabled: false
+#
+# SimpleFormInputMissingAccessibleName:
 #   Enabled: false
 
-# Class names that wrap content hidden from assistive technology
-# (e.g. via CSS `visibility: hidden`). Content inside these wrappers
-# does not count toward an element's accessible name.
-hidden_wrapper_classes:
+# Class names that wrap content hidden from assistive technology.
+# Content inside these wrappers does not count toward an element's accessible name.
+inaccessible_wrapper_classes:
   - popover
+
+# Class names that wrap content visible only to assistive technology.
+# Content inside these wrappers counts toward an element's accessible name.
+accessible_wrapper_classes:
+  - sr-only
