@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-05-06
+
 ### Changed
 
 - **Breaking:** `.a11y-lint.yml`'s `hidden_wrapper_classes` key is now `inaccessible_wrapper_classes`. Behavior is unchanged. The rename brings the key into line with the new `accessible_wrapper_classes` (below). Projects with `hidden_wrapper_classes` in their config need to rename it
