@@ -76,16 +76,6 @@ module A11y
           refute_predicate(wrap("img(src: 'x.jpg')"), :forwarded_block?)
         end
 
-        def test_block_children_returns_children_when_block_present
-          call = wrap("div { p { 'hi' } }")
-
-          refute_empty(call.block_children)
-        end
-
-        def test_block_children_empty_when_no_block
-          assert_empty(wrap("img(src: 'x.jpg')").block_children)
-        end
-
         def test_block_has_text_true_for_explicit_string
           assert(wrap("a(href: '/x') { 'click' }").block_has_text?)
         end

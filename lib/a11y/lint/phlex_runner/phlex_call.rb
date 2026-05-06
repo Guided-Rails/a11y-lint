@@ -57,14 +57,8 @@ module A11y
           block.is_a?(Prism::BlockArgumentNode)
         end
 
-        def block_children
-          block_node ? block_node.child_nodes.compact : []
-        end
-
         def block_has_text?(children = [], wrapper: false)
-          BlockTextScanner.scan(
-            block_node, children: children, wrapper: wrapper
-          )
+          BlockTextScanner.scan(block_node, children:, wrapper:)
         end
 
         # Phlex's tag API emits the first positional argument as text
