@@ -91,9 +91,11 @@ module A11y
 
       def gather_tag_child(call, result)
         kids = collect_block_children(call.block_node)
-        accessible_name_wrapper = accessible_name_wrapper_tag?(call)
         has_text = call.arg_has_text? ||
-                   call.block_has_text?(kids, wrapper: accessible_name_wrapper)
+                   call.block_has_text?(
+                     kids,
+                     accessible_name_wrapper: accessible_name_wrapper_tag?(call)
+                   )
         tag = PhlexNode.build_tag(
           call.call_node, children: kids, text_content: has_text,
                           configuration: configuration
