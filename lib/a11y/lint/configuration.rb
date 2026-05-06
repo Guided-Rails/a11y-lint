@@ -47,6 +47,11 @@ module A11y
           Array(@config["hidden_wrapper_classes"]).map(&:to_s).freeze
       end
 
+      def accessible_name_wrapper_classes
+        @accessible_name_wrapper_classes ||=
+          Array(@config["accessible_name_wrapper_classes"]).map(&:to_s).freeze
+      end
+
       def enabled_rules
         Rules.constants.filter_map do |name|
           klass = Rules.const_get(name)

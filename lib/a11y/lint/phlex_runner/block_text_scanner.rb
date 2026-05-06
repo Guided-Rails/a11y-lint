@@ -22,8 +22,8 @@ module A11y
           highlight excerpt
         ].to_set.freeze
 
-        def self.scan(block, children:)
-          new(block, children).scan
+        def self.scan(block, children:, wrapper: false)
+          new(block, children, wrapper: wrapper).scan
         end
 
         # Public recognizer for a single Prism node — used by PhlexRunner
@@ -50,9 +50,10 @@ module A11y
           end
         end
 
-        def initialize(block, children)
+        def initialize(block, children, wrapper: false)
           @block = block
           @children = children
+          @wrapper = wrapper
         end
 
         def scan
@@ -119,13 +120,25 @@ module A11y
           return true if call.receiver
 
           name = call.name.to_s
-          return false if PhlexNode.html_tag?(name)
+          if PhlexNode.html_tag?(name)
+            # Inside a tag whose class signals an accessible-name wrapper
+            # (e.g. `sr-only`), an ambiguous bare call — name matches an
+            # HTML tag, no args, no block — is treated as a text-emitting
+            # method call rather than an empty HTML element. Matches
+            # author intent for patterns like `span(class: "sr-only") { label }`
+            # where `label` is an instance method, not the `<label>` tag.
+            return @wrapper && bare_call?(call)
+          end
           return true if TEXT_CALLS.include?(name)
 
           # Lowercase receiverless calls (locals, helper methods) auto-emit
           # their return value. Capitalized names are Phlex components,
           # which emit their own HTML, not text.
           lowercase_name?(name)
+        end
+
+        def bare_call?(call)
+          call.arguments.nil? && call.block.nil?
         end
 
         def conditional_container?(node)

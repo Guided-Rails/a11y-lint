@@ -61,8 +61,10 @@ module A11y
           block_node ? block_node.child_nodes.compact : []
         end
 
-        def block_has_text?(children = [])
-          BlockTextScanner.scan(block_node, children: children)
+        def block_has_text?(children = [], wrapper: false)
+          BlockTextScanner.scan(
+            block_node, children: children, wrapper: wrapper
+          )
         end
 
         # Phlex's tag API emits the first positional argument as text

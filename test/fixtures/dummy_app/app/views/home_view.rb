@@ -141,6 +141,25 @@ class HomeView < Phlex::HTML
       span { label }
     end
 
+    # Good: anchor whose accessible name lives in an sr-only span
+    # whose body is an ambiguous bare call (`label` is an instance
+    # method, not the `<label>` HTML tag).
+    # Needs accessible_name_wrapper_classes: [sr-only] config.
+    a(href: "/back", class: "icon") do
+      span(class: "absolute -inset-2.5")
+      span(class: "sr-only") { label }
+      ChevronLeft(variant: :solid, class: "size-5")
+    end
+
+    # Good: button whose accessible name lives in an sr-only span
+    # with the same bare-call shape.
+    # Needs accessible_name_wrapper_classes: [sr-only] config.
+    button(class: "icon") do
+      span(class: "absolute -inset-2.5")
+      span(class: "sr-only") { label }
+      EllipsisVertical(variant: :solid, class: "size-5")
+    end
+
     # Good: button with bare string-literal block
     button(type: :submit, class: "btn") { "Filter" }
 

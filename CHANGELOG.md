@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `.a11y-lint.yml` now supports a top-level `accessible_name_wrapper_classes` list. Inside Phlex `a`/`button` tags whose direct child has a matching class, `AnchorMissingAccessibleName` and `ButtonMissingAccessibleName` treat ambiguous bare calls — receiverless calls whose name matches an HTML tag, with no arguments and no block — as text-emitting method calls rather than empty HTML elements. Fixes false positives on the `span(class: "sr-only") { label }` pattern, where `label` is an instance method that parses as a `Prism::CallNode` indistinguishable from the `<label>` HTML tag. Opt-in; default is no special handling. Distinct from `hidden_wrapper_classes` (which excludes the wrapper from the parent's accessible name); a wrapper-class list member here stays in the parent's children with `text_content?` set to true. No-op in the Slim and ERB pipelines, which have no analogous ambiguity
+
 ## [0.14.2] - 2026-05-05
 
 ### Fixed

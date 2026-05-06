@@ -91,6 +91,41 @@ module A11y
           assert_equal(["popover"], config.hidden_wrapper_classes)
         end
       end
+
+      def test_accessible_name_wrapper_classes_defaults_to_empty_array
+        assert_empty(Configuration.new.accessible_name_wrapper_classes)
+      end
+
+      def test_accessible_name_wrapper_classes_reads_top_level_key
+        config = Configuration.new(
+          "accessible_name_wrapper_classes" => %w[sr-only visually-hidden]
+        )
+
+        assert_equal(
+          %w[sr-only visually-hidden], config.accessible_name_wrapper_classes
+        )
+      end
+
+      def test_accessible_name_wrapper_classes_coerces_entries_to_strings
+        config = Configuration.new(
+          "accessible_name_wrapper_classes" => [:"sr-only"]
+        )
+
+        assert_equal(["sr-only"], config.accessible_name_wrapper_classes)
+      end
+
+      def test_accessible_name_wrapper_classes_load_from_yaml
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, ".a11y-lint.yml")
+          File.write(
+            path, "accessible_name_wrapper_classes:\n  - sr-only\n"
+          )
+
+          config = Configuration.load(path)
+
+          assert_equal(["sr-only"], config.accessible_name_wrapper_classes)
+        end
+      end
     end
   end
 end

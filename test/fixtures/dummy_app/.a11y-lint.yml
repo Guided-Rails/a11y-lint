@@ -18,3 +18,10 @@
 # does not count toward an element's accessible name.
 hidden_wrapper_classes:
   - popover
+
+# Class names that wrap content visible only to assistive technology
+# (e.g. CSS-clipped sr-only spans). Inside Phlex tags whose class
+# matches, ambiguous bare calls (HTML-tag-named, no args, no block)
+# are treated as auto-emitting text rather than empty HTML elements.
+accessible_name_wrapper_classes:
+  - sr-only

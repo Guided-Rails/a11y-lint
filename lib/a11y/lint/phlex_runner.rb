@@ -91,7 +91,9 @@ module A11y
 
       def gather_tag_child(call, result)
         kids = collect_block_children(call.block_node)
-        has_text = call.arg_has_text? || call.block_has_text?(kids)
+        accessible_name_wrapper = accessible_name_wrapper_tag?(call)
+        has_text = call.arg_has_text? ||
+                   call.block_has_text?(kids, wrapper: accessible_name_wrapper)
         tag = PhlexNode.build_tag(
           call.call_node, children: kids, text_content: has_text,
                           configuration: configuration
@@ -101,7 +103,16 @@ module A11y
       end
 
       def hidden_wrapper_tag?(call)
-        classes = configuration.hidden_wrapper_classes
+        wrapper_class_match?(call, configuration.hidden_wrapper_classes)
+      end
+
+      def accessible_name_wrapper_tag?(call)
+        wrapper_class_match?(
+          call, configuration.accessible_name_wrapper_classes
+        )
+      end
+
+      def wrapper_class_match?(call, classes)
         return false if classes.empty?
 
         call.class_values.any? { |klass| classes.include?(klass) }
