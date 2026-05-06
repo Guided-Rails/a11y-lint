@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Breaking:** `.a11y-lint.yml`'s `hidden_wrapper_classes` key is now `inaccessible_wrapper_classes`. Behavior is unchanged. The rename mirrors the new `accessible_wrapper_classes` (below) and frames both keys around the same property — whether wrapped content is exposed to assistive technology. Projects with `hidden_wrapper_classes` in their config need to rename it
+- **Breaking:** `.a11y-lint.yml`'s `hidden_wrapper_classes` key is now `inaccessible_wrapper_classes`. Behavior is unchanged. The rename brings the key into line with the new `accessible_wrapper_classes` (below). Projects with `hidden_wrapper_classes` in their config need to rename it
 
 ### Added
 
