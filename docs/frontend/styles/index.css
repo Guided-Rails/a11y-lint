@@ -2,7 +2,7 @@
   --body-background: #f2f2f2;
   --body-color: #444;
   --heading-color: black;
-  --action-color: #d64045;
+  --action-color: #931a1e;
 }
 
 body {
@@ -19,7 +19,6 @@ body {
 a {
   color: var(--action-color);
   text-decoration: underline;
-  text-decoration-color: #ffb088;
 }
 
 h1 {
@@ -36,10 +35,11 @@ body > header {
   text-align: center;
 }
 
-body > header img {
-  display: inline-block;
-  width: 400px;
-  max-width: 100%;
+body > header .site-title {
+  font-size: 2rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: var(--heading-color);
 }
 
 body > nav ul {
