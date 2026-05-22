@@ -21,6 +21,8 @@ Bridgetown.configure do |config|
   # Available options are `erb` (default), `serbea`, or `liquid`
   template_engine "erb"
 
+  init :"bridgetown-stoa"
+
   # Other options you might want to investigate:
 
   # See list of timezone values here:
