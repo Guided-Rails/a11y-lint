@@ -14,7 +14,7 @@ module A11y
       end
 
       def test_filename
-        filename = "app/views/index.html.slim"
+        filename = "app/views/index.html.erb"
 
         offense = Offense.new(rule: "x", filename:, line: 0, message: "x")
 

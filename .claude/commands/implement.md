@@ -15,12 +15,12 @@ Plan and implement GitHub issue **#$ARGUMENTS** in this repo, end-to-end, on a f
 3. **Plan before coding.** Produce a short plan covering:
    - Which files you'll touch or create
    - For new rules: the WCAG principle directory under `lib/a11y/lint/rules/`, the rule class name (see CLAUDE.md "Rule Scoping Convention"), and whether it has an HTML/helper pair
-   - Tests to add (Slim + ERB + Phlex parity per `.claude/rules/testing.md`)
-   - Dummy app fixtures to add in `test/fixtures/dummy_app/app/views/home/home.html.{slim,erb}` and any Phlex view
+   - Tests to add (ERB + Phlex parity per `.claude/rules/testing.md`)
+   - Dummy app fixtures to add in `test/fixtures/dummy_app/app/views/home/home.html.erb` and any Phlex view
    - Open questions, if any — ask once, then proceed
 
 4. **Implement the plan.**
-   - Follow `CLAUDE.md` (rule scoping, node interface, configuration loading) and `.claude/rules/testing.md` (no `setup`, all three calling styles for `ruby_code` rules, Slim/ERB/Phlex parity, inline HEREDOC fixtures).
+   - Follow `CLAUDE.md` (rule scoping, node interface, configuration loading) and `.claude/rules/testing.md` (no `setup`, all three calling styles for `ruby_code` rules, ERB/Phlex parity, inline HEREDOC fixtures).
    - For new rules: register the rule, add good/bad examples to dummy app fixtures, and add a docs page under `docs/src/rules/` if the issue is adding a user-visible rule.
    - Add an entry under `[Unreleased]` in `CHANGELOG.md` for any user-visible change (bug fixes, new rules, behavior changes). Skip for internal refactors and test-only changes.
 

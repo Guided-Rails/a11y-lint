@@ -10,7 +10,7 @@ globs: test/**/*.rb
   def setup
     @offense = Offense.new(
       rule: "ImgMissingAlt",
-      filename: "test.slim",
+      filename: "test.html.erb",
       line: 1,
       message: "missing alt"
     )
@@ -26,7 +26,7 @@ globs: test/**/*.rb
   def test_rule
     offense = Offense.new(
       rule: "ImgMissingAlt",
-      filename: "test.slim",
+      filename: "test.html.erb",
       line: 1,
       message: "missing alt"
     )
@@ -36,17 +36,17 @@ globs: test/**/*.rb
   ```
 
 - Rules that inspect `ruby_code` (e.g. `link_to`, `image_tag` helpers) must include test cases for all three calling styles:
-  1. Single-line with parentheses: `= link_to("", "/path", class: "icon")`
-  2. Single-line without parentheses: `= link_to "", "/path", class: "icon"`
+  1. Single-line with parentheses: `<%= link_to("", "/path", class: "icon") %>`
+  2. Single-line without parentheses: `<%= link_to "", "/path", class: "icon" %>`
   3. Multiline with trailing comma:
-     ```slim
-     = link_to(\
-         "",
-         "/path",
-         class: "icon",
-       )
+     ```erb
+     <%= link_to(
+           "",
+           "/path",
+           class: "icon",
+         ) %>
      ```
 
   Each style must be tested for both the offense case and the "passes with fix" case.
 
-- Every rule must be tested against the Slim, ERB, and Phlex pipelines.
+- Every rule must be tested against the ERB and Phlex pipelines.

@@ -4,14 +4,13 @@ require "securerandom"
 class Shared::CodeTabs < Bridgetown::Component
   TABS = [
     { key: :erb,   label: "ERB",   lexer: "erb" },
-    { key: :slim,  label: "Slim",  lexer: "slim" },
     { key: :phlex, label: "Phlex", lexer: "ruby" }
   ].freeze
 
   attr_reader :id
 
-  def initialize(erb:, slim: nil, phlex: nil)
-    @samples = { erb: erb, slim: slim, phlex: phlex }
+  def initialize(erb:, phlex: nil)
+    @samples = { erb: erb, phlex: phlex }
     @id = "code-tabs-#{SecureRandom.hex(4)}"
   end
 

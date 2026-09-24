@@ -49,10 +49,16 @@ module A11y
         end
       end
 
-      def test_mixed_slim_and_erb
+      def test_mixed_erb_and_phlex
         Dir.mktmpdir do |dir|
-          write_file(dir, "bad.slim", 'img src="photo.jpg"')
           write_file(dir, "bad.html.erb", '<img src="photo.jpg">')
+          write_file(dir, "bad_view.rb", <<~RUBY)
+            class BadView < Phlex::HTML
+              def view_template
+                img(src: "photo.jpg")
+              end
+            end
+          RUBY
 
           stdout, _stderr = run_cli([dir])
 

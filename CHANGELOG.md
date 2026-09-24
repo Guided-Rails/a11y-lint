@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- **Breaking:** Slim support has been dropped. `.slim` files are no longer discovered or linted, and `SlimRunner`, `SlimNode`, and `SlimLoadError` have been removed along with the `slim` development dependency. a11y-lint now targets ERB and Phlex only
+
 ## [0.15.0] - 2026-05-06
 
 ### Changed

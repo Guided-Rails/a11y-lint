@@ -80,12 +80,6 @@ Or `aria-labelledby` pointing to existing visible text:
 <%%= form.input :secret, as: :hidden, label: false %>
 ```
 
-### Slim equivalent
-
-```slim
-= form.input :name, label: false, input_html: { aria: { label: "Name" } }
-```
-
 ## What this rule doesn't catch
 
 This rule has a deliberately narrow scope. Things it doesn't flag:

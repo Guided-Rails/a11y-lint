@@ -71,9 +71,6 @@ Applies to: HTML `<img>` elements.
   erb: <<~ERB,
     <img src="hero.jpg">
   ERB
-  slim: <<~SLIM,
-    img src="hero.jpg"
-  SLIM
   phlex: <<~PHLEX,
     img(src: "hero.jpg")
   PHLEX
@@ -85,9 +82,6 @@ Applies to: HTML `<img>` elements.
   erb: <<~ERB,
     <img src="hero.jpg" alt="Team celebrating after a product launch">
   ERB
-  slim: <<~SLIM,
-    img src="hero.jpg" alt="Team celebrating after a product launch"
-  SLIM
   phlex: <<~PHLEX,
     img(src: "hero.jpg", alt: "Team celebrating after a product launch")
   PHLEX
@@ -99,15 +93,7 @@ For a decorative image, use an empty `alt` so assistive tech skips it:
 <img src="divider.svg" alt="">
 ```
 
-### Slim and Phlex equivalents
-
-Slim:
-
-```slim
-img src="hero.jpg" alt="Team celebrating after a product launch"
-```
-
-Phlex:
+### Phlex equivalent
 
 ```ruby
 img(src: "hero.jpg", alt: "Team celebrating after a product launch")
@@ -136,15 +122,7 @@ For a decorative image:
 <%%= image_tag("divider.svg", alt: "") %>
 ```
 
-### Slim and Phlex equivalents
-
-Slim:
-
-```slim
-= image_tag("hero.jpg", alt: "Team celebrating after a product launch")
-```
-
-Phlex:
+### Phlex equivalent
 
 ```ruby
 image_tag("hero.jpg", alt: "Team celebrating after a product launch")
@@ -169,15 +147,7 @@ Applies to: HTML `<input type="image">` elements.
 <input type="image" src="search.svg" alt="Search">
 ```
 
-### Slim and Phlex equivalents
-
-Slim:
-
-```slim
-input type="image" src="search.svg" alt="Search"
-```
-
-Phlex:
+### Phlex equivalent
 
 ```ruby
 input(type: "image", src: "search.svg", alt: "Search")
@@ -202,15 +172,7 @@ Applies to: Rails `image_submit_tag` helper (renders `<input type="image">`).
 <%%= image_submit_tag("search.svg", alt: "Search") %>
 ```
 
-### Slim and Phlex equivalents
-
-Slim:
-
-```slim
-= image_submit_tag("search.svg", alt: "Search")
-```
-
-Phlex:
+### Phlex equivalent
 
 ```ruby
 image_submit_tag("search.svg", alt: "Search")
@@ -243,17 +205,7 @@ Each `<area>` is a clickable hotspot in an image map — effectively a link. Its
 </map>
 ```
 
-### Slim and Phlex equivalents
-
-Slim:
-
-```slim
-img src="team-photo.jpg" alt="Our team" usemap="#team"
-map name="team"
-  area shape="rect" coords="0,0,100,100" href="/team/alex" alt="Alex's profile"
-```
-
-Phlex:
+### Phlex equivalent
 
 ```ruby
 img(src: "team-photo.jpg", alt: "Our team", usemap: "#team")
