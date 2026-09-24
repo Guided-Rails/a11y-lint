@@ -18,7 +18,7 @@ module A11y
         files = resolve_files(@argv)
 
         if files.empty?
-          @stderr.puts("No .slim, .erb, or .rb files found")
+          @stderr.puts("No .erb or .rb files found")
           return 0
         end
 
@@ -61,7 +61,7 @@ module A11y
 
       def expand_path(path)
         if File.directory?(path)
-          Dir.glob(File.join(path, "**", "*.{slim,erb,rb}"))
+          Dir.glob(File.join(path, "**", "*.{erb,rb}"))
         elsif File.file?(path)
           [path]
         else
@@ -72,22 +72,20 @@ module A11y
 
       def lint_files(files)
         configuration = load_configuration
-        slim_runner = SlimRunner.new(configuration:)
         erb_runner = ErbRunner.new(configuration:)
         phlex_runner = PhlexRunner.new(configuration:)
 
         files.flat_map do |file|
           source = File.read(file)
-          runner = runner_for(file, slim_runner, erb_runner, phlex_runner)
+          runner = runner_for(file, erb_runner, phlex_runner)
           runner.run(source, filename: file)
         end
       end
 
-      def runner_for(file, slim_runner, erb_runner, phlex_runner)
+      def runner_for(file, erb_runner, phlex_runner)
         case File.extname(file)
-        when ".erb" then erb_runner
         when ".rb" then phlex_runner
-        else slim_runner
+        else erb_runner
         end
       end
 

@@ -30,10 +30,10 @@ Run the linter on specific files or directories:
 
 ```bash
 a11y-lint app/views/
-a11y-lint app/views/home.html.slim app/views/about.html.slim
+a11y-lint app/views/home.html.erb app/views/about.html.erb
 ```
 
-With no arguments, it scans the current directory recursively for `.slim`, `.erb`, and `.rb` (Phlex) files:
+With no arguments, it scans the current directory recursively for `.erb` and `.rb` (Phlex) files:
 
 ```bash
 a11y-lint
@@ -63,11 +63,6 @@ a11y-lint --config path/to/.a11y-lint.yml app/views/
 
 ```ruby
 require "a11y/lint"
-
-# Slim
-source = File.read("app/views/home.html.slim")
-runner = A11y::Lint::SlimRunner.new([A11y::Lint::Rules::ImgMissingAlt])
-offenses = runner.run(source, filename: "app/views/home.html.slim")
 
 # ERB
 source = File.read("app/views/home.html.erb")

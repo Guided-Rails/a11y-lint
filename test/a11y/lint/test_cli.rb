@@ -14,13 +14,17 @@ module A11y
           _stdout, stderr = run_cli([], dir:)
 
           assert_equal(0, @exit_code)
-          assert_match(/No .slim, .erb, or .rb files found/, stderr)
+          assert_match(/No .erb or .rb files found/, stderr)
         end
       end
 
       def test_clean_file
         Dir.mktmpdir do |dir|
-          write_file(dir, "clean.slim", 'img src="photo.jpg" alt="A photo"')
+          write_file(
+            dir,
+            "clean.html.erb",
+            '<img src="photo.jpg" alt="A photo">'
+          )
 
           stdout, _stderr = run_cli([dir])
 
@@ -31,7 +35,7 @@ module A11y
 
       def test_file_with_offense
         Dir.mktmpdir do |dir|
-          write_file(dir, "bad.slim", 'img src="photo.jpg"')
+          write_file(dir, "bad.html.erb", '<img src="photo.jpg">')
 
           stdout, _stderr = run_cli([dir])
 
@@ -43,12 +47,12 @@ module A11y
 
       def test_output_format
         Dir.mktmpdir do |dir|
-          path = write_file(dir, "bad.slim", 'img src="photo.jpg"')
+          path = write_file(dir, "bad.html.erb", '<img src="photo.jpg">')
 
           stdout, _stderr = run_cli([path])
 
           assert_match(
-            /bad\.slim:1 \[ImgMissingAlt\] img tag is missing/,
+            /bad\.html\.erb:1 \[ImgMissingAlt\] img tag is missing/,
             stdout
           )
         end
@@ -56,7 +60,11 @@ module A11y
 
       def test_multiple_offenses
         Dir.mktmpdir do |dir|
-          write_file(dir, "bad.slim", "img src=\"a.jpg\"\nimg src=\"b.jpg\"")
+          write_file(
+            dir,
+            "bad.html.erb",
+            "<img src=\"a.jpg\">\n<img src=\"b.jpg\">"
+          )
 
           stdout, _stderr = run_cli([dir])
 
@@ -67,7 +75,7 @@ module A11y
 
       def test_default_scans_current_directory
         Dir.mktmpdir do |dir|
-          write_file(dir, "test.slim", 'img src="photo.jpg"')
+          write_file(dir, "test.html.erb", '<img src="photo.jpg">')
 
           stdout, _stderr = run_cli([], dir:)
 
@@ -80,7 +88,7 @@ module A11y
         Dir.mktmpdir do |dir|
           subdir = File.join(dir, "views", "admin")
           FileUtils.mkdir_p(subdir)
-          write_file(subdir, "index.slim", 'img src="photo.jpg"')
+          write_file(subdir, "index.html.erb", '<img src="photo.jpg">')
 
           stdout, _stderr = run_cli([dir])
 
@@ -100,7 +108,7 @@ module A11y
       end
 
       def test_nonexistent_path_warns
-        _stdout, stderr = run_cli(["/nonexistent/path/file.slim"])
+        _stdout, stderr = run_cli(["/nonexistent/path/file.html.erb"])
 
         assert_equal(0, @exit_code)
         assert_match(/not found, skipping/, stderr)
@@ -108,12 +116,12 @@ module A11y
 
       def test_explicit_file_argument
         Dir.mktmpdir do |dir|
-          path = write_file(dir, "specific.slim", 'img src="photo.jpg"')
+          path = write_file(dir, "specific.html.erb", '<img src="photo.jpg">')
 
           stdout, _stderr = run_cli([path])
 
           assert_equal(1, @exit_code)
-          assert_match(/specific\.slim/, stdout)
+          assert_match(/specific\.html\.erb/, stdout)
         end
       end
 

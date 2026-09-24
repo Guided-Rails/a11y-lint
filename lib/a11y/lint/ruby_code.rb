@@ -81,7 +81,7 @@ module A11y
         @prism_parse_result ||= Prism.parse(source)
       end
 
-      # Slim/ERB block forms end with ` do` (e.g. `link_to("#") do`)
+      # ERB block forms end with ` do` (e.g. `link_to("#") do`)
       # which isn't valid Ruby on its own. Appending `\nend` makes it
       # parseable and gives the resulting CallNode a `.block` attribute.
       def source

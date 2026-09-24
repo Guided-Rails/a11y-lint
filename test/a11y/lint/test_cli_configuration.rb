@@ -10,7 +10,7 @@ module A11y
     class TestCLIConfiguration < Minitest::Test
       def test_disabled_rule_is_not_reported
         Dir.mktmpdir do |dir|
-          write_file(dir, "bad.slim", 'img src="photo.jpg"')
+          write_file(dir, "bad.html.erb", '<img src="photo.jpg">')
           config_path = write_file(
             dir,
             ".a11y-lint.yml",
@@ -26,7 +26,7 @@ module A11y
 
       def test_enabled_rule_is_still_reported
         Dir.mktmpdir do |dir|
-          write_file(dir, "bad.slim", 'img src="photo.jpg"')
+          write_file(dir, "bad.html.erb", '<img src="photo.jpg">')
           config_path = write_file(
             dir,
             ".a11y-lint.yml",
@@ -42,7 +42,7 @@ module A11y
 
       def test_default_config_file_is_loaded_from_working_directory
         Dir.mktmpdir do |dir|
-          write_file(dir, "bad.slim", 'img src="photo.jpg"')
+          write_file(dir, "bad.html.erb", '<img src="photo.jpg">')
           write_file(
             dir,
             ".a11y-lint.yml",
@@ -58,7 +58,7 @@ module A11y
 
       def test_other_rules_still_run_when_one_is_disabled
         Dir.mktmpdir do |dir|
-          write_file(dir, "bad.slim", '= image_tag("photo.jpg")')
+          write_file(dir, "bad.html.erb", '<%= image_tag("photo.jpg") %>')
           config_path = write_file(
             dir,
             ".a11y-lint.yml",

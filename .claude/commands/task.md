@@ -17,7 +17,7 @@ Idea: $ARGUMENTS
      - **Proposed approach** — only include if the approach is obvious from the idea
      - **Files likely involved** — only include if you can quickly identify them from the repo (e.g. a new rule idea should point at the right WCAG principle directory under `lib/a11y/lint/rules/`)
 
-2. **Clarify only if necessary** — one round, max. Voice input drops context, but too many questions defeat frictionless capture. Skip clarification when the idea is unambiguous. Typical clarifications: bug vs. feature, which rule/file, which template pipeline (Slim/ERB/Phlex).
+2. **Clarify only if necessary** — one round, max. Voice input drops context, but too many questions defeat frictionless capture. Skip clarification when the idea is unambiguous. Typical clarifications: bug vs. feature, which rule/file, which template pipeline (ERB/Phlex).
 
 3. **Create the issue** with `gh issue create --title "..." --body "$(cat <<'EOF' ... EOF)"` against the current repo. Do **not** pass `--repo`. Do **not** add labels.
 
