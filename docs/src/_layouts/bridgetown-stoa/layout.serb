@@ -1,0 +1,45 @@
+{%# Shadows the bridgetown-stoa gem's layout so the sidebar footer can link
+    back to Guided Rails. Stoa has no footer override point yet; when it grows
+    one, delete this file and move the link there. Keep the rest in sync with
+    layouts/bridgetown-stoa/layout.serb in the gem. %}
+<!doctype html>
+<html lang="{{ site.locale || 'en' }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      {% if resource.data.title != "Index" %}
+        {{ resource.data.title }} |
+      {% end %}
+      {{ site.metadata.title }}
+    </title>
+    {% if resource.data.description %}
+      <meta name="description" content="{{ resource.data.description }}">
+    {% end %}
+    <link rel="stylesheet" href="{%= asset_path :css %}">
+  </head>
+  <body class="stoa-shell">
+    <aside class="stoa-sidebar-shell">
+      <header class="stoa-brand">
+        <a href="/" class="stoa-site-title">{{ site.metadata.title }}</a>
+      </header>
+      {%= render BridgetownStoa::Sidebar.new(site: site, current_resource: resource) %}
+      <footer class="stoa-sidebar-footer">
+        <p>
+          A <a href="https://guidedrails.com">Guided Rails</a> project.
+        </p>
+        <p>
+          Built with <a href="https://www.bridgetownrb.com">Bridgetown</a>
+          <span>+</span>
+          <a href="https://github.com/Guided-Rails/bridgetown-stoa">Stoa</a>.
+        </p>
+      </footer>
+    </aside>
+    <main class="stoa-main">
+      <div class="stoa-content">
+        {%= yield %}
+      </div>
+    </main>
+    <script src="{%= asset_path :js %}" defer></script>
+  </body>
+</html>
