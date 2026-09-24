@@ -1,1 +1,3 @@
-/* Intentionally empty. Stoa will ship styles in a future release. */
+@import "tailwindcss";
+@import "bridgetown-stoa";
+@source "../../node_modules/bridgetown-stoa/layouts/**/*.serb";
